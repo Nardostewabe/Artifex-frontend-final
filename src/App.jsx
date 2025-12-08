@@ -7,8 +7,8 @@ import Login from './Pages/Login.jsx';
 import Role from './Pages/RoleSelection.jsx';
 import SellerForm from './Pages/SellerForm.jsx';
 import CustomerForm from './Pages/CustomerForm.jsx';
-import CustomerHome from './Pages/Customer/HomePage.jsx'
-import SellerHome from './Pages/Seller/HomePage.jsx'
+import CustomerHome from './Pages/Customer/pages/HomePage.jsx'
+import SellerHome from './Pages/Seller/pages/HomePage.jsx'
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 
 const App = () => {
@@ -35,7 +35,7 @@ const App = () => {
 
           {/* PROTECTED CUSTOMER ROUTES */}
           <Route element={<ProtectedRoute allowedRoles={[1, "Customer"]} />}>
-          console.log("successfully entered protected zone");
+            console.log("successfully entered protected zone");
             <Route path="/customer-home" element={<CustomerHome />} />
           </Route>
           {/* PROTECTED SELLER ROUTES */}
