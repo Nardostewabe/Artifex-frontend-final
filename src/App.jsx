@@ -1,5 +1,4 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Navigationbar from './components/Navigationbar.jsx';
 import HomePage from './Pages/HomePage.jsx';
 import Shop from './Pages/Shop.jsx';
 import Signup from './Pages/Signup.jsx';
@@ -11,6 +10,14 @@ import CustomerHome from './Pages/Customer/pages/HomePage.jsx';
 import SellerHome from './Pages/Seller/pages/HomePage.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 import { AuthProvider } from './context/AuthContext.jsx';
+import PublicLayout from './layouts/PublicLayout.jsx';
+import PlatformAdminLayout from './layouts/PlatformAdminLayout.jsx';
+import Dashboard from './Pages/PlatformAdmin/pages/Dashboard.jsx';
+import UserMonitoring from "./Pages/PlatformAdmin/pages/UserMonitoring";
+import SellerManagement from "./Pages/PlatformAdmin/pages/SellerManagement";
+import AdminManagement from "./Pages/PlatformAdmin/pages/AdminManagement";
+import Reports from "./Pages/PlatformAdmin/pages/Reports";
+import SystemLogs from "./Pages/PlatformAdmin/pages/SystemLogs";
 
 const App = () => {
   return (
@@ -18,10 +25,13 @@ const App = () => {
     <AuthProvider>
             <Router>
         <div className="font-sans text-gray-900">
-          
-          <Navigationbar />
+
+            {/* ======================================================= */}
+            {/* WORLD 1: PUBLIC / CUSTOMER / SELLER (Has Top Navbar)    */}
+            {/* ======================================================= */}
 
           <Routes>
+            <Route element={<PublicLayout />}>
             {/* =========================================
                1. PUBLIC ROUTES (No Token Required)
                ========================================= */}
@@ -59,7 +69,21 @@ const App = () => {
             <Route element={<ProtectedRoute allowedRoles={[2, "Seller"]} />}>
               <Route path="/seller-home" element={<SellerHome />} />
             </Route>
+            </Route>
+            {/* ======================================================= */}
+            {/* WORLD 2: PLATFORM ADMIN (Has Sidebar Navigation)       */}
+            {/* ======================================================= */}
 
+            <Route element={<ProtectedRoute allowedRoles={[4, "PlatformAdmin"]} />}>
+              <Route element={<PlatformAdminLayout />}>
+                <Route path="/PlatformAdmin-dashboard" element={<Dashboard />} />
+                <Route path="/users" element={<UserMonitoring />} />
+                <Route path="/sellers" element={<SellerManagement />} />
+                <Route path="/admins" element={<AdminManagement />} />
+                <Route path="/reports" element={<Reports />} />
+                <Route path="/logs" element={<SystemLogs />} />
+              </Route>
+            </Route>
           </Routes>
         </div>
       </Router>  
