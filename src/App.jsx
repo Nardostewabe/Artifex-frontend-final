@@ -19,6 +19,8 @@ import AdminManagement from "./Pages/PlatformAdmin/pages/AdminManagement";
 import Reports from "./Pages/PlatformAdmin/pages/Reports";
 import SystemLogs from "./Pages/PlatformAdmin/pages/SystemLogs";
 
+import CHomepage from "./Pages/Customer/pages/HomePage.jsx";
+
 const App = () => {
   return (
     <>
@@ -42,6 +44,8 @@ const App = () => {
             <Route path="/contact" element={<div className="pt-32 text-center">Contact Page Coming Soon</div>} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/login" element={<Login />} />
+
+            <Route path = "/chomepage" element = {<CHomepage/>}/>
 
             {/* =========================================
                2. LOGGED IN ROUTES (Token Required)
