@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { API_BASE_URL } from "../config"; // Make sure this path is correct
+import { useAuth } from '../context/AuthContext';
 
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -9,7 +10,8 @@ const Login = () => {
   // UI States
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  
+ 
+  const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
@@ -36,6 +38,7 @@ const Login = () => {
         // 1. Save the token
         const token = data.token || data.Token; // Handle capitalization safety
         if (token) {
+            login(token, data.user);
             localStorage.setItem("token", token);
             localStorage.setItem("user", JSON.stringify(data.user));
             

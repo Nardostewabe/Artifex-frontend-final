@@ -1,23 +1,33 @@
 import { Navigate, Outlet } from "react-router-dom";
 
-// This component wraps around your pages
 const ProtectedRoute = ({ allowedRoles }) => {
   const token = localStorage.getItem("token");
   const userString = localStorage.getItem("user");
-  const user = userString ? JSON.parse(userString) : null;
-
-  // 1. If no token, kick them out to login
+  
+  // 1. Debugging Logs (Check your browser console!)
+  console.log("Protected Route Check:");
+  console.log("Token:", token);
+  
+  // 2. Check Token
   if (!token) {
+    console.warn("No token found. Redirecting to Login.");
     return <Navigate to="/login" replace />;
   }
 
-  // 2. (Optional) If we specified specific roles (e.g. only Sellers), check that here
-  if (allowedRoles && !allowedRoles.includes(user.role)) {
-    // If a Customer tries to go to Seller page, send them back
-    return <Navigate to="/unauthorized" replace />; 
+  // 3. Check Roles (Only if allowedRoles prop is passed)
+  if (allowedRoles && userString) {
+    const user = JSON.parse(userString);
+    console.log("User Role:", user.role);
+    console.log("Allowed Roles:", allowedRoles);
+
+    if (!allowedRoles.includes(user.role)) {
+      console.warn("User does not have required role. Redirecting.");
+      // You can redirect to an "Unauthorized" page, or just back to dashboard
+      return <Navigate to="/login" replace />;
+    }
   }
 
-  // 3. If all good, render the page (Outlet)
+  // 4. If all checks pass, render the child route
   return <Outlet />;
 };
 
