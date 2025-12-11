@@ -45,12 +45,16 @@ const Login = () => {
             console.log("Login successful",data.user.role);
 
             const userRole = data.user.role;
+            const sellerApproved = data.user.sellerApproved;
             if (userRole == "1") {
                 navigate("/customer-home");
                 console.log("Login successful",data.user.role);
             }
-            else if (userRole == "2") {
+            else if (userRole == "2" && sellerApproved) {
                 navigate("/seller-home");
+            }
+            else if (userRole == "2" && !sellerApproved) {
+                navigate("/waiting-approval");
             }
             else if (userRole == "3") {
                 navigate("/ContentAdmin-dashboard");

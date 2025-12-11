@@ -18,6 +18,8 @@ import SellerManagement from "./Pages/PlatformAdmin/pages/SellerManagement";
 import AdminManagement from "./Pages/PlatformAdmin/pages/AdminManagement";
 import Reports from "./Pages/PlatformAdmin/pages/Reports";
 import SystemLogs from "./Pages/PlatformAdmin/pages/SystemLogs";
+import SellerApproval from './Pages/PlatformAdmin/pages/SellerApproval.jsx';
+import WaitingApproval from './Pages/Seller/pages/WaitingApproval.jsx';
 
 const App = () => {
   return (
@@ -68,6 +70,7 @@ const App = () => {
                ========================================= */}
             <Route element={<ProtectedRoute allowedRoles={[2, "Seller"]} />}>
               <Route path="/seller-home" element={<SellerHome />} />
+              <Route path="/waiting-approval" element={<WaitingApproval />} />
             </Route>
             </Route>
             {/* ======================================================= */}
@@ -82,6 +85,7 @@ const App = () => {
                 <Route path="/admins" element={<AdminManagement />} />
                 <Route path="/reports" element={<Reports />} />
                 <Route path="/logs" element={<SystemLogs />} />
+                <Route path="/sellers-approval" element={<SellerApproval />} />
               </Route>
             </Route>
           </Routes>

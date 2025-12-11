@@ -43,7 +43,7 @@ const SellerForm = () => {
         });
 
         if (response.ok) {
-            navigate("/login");
+            navigate("/waiting-approval");
         } else {
             alert("Failed to create shop.");
         }

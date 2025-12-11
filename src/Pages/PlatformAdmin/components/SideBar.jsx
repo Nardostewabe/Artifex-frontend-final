@@ -13,6 +13,7 @@ export default function Sidebar() {
     { label: "Dashboard", to: "PlatformAdmin-dashboard", icon: <Home className="w-5 h-5" /> },
     { label: "User Monitoring", to: "/users", icon: <Users className="w-5 h-5" /> },
     { label: "Seller Management", to: "/sellers", icon: <ShoppingCart className="w-5 h-5" /> },
+    { label: "Seller Registers", to: "/sellers-approval", icon: <ShoppingCart className="w-5 h-5" /> },
     { label: "Admin Management", to: "/admins", icon: <Settings className="w-5 h-5" /> },
     { label: "Reports & Complaints", to: "/reports", icon: <AlertCircle className="w-5 h-5" /> },
     { label: "System Logs", to: "/logs", icon: <ClipboardList className="w-5 h-5" /> },
