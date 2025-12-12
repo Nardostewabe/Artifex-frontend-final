@@ -25,7 +25,7 @@ const Login = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        // Match the C# DTO property: public string UsernameOrEmail { get; set; }
+        
         body: JSON.stringify({ 
             UsernameOrEmail: username, 
             Password: password 
@@ -51,6 +51,7 @@ const Login = () => {
                 console.log("Login successful",data.user.role);
             }
             else if (userRole == "2" && sellerApproved) {
+              console.log("inside",data.user.role);
                 navigate("/seller-home");
             }
             else if (userRole == "2" && !sellerApproved) {
