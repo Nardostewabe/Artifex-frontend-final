@@ -22,6 +22,8 @@ import SellerApproval from './Pages/PlatformAdmin/pages/SellerApproval.jsx';
 import WaitingApproval from './Pages/Seller/pages/WaitingApproval.jsx';
 import AddProduct from './Pages/Seller/pages/AddProducts.jsx'; 
 
+import CHomepage from "./Pages/Customer/pages/HomePage.jsx";
+
 const App = () => {
   return (
     <>
@@ -45,6 +47,8 @@ const App = () => {
             <Route path="/contact" element={<div className="pt-32 text-center">Contact Page Coming Soon</div>} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/login" element={<Login />} />
+
+            <Route path = "/chomepage" element = {<CHomepage/>}/>
 
             {/* =========================================
                2. LOGGED IN ROUTES (Token Required)
