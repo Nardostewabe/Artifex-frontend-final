@@ -20,6 +20,7 @@ import Reports from "./Pages/PlatformAdmin/pages/Reports";
 import SystemLogs from "./Pages/PlatformAdmin/pages/SystemLogs";
 import SellerApproval from './Pages/PlatformAdmin/pages/SellerApproval.jsx';
 import WaitingApproval from './Pages/Seller/pages/WaitingApproval.jsx';
+import AddProduct from './Pages/Seller/pages/AddProducts.jsx'; 
 
 const App = () => {
   return (
@@ -71,6 +72,7 @@ const App = () => {
             <Route element={<ProtectedRoute allowedRoles={[2, "Seller"]} />}>
               <Route path="/seller-home" element={<SellerHome />} />
               <Route path="/waiting-approval" element={<WaitingApproval />} />
+              <Route path="/seller-home/add-product" element={<AddProduct />}/>
             </Route>
             </Route>
             {/* ======================================================= */}

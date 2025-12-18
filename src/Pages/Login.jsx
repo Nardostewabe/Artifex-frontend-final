@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { API_BASE_URL } from "../config"; // Make sure this path is correct
+import { API_BASE_URL } from "../config"; 
 import { useAuth } from '../context/AuthContext';
 
 const Login = () => {
@@ -11,8 +11,8 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
  
-  const { login } = useAuth();
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleLogin = async (e) => {
     e.preventDefault(); 
@@ -25,7 +25,6 @@ const Login = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        
         body: JSON.stringify({ 
             UsernameOrEmail: username, 
             Password: password 
@@ -34,46 +33,61 @@ const Login = () => {
 
       if (response.ok) {
         const data = await response.json();
+        const token = data.token || data.Token; 
 
-        // 1. Save the token
-        const token = data.token || data.Token; // Handle capitalization safety
         if (token) {
-            login(token, data.user);
-            localStorage.setItem("token", token);
-            localStorage.setItem("user", JSON.stringify(data.user));
-            
-            console.log("Login successful",data.user.role);
+           // 1. Save Data
+           login(token, data.user);
+           localStorage.setItem("token", token);
+           localStorage.setItem("user", JSON.stringify(data.user));
+           
+           console.log("FULL BACKEND DATA:", data.user);
 
-            const userRole = data.user.role;
-            const sellerApproved = data.user.sellerApproved;
-            if (userRole == "1") {
-                navigate("/customer-home");
-                console.log("Login successful",data.user.role);
-            }
-            else if (userRole == "2" && sellerApproved) {
-              console.log("inside",data.user.role);
-                navigate("/seller-home");
-            }
-            else if (userRole == "2" && !sellerApproved) {
-                navigate("/waiting-approval");
-            }
-            else if (userRole == "3") {
-                navigate("/ContentAdmin-dashboard");
-            }
-            else if (userRole == "4") {
-                navigate("/PlatformAdmin-dashboard");
-            }
-            else {
-              setError("User has not registered as a seller or a customer.");
-              navigate("/");
-            }
-            
+           // ---------------------------------------------------------
+           // THE FIX: NORMALIZE DATA BEFORE CHECKING
+           // ---------------------------------------------------------
+
+           // 1. Force Role to String (Safety check)
+           const role = String(data.user.role); 
+
+           // 2. Use the correct field name from your console log (.isApproved)
+           const rawApproved = data.user.isApproved; 
+           
+           // 3. Robust check: handles true, "true", 1, "1"
+           const isSellerApproved = rawApproved === true || rawApproved === "true" || rawApproved === 1 || rawApproved === "1";
+
+           console.log("NAVIGATION DEBUG:", { role, isSellerApproved, rawValue: rawApproved });
+
+           // 4. Navigate based on normalized data
+           if (role === "1") {
+               navigate("/customer-home");
+           }
+           else if (role === "2") {
+               if (isSellerApproved) {
+                   console.log("Seller is approved. Going to dashboard.");
+                   navigate("/seller-home");
+               } else {
+                   console.log("Seller NOT approved. Going to waiting room.");
+                   navigate("/waiting-approval");
+               }
+           }
+           else if (role === "3") {
+               navigate("/ContentAdmin-dashboard");
+           }
+           else if (role === "4") {
+               navigate("/PlatformAdmin-dashboard");
+           }
+           else {
+               console.warn("Unknown Role:", role);
+               setError("User role not recognized.");
+               navigate("/");
+           }
+           
         } else {
             setError("Login succeeded but no token was returned.");
         }
 
       } else {
-        // Handle 401 Unauthorized or 400 Bad Request
         const errorText = await response.text();
         setError(errorText || "Invalid username or password.");
       }
@@ -87,7 +101,6 @@ const Login = () => {
 
   const handleForgotPassword = () => {
     console.log("Forgot password clicked");
-    // Implement logic later
   };
 
   return (
