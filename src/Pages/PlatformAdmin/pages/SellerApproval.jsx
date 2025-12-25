@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import DataTable from "../components/DataTable"; 
+import DataTable from "../components/DataTable";
 import { Eye, CheckCircle, XCircle, Clock, AlertTriangle } from "lucide-react";
-import { API_BASE_URL } from  "../../../config";
+import { API_BASE_URL } from "../../../config";
+import ConfirmationModal from "../../../components/ConfirmationModal";
 
 // --- Helper for Auth Headers ---
 const getAuthHeaders = () => {
@@ -20,7 +21,7 @@ const SellerDetailsModal = ({ seller, isOpen, onClose, onApprove, onReject, isPr
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]">
-        
+
         {/* Header */}
         <div className="bg-gradient-to-r from-purple-100 to-blue-100 p-6 border-b border-white">
           <h2 className="text-2xl font-serif text-slate-800">Review Application</h2>
@@ -29,7 +30,7 @@ const SellerDetailsModal = ({ seller, isOpen, onClose, onApprove, onReject, isPr
 
         {/* Scrollable Content */}
         <div className="p-6 overflow-y-auto space-y-6">
-          
+
           <div className="flex items-center gap-2 p-3 bg-yellow-50 text-yellow-800 rounded-lg text-sm border border-yellow-100">
             <Clock size={16} />
             <span>Status: <strong>Pending Approval</strong></span>
@@ -64,21 +65,21 @@ const SellerDetailsModal = ({ seller, isOpen, onClose, onApprove, onReject, isPr
 
         {/* Footer Actions */}
         <div className="p-6 border-t border-slate-100 bg-slate-50 flex justify-end gap-3">
-          <button 
+          <button
             onClick={onClose}
             disabled={isProcessing}
             className="px-4 py-2 text-slate-600 hover:bg-slate-200 rounded-lg transition disabled:opacity-50"
           >
             Cancel
           </button>
-          <button 
+          <button
             onClick={() => onReject(seller.id)}
             disabled={isProcessing}
             className="flex items-center gap-2 px-4 py-2 bg-red-100 text-red-600 hover:bg-red-200 rounded-lg font-medium transition disabled:opacity-50"
           >
             <XCircle size={18} /> {isProcessing ? "Processing..." : "Reject"}
           </button>
-          <button 
+          <button
             onClick={() => onApprove(seller.id)}
             disabled={isProcessing}
             className="flex items-center gap-2 px-6 py-2 bg-purple-600 text-white hover:bg-purple-700 rounded-lg font-medium shadow-md shadow-purple-200 transition disabled:opacity-50"
@@ -99,7 +100,31 @@ export default function SellerApproval() {
   const [selectedSeller, setSelectedSeller] = useState(null);
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
+
+  // Modal State
+  const [modalConfig, setModalConfig] = useState({
+    isOpen: false,
+    title: "",
+    message: "",
+    type: "info",
+    isAlert: false,
+    onConfirm: null
+  });
+
   const navigate = useNavigate();
+
+  const showModal = (config) => {
+    setModalConfig({
+      isOpen: true,
+      confirmText: "Confirm",
+      cancelText: "Cancel",
+      ...config
+    });
+  };
+
+  const closeModal = () => {
+    setModalConfig(prev => ({ ...prev, isOpen: false }));
+  };
 
   // 1. Fetch Data from Backend
   const fetchPendingSellers = async () => {
@@ -109,8 +134,13 @@ export default function SellerApproval() {
       });
 
       if (response.status === 401 || response.status === 403) {
-        alert("Unauthorized. Please login as Admin.");
-        navigate("/login");
+        showModal({
+          title: "Unauthorized",
+          message: "Please login as Admin.",
+          type: "danger",
+          isAlert: true,
+          onConfirm: () => navigate("/login")
+        });
         return;
       }
 
@@ -130,9 +160,18 @@ export default function SellerApproval() {
   }, []);
 
   // 2. Handle Approve (Calls POST /approve)
-  const handleApprove = async (id) => {
-    if (!window.confirm("Are you sure you want to approve this seller?")) return;
-    
+  const confirmApprove = (id) => {
+    showModal({
+      title: "Approve Seller",
+      message: "Are you sure you want to approve this seller?",
+      type: "success",
+      confirmText: "Approve",
+      onConfirm: () => executeApprove(id)
+    });
+  };
+
+  const executeApprove = async (id) => {
+    closeModal();
     setProcessing(true);
     try {
       const response = await fetch(`${API_BASE_URL}/api/PlatformAdminSeller/approve/${id}`, {
@@ -144,23 +183,32 @@ export default function SellerApproval() {
         // Remove from list locally to avoid reload
         setSellers(prev => prev.filter(s => s.id !== id));
         setSelectedSeller(null);
-        alert("Seller approved successfully.");
+        showModal({ title: "Success", message: "Seller approved successfully.", type: "success", isAlert: true });
       } else {
         const err = await response.text();
-        alert(`Error: ${err}`);
+        showModal({ title: "Error", message: err, type: "danger", isAlert: true });
       }
     } catch (error) {
       console.error("Approval error:", error);
-      alert("Network error occurred.");
+      showModal({ title: "Error", message: "Network error occurred.", type: "danger", isAlert: true });
     } finally {
       setProcessing(false);
     }
   };
 
   // 3. Handle Reject (Calls DELETE /delete-seller)
-  const handleReject = async (id) => {
-    if (!window.confirm("Are you sure you want to REJECT and DELETE this application?")) return;
+  const confirmReject = (id) => {
+    showModal({
+      title: "Reject Application",
+      message: "Are you sure you want to REJECT and DELETE this application? This action cannot be undone.",
+      type: "danger",
+      confirmText: "Reject & Delete",
+      onConfirm: () => executeReject(id)
+    });
+  };
 
+  const executeReject = async (id) => {
+    closeModal();
     setProcessing(true);
     try {
       const response = await fetch(`${API_BASE_URL}/api/PlatformAdminSeller/delete-seller/${id}`, {
@@ -171,14 +219,14 @@ export default function SellerApproval() {
       if (response.ok) {
         setSellers(prev => prev.filter(s => s.id !== id));
         setSelectedSeller(null);
-        alert("Application rejected and deleted.");
+        showModal({ title: "Rejected", message: "Application rejected and deleted.", type: "info", isAlert: true });
       } else {
         const err = await response.text();
-        alert(`Error: ${err}`);
+        showModal({ title: "Error", message: err, type: "danger", isAlert: true });
       }
     } catch (error) {
       console.error("Rejection error:", error);
-      alert("Network error occurred.");
+      showModal({ title: "Error", message: "Network error occurred.", type: "danger", isAlert: true });
     } finally {
       setProcessing(false);
     }
@@ -186,14 +234,14 @@ export default function SellerApproval() {
 
   // 4. Data Mapping for DataTable
   const columns = ["Shop Name", "Category", "Contact", "Status", "Action"];
-  
+
   const tableData = sellers.map(seller => ({
     "Shop Name": seller.shopName,
     "Category": seller.category || "General", // Fallback if null
-    "Contact": seller.contactNumber || seller.email || "N/A", 
+    "Contact": seller.contactNumber || seller.email || "N/A",
     "Status": "Pending",
     "Action": (
-      <button 
+      <button
         onClick={() => setSelectedSeller(seller)}
         className="flex items-center gap-1 text-purple-600 hover:text-purple-800 hover:bg-purple-50 px-3 py-1.5 rounded-md transition text-sm font-medium"
       >
@@ -219,19 +267,31 @@ export default function SellerApproval() {
           <p className="text-slate-500 mt-1">Manage incoming shop applications</p>
         </div>
         <div className="bg-purple-100 text-purple-800 px-4 py-2 rounded-lg text-sm font-bold">
-            {sellers.length} Pending
+          {sellers.length} Pending
         </div>
       </div>
 
       <DataTable columns={columns} data={tableData} />
 
-      <SellerDetailsModal 
-        seller={selectedSeller} 
-        isOpen={!!selectedSeller} 
+      <SellerDetailsModal
+        seller={selectedSeller}
+        isOpen={!!selectedSeller}
         onClose={() => setSelectedSeller(null)}
-        onApprove={handleApprove}
-        onReject={handleReject}
+        onApprove={confirmApprove}
+        onReject={confirmReject}
         isProcessing={processing}
+      />
+
+      <ConfirmationModal
+        isOpen={modalConfig.isOpen}
+        onClose={closeModal}
+        onConfirm={modalConfig.onConfirm}
+        title={modalConfig.title}
+        message={modalConfig.message}
+        type={modalConfig.type}
+        confirmText={modalConfig.confirmText}
+        cancelText={modalConfig.cancelText}
+        isAlert={modalConfig.isAlert}
       />
     </div>
   );
