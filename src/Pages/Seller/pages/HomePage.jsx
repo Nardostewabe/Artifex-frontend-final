@@ -80,7 +80,7 @@ const SellerDashboard = () => {
             </nav>
 
             <div className="mt-8 pt-8 border-t border-gray-100">
-              <Link to="/seller-home/add-product"> 
+              <Link to="/add-product"> 
               <button className="w-full flex items-center justify-center space-x-2 bg-gray-900 text-white py-3 rounded-xl text-xs uppercase tracking-widest hover:bg-gray-800 transition-colors shadow-lg shadow-gray-200">
                 <Plus size={16} />
                 <span>Add Product</span>
@@ -100,9 +100,11 @@ const SellerDashboard = () => {
               <p className="text-gray-500 text-sm mt-1">Here is what’s happening with your shop today.</p>
             </div>
             <div className="hidden sm:flex space-x-3">
-              <button className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
-                View Shop
-              </button>
+             <Link to='/seller-shop' >
+                <button className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+                  View Shop
+                </button>
+              </Link>
               <button className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
                 Settings
               </button>

@@ -20,9 +20,14 @@ import Reports from "./Pages/PlatformAdmin/pages/Reports";
 import SystemLogs from "./Pages/PlatformAdmin/pages/SystemLogs";
 import SellerApproval from './Pages/PlatformAdmin/pages/SellerApproval.jsx';
 import WaitingApproval from './Pages/Seller/pages/WaitingApproval.jsx';
-import AddProduct from './Pages/Seller/pages/AddProducts.jsx'; 
-
+import AddProduct from './Pages/Seller/pages/AddProducts.jsx';
+import SellerShop from './Pages/Seller/pages/SellerShop.jsx'; 
+import EditProduct from './Pages/Seller/pages/EditProducts.jsx';
 import CHomepage from "./Pages/Customer/pages/HomePage.jsx";
+import ProductDetails from './Pages/Seller/pages/ProductDetails.jsx';
+import CustomerCollection from './Pages/Customer/pages/views/CustomerCollection.jsx';
+import CustomerProduct from './Pages/Customer/pages/views/CustomerProduct.jsx';
+
 
 const App = () => {
   return (
@@ -67,6 +72,8 @@ const App = () => {
                ========================================= */}
             <Route element={<ProtectedRoute allowedRoles={[1, "Customer"]} />}>
               <Route path="/customer-home" element={<CustomerHome />} />
+              <Route path="/collections/:category" element={<CustomerCollection />} />
+              <Route path="/product/:id" element={<CustomerProduct />} />
             </Route>
 
             {/* =========================================
@@ -76,7 +83,10 @@ const App = () => {
             <Route element={<ProtectedRoute allowedRoles={[2, "Seller"]} />}>
               <Route path="/seller-home" element={<SellerHome />} />
               <Route path="/waiting-approval" element={<WaitingApproval />} />
-              <Route path="/seller-home/add-product" element={<AddProduct />}/>
+              <Route path="/add-product" element={<AddProduct />}/>
+              <Route path="/seller-shop" element={<SellerShop />}/>
+              <Route path="/product/edit/:id" element={<EditProduct />}/> 
+              <Route path="/product/:id" element={<ProductDetails />}/> 
             </Route>
             </Route>
             {/* ======================================================= */}

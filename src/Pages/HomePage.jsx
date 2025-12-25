@@ -1,10 +1,12 @@
 import React from 'react';
+// 👇 1. Import the new component (Adjust the path if needed)
+import TrendingSection from '../Pages/TrendingSection'; 
 
 const Home = () => {
   return (
     <div>
       {/* Hero Section */}
-      <section className="relative h-screen w-screen bg-gradient-to-br from-[#bfdbfe] to-[#e9d5ff] flex items-center justify-center">
+      <section className="relative h-screen artifex_webiste\src\Pages\Customer\pages\views\CustomerCollection.jsx flex items-center justify-center">
         <div className="text-center px-4">
           <h1 className="font-serif text-5xl md:text-7xl text-gray-800 mb-6">
             Handcrafted <br /> with Soul.
@@ -18,7 +20,10 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Dummy Content for scroll testing */}
+      {/* 👇 2. Add the Trending Section Here */}
+      <TrendingSection />
+
+      {/* Dummy Content (You can keep or remove this) */}
       <section className="h-[50vh] bg-white flex items-center justify-center">
         <h2 className="text-2xl font-serif">Featured Collection</h2>
       </section>
