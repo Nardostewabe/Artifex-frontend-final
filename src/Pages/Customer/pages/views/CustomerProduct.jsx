@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Loader2 } from 'lucide-react';
+import { Loader2, ShoppingBag, Share2 } from 'lucide-react';
 import { API_BASE_URL } from "../../../../config.js";
 import { useAuth } from '../../../../context/AuthContext.jsx';
+import { useCart } from '../../../../context/CartContext.jsx';
 import ConfirmationModal from '../../../../components/ConfirmationModal';
 
 const CustomerProduct = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { token } = useAuth();
+  const { addToCart } = useCart();
 
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -67,64 +69,16 @@ const CustomerProduct = () => {
     if (id) fetchProduct();
   }, [id]);
 
-  const handleOrder = () => {
-    const actualToken = token || localStorage.getItem("token");
-    if (!actualToken) {
-      showModal({
-        title: "Login Required",
-        message: "Please log in to purchase items.",
-        type: "warning",
-        confirmText: "Login",
-        isAlert: true,
-        onConfirm: () => navigate('/login')
-      });
-      return;
-    }
-
+  const handleAddToCart = () => {
+    addToCart(product);
     showModal({
-      title: "Confirm Purchase",
-      message: `Are you sure you want to purchase this item for $${product.price}?`,
-      type: "info",
-      confirmText: "Purchase",
-      onConfirm: () => processOrder(actualToken)
+      title: "Added to Cart!",
+      message: `${product.name} has been added to your cart.`,
+      type: "success",
+      confirmText: "Go to Cart",
+      cancelText: "Continue Shopping",
+      onConfirm: () => navigate('/cart')
     });
-  };
-
-  const processOrder = async (actualToken) => {
-    closeModal();
-    setBuying(true);
-    try {
-      const res = await fetch(`${API_BASE_URL}/api/Products/${id}/buy`, {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${actualToken}` }
-      });
-
-      const result = await res.json();
-      if (!res.ok) throw new Error(result.message || "Purchase failed");
-
-      showModal({
-        title: "Order Placed",
-        message: "Order placed successfully! 🎉",
-        type: "success",
-        isAlert: true
-      });
-
-      setProduct(prev => ({
-        ...prev,
-        stockQuantity: result.remainingStock,
-        isTrending: result.isTrending
-      }));
-
-    } catch (err) {
-      showModal({
-        title: "Purchase Failed",
-        message: err.message,
-        type: "danger",
-        isAlert: true
-      });
-    } finally {
-      setBuying(false);
-    }
   };
 
   if (loading) return <div className="h-screen w-full flex items-center justify-center"><Loader2 className="animate-spin text-purple-600" size={48} /></div>;
@@ -188,13 +142,21 @@ const CustomerProduct = () => {
           </div>
 
           <div className="flex flex-col gap-3 pt-4">
-            <button
-              onClick={handleOrder}
-              disabled={buying || product.stockQuantity < 1}
-              className="px-6 py-3 rounded-md font-medium transition-colors duration-200 bg-gray-900 text-white hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center gap-2"
-            >
-              {buying ? <Loader2 className="animate-spin" size={20} /> : (product.stockQuantity < 1 ? "Sold Out" : "Order Now")}
-            </button>
+            {/* "Order Now" button removed as requested */}
+            {/* Action Buttons */}
+            <div className="mt-auto pt-6 border-t border-gray-100 flex gap-4">
+              <button
+                onClick={handleAddToCart}
+                disabled={product.stockQuantity < 1}
+                className="flex-1 flex items-center justify-center gap-2 bg-purple-300 text-white py-4 rounded-xl font-bold hover:bg-gray-800 transition-all shadow-xl shadow-gray-200 hover:shadow-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <ShoppingBag size={20} />
+                {product.stockQuantity < 1 ? "Sold Out" : "Add to Cart"}
+              </button>
+              <button className="p-4 rounded-xl border border-gray-200 text-gray-500 hover:bg-gray-50 hover:text-gray-900 transition-colors">
+                <Share2 size={20} />
+              </button>
+            </div>
             <div className="grid grid-cols-2 gap-3">
               <button className="px-6 py-3 rounded-md font-medium border border-gray-300 text-gray-800 hover:bg-gray-50">Message Seller</button>
             </div>

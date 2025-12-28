@@ -178,16 +178,7 @@ const ProductDetails = () => {
                  </div>
              )}
 
-             {/* Action Buttons */}
-             <div className="mt-auto pt-6 border-t border-gray-100 flex gap-4">
-                <button className="flex-1 flex items-center justify-center gap-2 bg-gray-900 text-white py-4 rounded-xl font-bold hover:bg-gray-800 transition-all shadow-xl shadow-gray-200 hover:shadow-gray-300">
-                    <ShoppingBag size={20} />
-                    Add to Cart
-                </button>
-                <button className="p-4 rounded-xl border border-gray-200 text-gray-500 hover:bg-gray-50 hover:text-gray-900 transition-colors">
-                    <Share2 size={20} />
-                </button>
-             </div>
+             
 
           </div>
         </div>

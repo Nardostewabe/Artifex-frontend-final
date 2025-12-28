@@ -1,19 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { Search, ShoppingBag, Heart, Menu, X, User, LogOut } from 'lucide-react';
-import logo from '../assets/Artifex logo 2_2/6.png'; // Make sure this path is correct
-import { Link, useNavigate } from 'react-router-dom';
+import { Menu, X, LogOut, User, Store, PlusCircle, FileText, Home } from 'lucide-react';
+import logo from '../assets/Artifex logo 2_2/6.png';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { useCart } from '../context/CartContext';
 
-const Navigationbar = () => {
+const SellerNavigationBar = () => {
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-    const { token, logout } = useAuth();
-    const { getCartCount } = useCart();
+    const { logout } = useAuth();
     const navigate = useNavigate();
+    const location = useLocation();
 
-    // 2. Handle Scroll Logic
+    // Handle Scroll Logic
     useEffect(() => {
         const handleScroll = () => {
             if (window.scrollY > 50) setIsScrolled(true);
@@ -23,7 +22,7 @@ const Navigationbar = () => {
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
-    // 3. Handle Logout Logic
+    // Handle Logout Logic
     const handleLogout = () => {
         logout();
         setIsMobileMenuOpen(false);
@@ -31,13 +30,12 @@ const Navigationbar = () => {
     };
 
     const navLinks = [
-        { name: 'Shop', path: '/shop' },
-        { name: 'Collections', path: '/collections' },
-        { name: 'About', path: '/about' },
-        { name: 'Contact', path: '/contact' },
+        { name: 'Dashboard', path: '/seller-home', icon: <Home size={18} /> },
+        { name: 'My Shop', path: '/seller-shop', icon: <Store size={18} /> },
+        { name: 'Add Product', path: '/add-product', icon: <PlusCircle size={18} /> },
+        { name: 'Applications', path: '/waiting-approval', icon: <FileText size={18} /> },
     ];
 
-    const isLoggedIn = !!token;
     return (
         <>
             <nav
@@ -59,8 +57,8 @@ const Navigationbar = () => {
                                 <Link
                                     key={link.name}
                                     to={link.path}
-                                    className={`text-xs uppercase tracking-[0.15em] font-medium transition-colors duration-200 
-                                        ${isScrolled ? 'text-gray-600' : 'text-gray-800'} 
+                                    className={`flex items-center gap-2 text-xs uppercase tracking-[0.15em] font-medium transition-colors duration-200 
+                                        ${location.pathname === link.path ? 'text-purple-600' : (isScrolled ? 'text-gray-600' : 'text-gray-800')} 
                                         hover:text-purple-400`}
                                 >
                                     {link.name}
@@ -71,7 +69,7 @@ const Navigationbar = () => {
 
                     {/* MIDDLE SECTION: LOGO */}
                     <div className="flex-shrink-0 flex justify-center">
-                        <Link to="/">
+                        <Link to="/seller-home">
                             <img
                                 src={logo}
                                 alt="Artifex Logo"
@@ -82,34 +80,12 @@ const Navigationbar = () => {
 
                     {/* RIGHT SECTION: ICONS & ACTIONS */}
                     <div className="flex-1 flex justify-end items-center space-x-3 md:space-x-6">
+                        <div className="flex items-center gap-2 px-3 py-1 bg-purple-50 text-purple-700 border border-purple-100 rounded-full text-xs font-bold uppercase tracking-wider">
+                            <User size={14} /> Seller Portal
+                        </div>
 
-                        {/* --- DESKTOP AUTH LOGIC --- */}
-                        {!isLoggedIn ? (
-                            <Link to="/login" className="hidden md:block text-gray-700 hover:text-purple-400 p-1" title="Login">
-                                <User size={20} strokeWidth={1.5} />
-                            </Link>
-                        ) : (
-                            <button onClick={handleLogout} className="hidden md:flex items-center gap-2 px-3 py-1 bg-red-50 text-red-500 border border-red-200 rounded-full hover:bg-red-100 text-xs uppercase tracking-wider">
-                                <LogOut size={14} /> Logout
-                            </button>
-                        )}
-
-                        <button className="text-gray-700 hover:text-blue-400 p-1 transition-colors">
-                            <Search size={20} strokeWidth={1.5} />
-                        </button>
-                        <button className="hidden sm:block text-gray-700 hover:text-purple-400 p-1 transition-colors">
-                            <Heart size={20} strokeWidth={1.5} />
-                        </button>
-                        <button
-                            onClick={() => navigate('/cart')}
-                            className="text-gray-700 hover:text-blue-400 p-1 transition-colors relative"
-                        >
-                            <ShoppingBag size={20} strokeWidth={1.5} />
-                            {getCartCount() > 0 && (
-                                <span className="absolute -top-1 -right-1 bg-purple-200 text-purple-800 text-[10px] font-bold px-1.5 py-0.5 rounded-full">
-                                    {getCartCount()}
-                                </span>
-                            )}
+                        <button onClick={handleLogout} className="hidden md:flex items-center gap-2 px-3 py-1 bg-red-50 text-red-500 border border-red-200 rounded-full hover:bg-red-100 text-xs uppercase tracking-wider transition-colors">
+                            <LogOut size={14} /> Logout
                         </button>
                     </div>
                 </div>
@@ -124,30 +100,16 @@ const Navigationbar = () => {
                             <Link
                                 key={link.name}
                                 to={link.path}
-                                className="text-gray-800 text-sm uppercase tracking-widest hover:text-purple-500 font-medium"
+                                className={`flex items-center gap-2 text-sm uppercase tracking-widest font-medium ${location.pathname === link.path ? 'text-purple-600' : 'text-gray-800 hover:text-purple-500'}`}
                                 onClick={() => setIsMobileMenuOpen(false)}
                             >
-                                {link.name}
+                                {link.icon} {link.name}
                             </Link>
                         ))}
 
-                        <Link to="/" className="text-gray-400 text-xs uppercase tracking-widest pt-4">
-                            Wishlist
-                        </Link>
-
                         <div className="w-16 h-px bg-gray-200 my-2"></div>
 
-                        {/* --- MOBILE AUTH LOGIC --- */}
-                        <div className="flex flex-col items-center space-y-4 w-full px-8">
-                            {!isLoggedIn ? (
-                                <>
-                                    <Link to="/login" onClick={() => setIsMobileMenuOpen(false)} className="text-gray-800 text-sm uppercase tracking-widest hover:text-purple-500">Log In</Link>
-                                    <Link to="/signup" onClick={() => setIsMobileMenuOpen(false)} className="w-full max-w-xs bg-gray-900 text-white text-center py-3 rounded-full text-xs uppercase tracking-widest">Sign Up</Link>
-                                </>
-                            ) : (
-                                <button onClick={handleLogout} className="w-full max-w-xs bg-red-400 text-white text-center py-3 rounded-full text-xs uppercase tracking-widest hover:bg-red-500">Logout</button>
-                            )}
-                        </div>
+                        <button onClick={handleLogout} className="w-full max-w-xs bg-red-400 text-white text-center py-3 rounded-full text-xs uppercase tracking-widest hover:bg-red-500">Logout</button>
                     </div>
                 </div>
             </nav>
@@ -163,4 +125,4 @@ const Navigationbar = () => {
     );
 }
 
-export default Navigationbar;
+export default SellerNavigationBar;

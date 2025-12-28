@@ -98,7 +98,7 @@ const CustomerDashboard = () => {
             {featuredProducts.map((product) => (
               <div 
                 key={product.id} 
-                onClick={() => navigate(`/product/${product.id}`)}
+                onClick={() => navigate(`/customer/product/${product.id}`)}
                 className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow cursor-pointer overflow-hidden border border-gray-100 group"
               >
                 <div className="h-48 bg-gray-100 w-full flex items-center justify-center overflow-hidden relative">
@@ -107,7 +107,7 @@ const CustomerDashboard = () => {
                       src={product.images[0].url} 
                       alt={product.name} 
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
+                    /> 
                   ) : (
                     <div className="flex flex-col items-center text-gray-400">
                       <Package size={32} />

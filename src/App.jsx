@@ -10,8 +10,10 @@ import CustomerHome from './Pages/Customer/pages/HomePage.jsx';
 import SellerHome from './Pages/Seller/pages/HomePage.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 import { AuthProvider } from './context/AuthContext.jsx';
+import { CartProvider } from './context/CartContext.jsx';
 import PublicLayout from './layouts/PublicLayout.jsx';
 import PlatformAdminLayout from './layouts/PlatformAdminLayout.jsx';
+import SellerLayout from './layouts/SellerLayout.jsx';
 import Dashboard from './Pages/PlatformAdmin/pages/Dashboard.jsx';
 import UserMonitoring from "./Pages/PlatformAdmin/pages/UserMonitoring";
 import SellerManagement from "./Pages/PlatformAdmin/pages/SellerManagement";
@@ -21,93 +23,98 @@ import SystemLogs from "./Pages/PlatformAdmin/pages/SystemLogs";
 import SellerApproval from './Pages/PlatformAdmin/pages/SellerApproval.jsx';
 import WaitingApproval from './Pages/Seller/pages/WaitingApproval.jsx';
 import AddProduct from './Pages/Seller/pages/AddProducts.jsx';
-import SellerShop from './Pages/Seller/pages/SellerShop.jsx'; 
+import SellerShop from './Pages/Seller/pages/SellerShop.jsx';
 import EditProduct from './Pages/Seller/pages/EditProducts.jsx';
 import CHomepage from "./Pages/Customer/pages/HomePage.jsx";
 import ProductDetails from './Pages/Seller/pages/ProductDetails.jsx';
 import CustomerCollection from './Pages/Customer/pages/views/CustomerCollection.jsx';
 import CustomerProduct from './Pages/Customer/pages/views/CustomerProduct.jsx';
-
+import CartPage from './Pages/CartPage.jsx';
 
 const App = () => {
   return (
     <>
-    <AuthProvider>
-            <Router>
-        <div className="font-sans text-gray-900">
+      <AuthProvider>
+        <CartProvider>
+          <Router>
+            <div className="font-sans text-gray-900">
 
-            {/* ======================================================= */}
-            {/* WORLD 1: PUBLIC / CUSTOMER / SELLER (Has Top Navbar)    */}
-            {/* ======================================================= */}
+              {/* ======================================================= */}
+              {/* WORLD 1: PUBLIC / CUSTOMER / SELLER (Has Top Navbar)    */}
+              {/* ======================================================= */}
 
-          <Routes>
-            <Route element={<PublicLayout />}>
-            {/* =========================================
+              <Routes>
+                <Route element={<PublicLayout />}>
+                  {/* =========================================
                1. PUBLIC ROUTES (No Token Required)
                ========================================= */}
-            <Route path="/" element={<HomePage />} />
-            <Route path="/shop" element={<Shop />} />
-            <Route path="/collections" element={<div className="pt-32 text-center">Collections Page Coming Soon</div>} />
-            <Route path="/about" element={<div className="pt-32 text-center">About Page Coming Soon</div>} />
-            <Route path="/contact" element={<div className="pt-32 text-center">Contact Page Coming Soon</div>} />
-            <Route path="/signup" element={<Signup />} />
-            <Route path="/login" element={<Login />} />
+                  <Route path="/" element={<HomePage />} />
+                  <Route path="/shop" element={<Shop />} />
+                  <Route path="/cart" element={<CartPage />} />
+                  <Route path="/collections" element={<div className="pt-32 text-center">Collections Page Coming Soon</div>} />
+                  <Route path="/about" element={<div className="pt-32 text-center">About Page Coming Soon</div>} />
+                  <Route path="/contact" element={<div className="pt-32 text-center">Contact Page Coming Soon</div>} />
+                  <Route path="/signup" element={<Signup />} />
+                  <Route path="/login" element={<Login />} />
 
-            <Route path = "/chomepage" element = {<CHomepage/>}/>
+                  <Route path="/chomepage" element={<CHomepage />} />
 
-            {/* =========================================
+                  {/* =========================================
                2. LOGGED IN ROUTES (Token Required)
                These pages need a user to be signed in, 
                but they haven't picked a role yet or are setting up.
                ========================================= */}
-            <Route element={<ProtectedRoute />}> 
-              <Route path="/roles" element={<Role />} />
-              <Route path="/setup-seller" element={<SellerForm />} />
-              <Route path="/setup-customer" element={<CustomerForm />} />
-            </Route>
+                  <Route element={<ProtectedRoute />}>
+                    <Route path="/roles" element={<Role />} />
+                    <Route path="/setup-seller" element={<SellerForm />} />
+                    <Route path="/setup-customer" element={<CustomerForm />} />
+                  </Route>
 
-            {/* =========================================
+                  {/* =========================================
                3. CUSTOMER ONLY ROUTES
                Requires Token + Role '1' or 'Customer'
                ========================================= */}
-            <Route element={<ProtectedRoute allowedRoles={[1, "Customer"]} />}>
-              <Route path="/customer-home" element={<CustomerHome />} />
-              <Route path="/collections/:category" element={<CustomerCollection />} />
-              <Route path="/product/:id" element={<CustomerProduct />} />
-            </Route>
+                  <Route element={<ProtectedRoute allowedRoles={[1, "Customer"]} />}>
+                    <Route path="/customer-home" element={<CustomerHome />} />
+                    <Route path="/collections/:category" element={<CustomerCollection />} />
+                    <Route path="customer/product/:id" element={<CustomerProduct />} />
+                  </Route>
 
-            {/* =========================================
+                  {/* =========================================
                4. SELLER ONLY ROUTES
                Requires Token + Role '2' or 'Seller'
                ========================================= */}
-            <Route element={<ProtectedRoute allowedRoles={[2, "Seller"]} />}>
-              <Route path="/seller-home" element={<SellerHome />} />
-              <Route path="/waiting-approval" element={<WaitingApproval />} />
-              <Route path="/add-product" element={<AddProduct />}/>
-              <Route path="/seller-shop" element={<SellerShop />}/>
-              <Route path="/product/edit/:id" element={<EditProduct />}/> 
-              <Route path="/product/:id" element={<ProductDetails />}/> 
-            </Route>
-            </Route>
-            {/* ======================================================= */}
-            {/* WORLD 2: PLATFORM ADMIN (Has Sidebar Navigation)       */}
-            {/* ======================================================= */}
+                  <Route element={<ProtectedRoute allowedRoles={[2, "Seller"]} />}>
+                    <Route element={<SellerLayout />}>
+                      <Route path="/seller-home" element={<SellerHome />} />
+                      <Route path="/waiting-approval" element={<WaitingApproval />} />
+                      <Route path="/add-product" element={<AddProduct />} />
+                      <Route path="/seller-shop" element={<SellerShop />} />
+                      <Route path="/product/edit/:id" element={<EditProduct />} />
+                      <Route path="/product/:id" element={<ProductDetails />} />
+                    </Route>
+                  </Route>
+                </Route>
+                {/* ======================================================= */}
+                {/* WORLD 2: PLATFORM ADMIN (Has Sidebar Navigation)       */}
+                {/* ======================================================= */}
 
-            <Route element={<ProtectedRoute allowedRoles={[4, "PlatformAdmin"]} />}>
-              <Route element={<PlatformAdminLayout />}>
-                <Route path="/PlatformAdmin-dashboard" element={<Dashboard />} />
-                <Route path="/users" element={<UserMonitoring />} />
-                <Route path="/sellers" element={<SellerManagement />} />
-                <Route path="/admins" element={<AdminManagement />} />
-                <Route path="/reports" element={<Reports />} />
-                <Route path="/logs" element={<SystemLogs />} />
-                <Route path="/sellers-approval" element={<SellerApproval />} />
-              </Route>
-            </Route>
-          </Routes>
-        </div>
-      </Router>  
-     </AuthProvider> 
+                <Route element={<ProtectedRoute allowedRoles={[4, "PlatformAdmin"]} />}>
+                  <Route element={<PlatformAdminLayout />}>
+                    <Route path="/PlatformAdmin-dashboard" element={<Dashboard />} />
+                    <Route path="/users" element={<UserMonitoring />} />
+                    <Route path="/sellers" element={<SellerManagement />} />
+                    <Route path="/admins" element={<AdminManagement />} />
+                    <Route path="/reports" element={<Reports />} />
+                    <Route path="/logs" element={<SystemLogs />} />
+                    <Route path="/sellers-approval" element={<SellerApproval />} />
+                  </Route>
+                </Route>
+              </Routes>
+            </div>
+          </Router>
+        </CartProvider>
+      </AuthProvider>
     </>
   );
 }

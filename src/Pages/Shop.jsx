@@ -132,7 +132,7 @@ const Shop = () => {
             ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     {filteredProducts.map((product) => (
-                        <div key={product.id} onClick={() => navigate(`/product/${product.id}`)} className="group bg-white rounded-xl shadow-sm hover:shadow-md transition-all cursor-pointer overflow-hidden border border-gray-100">
+                        <div key={product.id} onClick={() => navigate(`/customer/product/${product.id}`)} className="group bg-white rounded-xl shadow-sm hover:shadow-md transition-all cursor-pointer overflow-hidden border border-gray-100">
                             <div className="h-64 bg-gray-100 relative overflow-hidden">
                                 {product.images && product.images.length > 0 ? (
                                     <img src={product.images[0].url} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
