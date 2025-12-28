@@ -24,6 +24,7 @@ import SellerApproval from './Pages/PlatformAdmin/pages/SellerApproval.jsx';
 import WaitingApproval from './Pages/Seller/pages/WaitingApproval.jsx';
 import AddProduct from './Pages/Seller/pages/AddProducts.jsx';
 import SellerShop from './Pages/Seller/pages/SellerShop.jsx';
+import SellerInventory from './Pages/Seller/pages/SellerInventory.jsx';
 import EditProduct from './Pages/Seller/pages/EditProducts.jsx';
 import CHomepage from "./Pages/Customer/pages/HomePage.jsx";
 import ProductDetails from './Pages/Seller/pages/ProductDetails.jsx';
@@ -80,21 +81,25 @@ const App = () => {
                     <Route path="customer/product/:id" element={<CustomerProduct />} />
                   </Route>
 
-                  {/* =========================================
+                </Route>
+
+                {/* =========================================
                4. SELLER ONLY ROUTES
                Requires Token + Role '2' or 'Seller'
                ========================================= */}
-                  <Route element={<ProtectedRoute allowedRoles={[2, "Seller"]} />}>
-                    <Route element={<SellerLayout />}>
-                      <Route path="/seller-home" element={<SellerHome />} />
-                      <Route path="/waiting-approval" element={<WaitingApproval />} />
-                      <Route path="/add-product" element={<AddProduct />} />
-                      <Route path="/seller-shop" element={<SellerShop />} />
-                      <Route path="/product/edit/:id" element={<EditProduct />} />
-                      <Route path="/product/:id" element={<ProductDetails />} />
-                    </Route>
+                <Route element={<ProtectedRoute allowedRoles={[2, "Seller"]} />}>
+                  <Route element={<SellerLayout />}>
+                    <Route path="/seller-home" element={<SellerHome />} />
+                    <Route path="/waiting-approval" element={<WaitingApproval />} />
+                    <Route path="/add-product" element={<AddProduct />} />
+                    <Route path="/seller-inventory" element={<SellerInventory />} />
+                    <Route path="/seller-shop" element={<SellerShop />} />
+                    <Route path="/product/edit/:id" element={<EditProduct />} />
+                    <Route path="/product/:id" element={<ProductDetails />} />
                   </Route>
                 </Route>
+
+                {/* ======================================================= */}
                 {/* ======================================================= */}
                 {/* WORLD 2: PLATFORM ADMIN (Has Sidebar Navigation)       */}
                 {/* ======================================================= */}

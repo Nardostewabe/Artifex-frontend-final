@@ -71,7 +71,7 @@ const Navigationbar = () => {
 
                     {/* MIDDLE SECTION: LOGO */}
                     <div className="flex-shrink-0 flex justify-center">
-                        <Link to="/">
+                        <Link to="/customer-home">
                             <img
                                 src={logo}
                                 alt="Artifex Logo"

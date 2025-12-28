@@ -31,6 +31,7 @@ const SellerNavigationBar = () => {
 
     const navLinks = [
         { name: 'Dashboard', path: '/seller-home', icon: <Home size={18} /> },
+        { name: 'Inventory', path: '/seller-inventory', icon: <Store size={18} /> },
         { name: 'My Shop', path: '/seller-shop', icon: <Store size={18} /> },
         { name: 'Add Product', path: '/add-product', icon: <PlusCircle size={18} /> },
         { name: 'Applications', path: '/waiting-approval', icon: <FileText size={18} /> },
@@ -52,7 +53,7 @@ const SellerNavigationBar = () => {
                         >
                             {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
                         </button>
-                        <div className="hidden md:flex space-x-8">
+                        <div className="hidden md:flex space-x-12">
                             {navLinks.map((link) => (
                                 <Link
                                     key={link.name}

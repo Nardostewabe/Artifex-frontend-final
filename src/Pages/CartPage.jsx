@@ -1,14 +1,19 @@
 import React from 'react';
-import { useCart } from '../context/CartContext'; // Adjust path if needed (e.g., ../../context/CartContext) depending on folder structure
+import { useCart } from '../context/CartContext'; 
+import { useAuth } from '../context/AuthContext';
+import { API_BASE_URL } from '../config';
 import { Trash2, ShoppingBag, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import ConfirmationModal from '../components/ConfirmationModal';
+import { useState } from 'react';
 
 const CartPage = () => {
     const { cartItems, removeFromCart, updateQuantity, getCartTotal, clearCart } = useCart();
+    const { token } = useAuth();
     const navigate = useNavigate();
 
     const total = getCartTotal();
+    const [isProcessing, setIsProcessing] = useState(false);
 
     // Modal State
     const [modalConfig, setModalConfig] = React.useState({
@@ -33,10 +38,20 @@ const CartPage = () => {
         setModalConfig(prev => ({ ...prev, isOpen: false }));
     };
 
-    const handleCheckout = () => {
-        // 1. Check Stock
-        const outOfStockItems = cartItems.filter(item => item.quantity > item.stockQuantity);
+   const handleCheckout = () => {
+        if (!token) {
+            showModal({
+                title: "Login Required",
+                message: "You must be logged in to checkout.",
+                type: "warning",
+                isAlert: true,
+                onConfirm: () => navigate('/login')
+            });
+            return;
+        }
 
+        // 1. Pre-check Stock (Frontend Side)
+        const outOfStockItems = cartItems.filter(item => item.quantity > item.stockQuantity);
         if (outOfStockItems.length > 0) {
             const itemNames = outOfStockItems.map(i => i.name).join(", ");
             showModal({
@@ -48,23 +63,64 @@ const CartPage = () => {
             return;
         }
 
-        // 2. Proceed (Simulated)
+        // 2. Confirm & Pay
         showModal({
             title: "Confirm Checkout",
             message: `Proceed to payment for $${total.toFixed(2)}?`,
             type: "info",
             confirmText: "Pay Now",
-            onConfirm: () => {
-                showModal({
-                    title: "Order Success!",
-                    message: "Thank you for your purchase. Your order has been placed.",
-                    type: "success",
-                    isAlert: true,
-                    onConfirm: () => {
-                        clearCart();
-                        navigate('/shop');
+            onConfirm: async () => {
+                // CLOSE MODAL FIRST to prevent stacking
+                closeModal(); 
+                
+                try {
+                    setIsProcessing(true);
+
+                    // Prepare payload matching CheckoutDto
+                    const payload = {
+                        items: cartItems.map(item => ({
+                            productId: item.id,
+                            quantity: item.quantity
+                        }))
+                    };
+
+                    const response = await fetch(`${API_BASE_URL}/api/Order/checkout`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                        throw new Error(data.message || "Checkout failed.");
                     }
-                });
+
+                    // Success!
+                    showModal({
+                        title: "Order Success!",
+                        message: "Thank you! Your order has been placed successfully.",
+                        type: "success",
+                        isAlert: true,
+                        onConfirm: () => {
+                            clearCart();
+                            navigate('/shop');
+                        }
+                    });
+
+                } catch (err) {
+                    showModal({
+                        title: "Checkout Failed",
+                        message: err.message,
+                        type: "error",
+                        isAlert: true
+                    });
+                } finally {
+                    setIsProcessing(false);
+                }
             }
         });
     };

@@ -1,56 +1,137 @@
-import React, { useState } from 'react';
-import { 
-  Package, 
-  ShoppingBag, 
-  MessageSquare, 
-  Star, 
-  BarChart2, 
-  Video, 
-  Plus, 
-  Check, 
-  X, 
+import React, { useState, useEffect } from 'react';
+import {
+  Package,
+  ShoppingBag,
+  MessageSquare,
+  Star,
+  BarChart2,
+  Video,
+  Plus,
+  Check,
+  X,
   ChevronRight,
   MoreHorizontal,
-  DollarSign
+  DollarSign,
+  Loader2
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
-
-// Mock Data to visualize the UI
-const stats = [
-  { label: 'Total Revenue', value: '$4,200', change: '+12%', icon: DollarSign, color: 'text-green-600', bg: 'bg-green-50' },
-  { label: 'Active Orders', value: '12', change: '4 Pending', icon: Package, color: 'text-purple-600', bg: 'bg-purple-50' },
-  { label: 'Total Products', value: '48', change: '2 Low Stock', icon: ShoppingBag, color: 'text-blue-600', bg: 'bg-blue-50' },
-  { label: 'Review Score', value: '4.8', change: '150 Reviews', icon: Star, color: 'text-yellow-600', bg: 'bg-yellow-50' },
-];
-
-const recentOrders = [
-  { id: '#ORD-7721', product: 'Ceramic Vase Set', customer: 'Alice Freeman', date: '2 mins ago', total: '$120.00', status: 'Pending' },
-  { id: '#ORD-7720', product: 'Handwoven Scarf', customer: 'Mark T.', date: '1 hour ago', total: '$45.00', status: 'Processing' },
-  { id: '#ORD-7719', product: 'Leather Wallet', customer: 'Sarah Connor', date: '3 hours ago', total: '$85.00', status: 'Shipped' },
-];
-
-const inventoryAlerts = [
-  { name: 'Blue Clay Mug', stock: 2, image: 'https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?auto=format&fit=crop&q=80&w=100' },
-  { name: 'Canvas Tote', stock: 0, image: 'https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&q=80&w=100' },
-];
+import { API_BASE_URL } from '../../../config';
+import { useAuth } from '../../../context/AuthContext';
 
 const SellerDashboard = () => {
+  const { token } = useAuth();
   const [activeTab, setActiveTab] = useState('Overview');
+
+  // Real Data State
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // Computed Stats
+  const [stats, setStats] = useState([
+    { label: 'Total Revenue', value: '$0.00', change: '--', icon: DollarSign, color: 'text-green-600', bg: 'bg-green-50' },
+    { label: 'Active Orders', value: '0', change: '0 Pending', icon: Package, color: 'text-purple-600', bg: 'bg-purple-50' },
+    { label: 'Total Products', value: '0', change: '0 Low Stock', icon: ShoppingBag, color: 'text-blue-600', bg: 'bg-blue-50' },
+    { label: 'Review Score', value: '0.0', change: '0 Reviews', icon: Star, color: 'text-yellow-600', bg: 'bg-yellow-50' },
+  ]);
+
+  const [inventoryAlerts, setInventoryAlerts] = useState([]);
+
+  // Mock Data needs to stay for things we can't fetch yet
+  const recentOrders = [
+    { id: '#ORD-7721', product: 'Ceramic Vase Set', customer: 'Alice Freeman', date: '2 mins ago', total: '$120.00', status: 'Pending' },
+    { id: '#ORD-7720', product: 'Handwoven Scarf', customer: 'Mark T.', date: '1 hour ago', total: '$45.00', status: 'Processing' },
+    { id: '#ORD-7719', product: 'Leather Wallet', customer: 'Sarah Connor', date: '3 hours ago', total: '$85.00', status: 'Shipped' },
+  ];
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, [token]);
+
+  const fetchDashboardData = async () => {
+    const actualToken = token || localStorage.getItem("token");
+    if (!actualToken) return;
+
+    try {
+      // 1. Fetch Products
+      const prodResponse = await fetch(`${API_BASE_URL}/api/Products/my-products`, {
+        headers: { 'Authorization': `Bearer ${actualToken}` }
+      });
+
+      if (prodResponse.ok) {
+        const data = await prodResponse.json();
+        setProducts(data);
+        calculateStats(data);
+      }
+
+      // 2. Fetch Orders (Simulated / Placeholder until endpoint exists)
+      // ...
+
+    } catch (err) {
+      console.error("Dashboard Fetch Error:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const calculateStats = (productsData) => {
+    const totalProducts = productsData.length;
+    const lowStockItems = productsData.filter(p => p.stockQuantity < 5 && p.stockQuantity > 0);
+    const outOfStockItems = productsData.filter(p => p.stockQuantity === 0);
+
+    // Sort by stock level asc for alerts
+    const alerts = [...lowStockItems, ...outOfStockItems]
+      .sort((a, b) => a.stockQuantity - b.stockQuantity)
+      .slice(0, 5)
+      .map(p => ({
+        name: p.name,
+        stock: p.stockQuantity,
+        image: p.images && p.images.length > 0 ? p.images[0].url : null,
+        id: p.id
+      }));
+
+    setInventoryAlerts(alerts);
+
+    setStats(prevStats => {
+      const newStats = [...prevStats];
+
+      // Update Total Products Stat
+      newStats[2] = {
+        ...newStats[2],
+        value: totalProducts.toString(),
+        change: `${lowStockItems.length} Low Stock`
+      };
+
+      // Revenue & Orders remain mock for now as requested "given endpoints so far"
+      // If we had orders in the future:
+      // newStats[0].value = calculateRevenue(orders);
+      // newStats[1].value = orders.filter(o => o.status === 'Pending').length;
+
+      return newStats;
+    });
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen w-screen flex items-center justify-center bg-gray-50">
+        <Loader2 className="animate-spin text-purple-600" size={40} />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen w-screen bg-gradient-to-br from-[#bfdbfe] to-[#e9d5ff] pt-20 md:pt-24 pb-12 px-4 sm:px-6">
       <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-8">
-        
+
         {/* --- LEFT SIDEBAR Navigation --- */}
         <aside className="w-full lg:w-64 flex-shrink-0">
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sticky top-28">
             <div className="flex items-center space-x-3 mb-8">
               <div className="h-10 w-10 rounded-full bg-gray-200 overflow-hidden">
                 {/* Placeholder for Shop Logo */}
-                <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=100" alt="Shop" className="h-full w-full object-cover"/>
+                <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=100" alt="Shop" className="h-full w-full object-cover" />
               </div>
               <div>
-                <h2 className="text-sm font-bold text-gray-900">CraftedByMe</h2>
+                <h2 className="text-sm font-bold text-gray-900">My Shop</h2>
                 <p className="text-xs text-gray-500">Seller Dashboard</p>
               </div>
             </div>
@@ -67,11 +148,10 @@ const SellerDashboard = () => {
                 <button
                   key={item.name}
                   onClick={() => setActiveTab(item.name)}
-                  className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
-                    activeTab === item.name 
-                      ? 'bg-purple-50 text-purple-700' 
+                  className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${activeTab === item.name
+                      ? 'bg-purple-50 text-purple-700'
                       : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                  }`}
+                    }`}
                 >
                   <item.icon size={18} strokeWidth={2} />
                   <span>{item.name}</span>
@@ -80,11 +160,11 @@ const SellerDashboard = () => {
             </nav>
 
             <div className="mt-8 pt-8 border-t border-gray-100">
-              <Link to="/add-product"> 
-              <button className="w-full flex items-center justify-center space-x-2 bg-gray-900 text-white py-3 rounded-xl text-xs uppercase tracking-widest hover:bg-gray-800 transition-colors shadow-lg shadow-gray-200">
-                <Plus size={16} />
-                <span>Add Product</span>
-              </button>
+              <Link to="/add-product">
+                <button className="w-full flex items-center justify-center space-x-2 bg-gray-900 text-white py-3 rounded-xl text-xs uppercase tracking-widest hover:bg-gray-800 transition-colors shadow-lg shadow-gray-200">
+                  <Plus size={16} />
+                  <span>Add Product</span>
+                </button>
               </Link>
             </div>
           </div>
@@ -92,7 +172,7 @@ const SellerDashboard = () => {
 
         {/* --- MAIN CONTENT AREA --- */}
         <main className="flex-1 space-y-8">
-          
+
           {/* 1. Header & Welcome */}
           <div className="flex justify-between items-end">
             <div>
@@ -100,7 +180,7 @@ const SellerDashboard = () => {
               <p className="text-gray-500 text-sm mt-1">Here is what’s happening with your shop today.</p>
             </div>
             <div className="hidden sm:flex space-x-3">
-             <Link to='/seller-shop' >
+              <Link to='/seller-shop' >
                 <button className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
                   View Shop
                 </button>
@@ -119,7 +199,7 @@ const SellerDashboard = () => {
                   <div className={`p-2 rounded-lg ${stat.bg} ${stat.color}`}>
                     <stat.icon size={20} />
                   </div>
-                  <span className={`text-xs font-medium px-2 py-1 rounded-full ${stat.label === 'Total Revenue' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>
+                  <span className={`text-xs font-medium px-2 py-1 rounded-full ${stat.label === 'Total Products' ? (stat.change.includes('0') ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-600') : 'bg-gray-100 text-gray-600'}`}>
                     {stat.change}
                   </span>
                 </div>
@@ -132,8 +212,8 @@ const SellerDashboard = () => {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            
-            {/* 3. Recent Orders (Track Orders - Accept/Decline) */}
+
+            {/* 3. Recent Orders (Stationary for now) */}
             <div className="lg:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
               <div className="p-6 border-b border-gray-50 flex justify-between items-center">
                 <h3 className="font-bold text-gray-900">Recent Orders</h3>
@@ -158,9 +238,9 @@ const SellerDashboard = () => {
                         </td>
                         <td className="px-6 py-4">
                           <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                            ${order.status === 'Pending' ? 'bg-yellow-100 text-yellow-800' : 
-                              order.status === 'Processing' ? 'bg-blue-100 text-blue-800' : 
-                              'bg-green-100 text-green-800'}`}>
+                            ${order.status === 'Pending' ? 'bg-yellow-100 text-yellow-800' :
+                              order.status === 'Processing' ? 'bg-blue-100 text-blue-800' :
+                                'bg-green-100 text-green-800'}`}>
                             {order.status}
                           </span>
                         </td>
@@ -192,27 +272,44 @@ const SellerDashboard = () => {
 
             {/* 4. Right Column: Inventory & Reviews Highlights */}
             <div className="space-y-6">
-              
-              {/* Inventory Alert */}
+
+              {/* Inventory Alert (Dynamic) */}
               <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="font-bold text-gray-900">Low Stock Alert</h3>
                   <ShoppingBag size={18} className="text-gray-400" />
                 </div>
-                <div className="space-y-4">
-                  {inventoryAlerts.map((item, i) => (
-                    <div key={i} className="flex items-center gap-4">
-                      <img src={item.image} alt={item.name} className="w-12 h-12 rounded-lg object-cover bg-gray-100"/>
-                      <div className="flex-1">
-                        <div className="text-sm font-medium text-gray-900">{item.name}</div>
-                        <div className="text-xs text-red-500 font-medium">{item.stock === 0 ? 'Out of Stock' : `${item.stock} remaining`}</div>
+                {inventoryAlerts.length > 0 ? (
+                  <div className="space-y-4">
+                    {inventoryAlerts.map((item, i) => (
+                      <div key={i} className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-lg bg-gray-100 overflow-hidden flex-shrink-0">
+                          {item.image ? (
+                            <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-gray-300">
+                              <Package size={20} />
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="text-sm font-medium text-gray-900 truncate" title={item.name}>{item.name}</div>
+                          <div className="text-xs text-red-500 font-medium">{item.stock === 0 ? 'Out of Stock' : `${item.stock} remaining`}</div>
+                        </div>
+                        <Link to={`/product/edit/${item.id}`}>
+                          <button className="text-xs bg-gray-900 text-white px-3 py-1.5 rounded-lg hover:bg-gray-800">
+                            Restock
+                          </button>
+                        </Link>
                       </div>
-                      <button className="text-xs bg-gray-900 text-white px-3 py-1.5 rounded-lg hover:bg-gray-800">
-                        Restock
-                      </button>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-6 text-gray-400 text-sm">
+                    <Check size={24} className="mx-auto mb-2 text-green-500" />
+                    <p>All stock levels are healthy.</p>
+                  </div>
+                )}
               </div>
 
               {/* DIY Tutorial Quick Action */}
@@ -224,7 +321,7 @@ const SellerDashboard = () => {
                   <h3 className="font-bold text-lg mb-1">Upload Tutorial</h3>
                   <p className="text-purple-200 text-xs mb-4 max-w-[80%]">Share your craft process with customers to boost engagement.</p>
                   <div className="inline-flex items-center text-xs font-bold uppercase tracking-widest bg-white/10 px-3 py-2 rounded-lg hover:bg-white/20 transition-colors">
-                    Upload Video <ChevronRight size={14} className="ml-1"/>
+                    Upload Video <ChevronRight size={14} className="ml-1" />
                   </div>
                 </div>
               </div>
