@@ -31,6 +31,7 @@ import ProductDetails from './Pages/Seller/pages/ProductDetails.jsx';
 import CustomerCollection from './Pages/Customer/pages/views/CustomerCollection.jsx';
 import CustomerProduct from './Pages/Customer/pages/views/CustomerProduct.jsx';
 import CartPage from './Pages/CartPage.jsx';
+import ContentAdminDashboard from './Pages/ContentAdmin/index.jsx';
 
 const App = () => {
   return (
@@ -114,6 +115,14 @@ const App = () => {
                     <Route path="/logs" element={<SystemLogs />} />
                     <Route path="/sellers-approval" element={<SellerApproval />} />
                   </Route>
+                </Route>
+
+                {/* =========================================
+                5. CONTENT ADMIN ROUTES
+                Requires Token + Role '3' or 'ContentAdmin'
+                ========================================= */}
+                <Route element={<ProtectedRoute allowedRoles={[3, "ContentAdmin"]} />}>
+                  <Route path="/ContentAdmin-dashboard" element={<ContentAdminDashboard />} />
                 </Route>
               </Routes>
             </div>
