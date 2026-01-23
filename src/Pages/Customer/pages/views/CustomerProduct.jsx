@@ -5,6 +5,7 @@ import { API_BASE_URL } from "../../../../config.js";
 import { useAuth } from '../../../../context/AuthContext.jsx';
 import { useCart } from '../../../../context/CartContext.jsx';
 import ConfirmationModal from '../../../../components/ConfirmationModal';
+import ReviewSection from '../../../../components/ReviewSection';
 
 const CustomerProduct = () => {
   const { id } = useParams();
@@ -155,7 +156,7 @@ const CustomerProduct = () => {
               </button>
               <button className="p-4 rounded-xl border border-gray-200 text-gray-500 hover:bg-gray-50 hover:text-gray-900 transition-colors">
                 <Share2 size={20} />
-              </button> 
+              </button>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <button className="px-6 py-3 rounded-md font-medium border border-gray-300 text-gray-800 hover:bg-gray-50">Message Seller</button>
@@ -168,6 +169,10 @@ const CustomerProduct = () => {
           </div>
         </div>
       </div>
+
+      {/* ✅ NEW: Review Section */}
+      {product && <ReviewSection productId={product.id} />}
+
       <ConfirmationModal
         isOpen={modalConfig.isOpen}
         onClose={closeModal}

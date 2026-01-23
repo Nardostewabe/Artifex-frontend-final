@@ -1,4 +1,4 @@
-import { FiAlertCircle, FiClock, FiLogOut, FiBarChart2, FiBookOpen } from "react-icons/fi";
+import { AlertCircle, Clock, LogOut, BarChart, BookOpen } from "lucide-react";
 
 export default function Sidebar({ setActivePage, activePage, queueCount, unseenLogsCount }) {
   /**
@@ -6,10 +6,10 @@ export default function Sidebar({ setActivePage, activePage, queueCount, unseenL
    * count: References the dynamic state passed from App.jsx.
    */
   const menus = [
-    { id: "queue", title: "Moderation Queue", icon: <FiAlertCircle />, count: queueCount },
-    { id: "tutorials", title: "DIY Tutorials", icon: <FiBookOpen />, count: 0 },
-    { id: "history", title: "History Logs", icon: <FiClock />, count: unseenLogsCount },
-    { id: "reports", title: "Insights", icon: <FiBarChart2 />, count: 0 },
+    { id: "queue", title: "Moderation Queue", icon: <AlertCircle />, count: queueCount },
+    { id: "tutorials", title: "DIY Tutorials", icon: <BookOpen />, count: 0 },
+    { id: "history", title: "History Logs", icon: <Clock />, count: unseenLogsCount },
+    { id: "reports", title: "Insights", icon: <BarChart />, count: 0 },
   ];
 
   return (
@@ -48,7 +48,7 @@ export default function Sidebar({ setActivePage, activePage, queueCount, unseenL
       </nav>
 
       <button className="flex items-center gap-3 px-4 py-3 mt-auto text-white/50 text-sm hover:text-white transition-colors">
-        <FiLogOut /> Logout
+        <LogOut /> Logout
       </button>
     </div>
   );

@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import HomePage from './Pages/HomePage.jsx';
 import Shop from './Pages/Shop.jsx';
 import Signup from './Pages/Signup.jsx';
+import CompleteSignup from './Pages/CompleteSignup.jsx';
 import Login from './Pages/Login.jsx';
 import Role from './Pages/RoleSelection.jsx';
 import SellerForm from './Pages/SellerForm.jsx';
@@ -57,6 +58,7 @@ const App = () => {
                   <Route path="/about" element={<div className="pt-32 text-center">About Page Coming Soon</div>} />
                   <Route path="/contact" element={<div className="pt-32 text-center">Contact Page Coming Soon</div>} />
                   <Route path="/signup" element={<Signup />} />
+                  <Route path="/complete-signup" element={<CompleteSignup />} />
                   <Route path="/login" element={<Login />} />
 
                   <Route path="/chomepage" element={<CHomepage />} />

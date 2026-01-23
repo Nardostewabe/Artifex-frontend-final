@@ -1,69 +1,64 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { API_BASE_URL } from "../config"; 
+import { supabase } from "../supabaseClient";
 
 const Signup = () => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  
+  const [msg, setMsg] = useState(null);
+
   const navigate = useNavigate();
 
   const handleSignup = async (e) => {
-  e.preventDefault(); 
-  setError(null);
+    e.preventDefault();
+    setError(null);
+    setMsg(null);
 
-  if (password !== confirmPassword) {
-    setError("Passwords do not match.");
-    return;
-  }
+    if (password !== confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
 
-  setLoading(true);
+    setLoading(true);
 
-  try {
-    const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, email, password }),
-    });
+    try {
+      // Gatekeeper Step 1: Trigger Supabase Verification Email
+      const { data, error: supabaseError } = await supabase.auth.signUp({
+        email: email,
+        password: password,
+        options: {
+          data: {
+            username: username // Save username to metadata for later retrieval
+          },
+          emailRedirectTo: `${window.location.origin}/complete-signup`
+        }
+      });
 
-    if (response.ok) {
-      const data = await response.json();
-      
-      // --- DEBUGGING LOG ---
-      console.log("Signup Response from Backend:", data);
-
-      // 1. EXTRACT TOKEN (Handle both lowercase 'token' and uppercase 'Token')
-      const token = data.token || data.Token;
-
-      if (token) {
-          // 2. SAVE TOKEN TO LOCAL STORAGE
-          localStorage.setItem("token", token);
-          
-          console.log("Token saved successfully:", token);
-
-          // 3. Navigate to the next step
-          navigate("/roles"); 
-      } else {
-          console.error("Signup succeeded, but NO token was found in the response.");
-          setError("Account created, but automatic login failed. Please try logging in.");
+      if (supabaseError) {
+        throw supabaseError;
       }
 
-    } else {
-      const errorText = await response.text();
-      setError(errorText || "Registration failed.");
+      // Success!
+      setMsg("Please check your email to verify your account. You will be redirected to complete your registration after verification.");
+
+      // Optional: Clear form
+      // setUsername("");
+      // setEmail("");
+      // setPassword("");
+      // setConfirmPassword("");
+
+    } catch (err) {
+      console.error("Signup error:", err);
+      setError(err.message || "Unable to start registration.");
+    } finally {
+      setLoading(false);
     }
-  } catch (err) {
-    console.error("Network error:", err);
-    setError("Unable to connect to the server.");
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   return (
     <div className="min-h-screen w-screen bg-gradient-to-r from-purple-200 to-blue-200 flex items-center justify-center">
@@ -73,6 +68,12 @@ const Signup = () => {
         {error && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded mb-4 text-sm text-center">
             {error}
+          </div>
+        )}
+
+        {msg && (
+          <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded mb-4 text-sm text-center">
+            {msg}
           </div>
         )}
 
@@ -117,7 +118,7 @@ const Signup = () => {
           className="w-full bg-purple-500 text-white py-2 rounded hover:bg-purple-600 disabled:opacity-50"
           disabled={loading}
         >
-          {loading ? "Creating Account..." : "Signup"}
+          {loading ? "Sending Verification..." : "Signup"}
         </button>
 
         <p className="mt-4 text-center text-sm">
