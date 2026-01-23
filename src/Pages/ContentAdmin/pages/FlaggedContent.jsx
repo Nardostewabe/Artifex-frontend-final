@@ -37,7 +37,7 @@ export default function FlaggedContent({ showToast }) {
               <p className="text-lg font-semibold text-[#3A3A6C]">"{item.content}"</p>
               <p className="text-sm text-gray-500 italic">Reported by {item.reporter} against @{item.seller}</p>
             </div>
-            <button 
+            <button
               onClick={() => setSelectedItem(item)}
               className="bg-[#F8F8FF] text-[#6C63FF] px-6 py-2 rounded-xl font-bold hover:bg-[#6C63FF] hover:text-white transition-all"
             >

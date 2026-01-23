@@ -1,11 +1,12 @@
 import React from 'react';
-import { useCart } from '../context/CartContext'; 
+import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { API_BASE_URL } from '../config';
 import { Trash2, ShoppingBag, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import ConfirmationModal from '../components/ConfirmationModal';
 import { useState } from 'react';
+import { recordPurchase } from '../services/purchaseService';
 
 const CartPage = () => {
     const { cartItems, removeFromCart, updateQuantity, getCartTotal, clearCart } = useCart();
@@ -38,7 +39,7 @@ const CartPage = () => {
         setModalConfig(prev => ({ ...prev, isOpen: false }));
     };
 
-   const handleCheckout = () => {
+    const handleCheckout = () => {
         if (!token) {
             showModal({
                 title: "Login Required",
@@ -71,8 +72,8 @@ const CartPage = () => {
             confirmText: "Pay Now",
             onConfirm: async () => {
                 // CLOSE MODAL FIRST to prevent stacking
-                closeModal(); 
-                
+                closeModal();
+
                 try {
                     setIsProcessing(true);
 
@@ -100,6 +101,9 @@ const CartPage = () => {
                     }
 
                     // Success!
+                    // ✅ NEW: Record purchase for review system
+                    await recordPurchase(cartItems.map(item => item.id));
+
                     showModal({
                         title: "Order Success!",
                         message: "Thank you! Your order has been placed successfully.",

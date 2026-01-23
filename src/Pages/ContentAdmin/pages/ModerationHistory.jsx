@@ -25,9 +25,8 @@ export default function ModerationHistory({ logs }) {
             {logs.map(log => (
               <tr key={log.id} className="text-sm hover:bg-slate-50 transition-colors animate-in fade-in duration-500">
                 <td className="p-4">
-                  <span className={`px-3 py-1 rounded-full font-bold text-[10px] uppercase ${
-                    log.action.includes('Removed') ? 'bg-red-50 text-red-600' : 'bg-emerald-50 text-emerald-600'
-                  }`}>
+                  <span className={`px-3 py-1 rounded-full font-bold text-[10px] uppercase ${log.action.includes('Removed') ? 'bg-red-50 text-red-600' : 'bg-emerald-50 text-emerald-600'
+                    }`}>
                     {log.action}
                   </span>
                 </td>

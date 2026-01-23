@@ -19,7 +19,7 @@ export default function Header({ moderatorName = "Admin" }) {
             Senior Moderator
           </p>
         </div>
-        
+
         {/* AVATAR: Generates first initial of the name */}
         <div className="w-10 h-10 bg-[#6C63FF] rounded-full flex items-center justify-center text-white font-bold shadow-md">
           {moderatorName.charAt(0)}

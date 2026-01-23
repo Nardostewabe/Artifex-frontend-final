@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import HomePage from './Pages/HomePage.jsx';
 import Shop from './Pages/Shop.jsx';
 import Signup from './Pages/Signup.jsx';
+import CompleteSignup from './Pages/CompleteSignup.jsx';
 import Login from './Pages/Login.jsx';
 import Role from './Pages/RoleSelection.jsx';
 import SellerForm from './Pages/SellerForm.jsx';
@@ -31,6 +32,7 @@ import ProductDetails from './Pages/Seller/pages/ProductDetails.jsx';
 import CustomerCollection from './Pages/Customer/pages/views/CustomerCollection.jsx';
 import CustomerProduct from './Pages/Customer/pages/views/CustomerProduct.jsx';
 import CartPage from './Pages/CartPage.jsx';
+import ContentAdminDashboard from './Pages/ContentAdmin/index.jsx';
 
 const App = () => {
   return (
@@ -56,6 +58,7 @@ const App = () => {
                   <Route path="/about" element={<div className="pt-32 text-center">About Page Coming Soon</div>} />
                   <Route path="/contact" element={<div className="pt-32 text-center">Contact Page Coming Soon</div>} />
                   <Route path="/signup" element={<Signup />} />
+                  <Route path="/complete-signup" element={<CompleteSignup />} />
                   <Route path="/login" element={<Login />} />
 
                   <Route path="/chomepage" element={<CHomepage />} />
@@ -114,6 +117,14 @@ const App = () => {
                     <Route path="/logs" element={<SystemLogs />} />
                     <Route path="/sellers-approval" element={<SellerApproval />} />
                   </Route>
+                </Route>
+
+                {/* =========================================
+                5. CONTENT ADMIN ROUTES
+                Requires Token + Role '3' or 'ContentAdmin'
+                ========================================= */}
+                <Route element={<ProtectedRoute allowedRoles={[3, "ContentAdmin"]} />}>
+                  <Route path="/ContentAdmin-dashboard" element={<ContentAdminDashboard />} />
                 </Route>
               </Routes>
             </div>

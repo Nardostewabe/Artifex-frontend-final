@@ -1,4 +1,4 @@
-import { FiAlertCircle, FiClock, FiLogOut, FiBarChart2 } from "react-icons/fi";
+import { AlertCircle, Clock, LogOut, BarChart, BookOpen } from "lucide-react";
 
 export default function Sidebar({ setActivePage, activePage, queueCount, unseenLogsCount }) {
   /**
@@ -6,9 +6,10 @@ export default function Sidebar({ setActivePage, activePage, queueCount, unseenL
    * count: References the dynamic state passed from App.jsx.
    */
   const menus = [
-    { id: "queue", title: "Moderation Queue", icon: <FiAlertCircle />, count: queueCount },
-    { id: "history", title: "History Logs", icon: <FiClock />, count: unseenLogsCount },
-    { id: "reports", title: "Insights", icon: <FiBarChart2 />, count: 0 },
+    { id: "queue", title: "Moderation Queue", icon: <AlertCircle />, count: queueCount },
+    { id: "tutorials", title: "DIY Tutorials", icon: <BookOpen />, count: 0 },
+    { id: "history", title: "History Logs", icon: <Clock />, count: unseenLogsCount },
+    { id: "reports", title: "Insights", icon: <BarChart />, count: 0 },
   ];
 
   return (
@@ -27,9 +28,8 @@ export default function Sidebar({ setActivePage, activePage, queueCount, unseenL
           <button
             key={m.id}
             onClick={() => setActivePage(m.id)}
-            className={`flex items-center justify-between w-full px-4 py-3 rounded-xl transition-all duration-300 ${
-              activePage === m.id ? "bg-white text-[#6C63FF] font-bold shadow-lg scale-105" : "hover:bg-white/10"
-            }`}
+            className={`flex items-center justify-between w-full px-4 py-3 rounded-xl transition-all duration-300 ${activePage === m.id ? "bg-white text-[#6C63FF] font-bold shadow-lg scale-105" : "hover:bg-white/10"
+              }`}
           >
             <div className="flex items-center gap-3">
               <span className="text-lg">{m.icon}</span>
@@ -38,9 +38,8 @@ export default function Sidebar({ setActivePage, activePage, queueCount, unseenL
 
             {/* BUBBLE UI: Shows red circle if count > 0 */}
             {m.count > 0 && (
-              <span className={`h-5 min-w-[20px] px-1.5 flex items-center justify-center rounded-full text-[10px] font-black ${
-                activePage === m.id ? "bg-[#6C63FF] text-white" : "bg-red-500 text-white"
-              }`}>
+              <span className={`h-5 min-w-[20px] px-1.5 flex items-center justify-center rounded-full text-[10px] font-black ${activePage === m.id ? "bg-[#6C63FF] text-white" : "bg-red-500 text-white"
+                }`}>
                 {m.count}
               </span>
             )}
@@ -49,7 +48,7 @@ export default function Sidebar({ setActivePage, activePage, queueCount, unseenL
       </nav>
 
       <button className="flex items-center gap-3 px-4 py-3 mt-auto text-white/50 text-sm hover:text-white transition-colors">
-        <FiLogOut /> Logout
+        <LogOut /> Logout
       </button>
     </div>
   );

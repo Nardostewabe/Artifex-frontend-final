@@ -1,11 +1,11 @@
 import { useState, useMemo } from "react";
-import { FiEye, FiTrash2, FiCheck, FiAlertTriangle, FiSearch, FiFilter, FiLayers, FiUser } from "react-icons/fi";
+import { Eye, Trash2, Check, AlertTriangle, Search, Filter, Layers, User } from "lucide-react";
 
 export default function ModerationQueue({ items, onAction }) {
   // SEARCH & FILTER STATES
   const [search, setSearch] = useState("");
   const [sortBy, setSortBy] = useState("newest");
-  const [filterType, setFilterType] = useState("All"); 
+  const [filterType, setFilterType] = useState("All");
   const [selectedItem, setSelectedItem] = useState(null);
 
   /**
@@ -13,8 +13,8 @@ export default function ModerationQueue({ items, onAction }) {
    * useMemo ensures filtering and sorting don't run unnecessarily.
    */
   const processedItems = useMemo(() => {
-    let result = items.filter(i => 
-      i.name.toLowerCase().includes(search.toLowerCase()) || 
+    let result = items.filter(i =>
+      i.name.toLowerCase().includes(search.toLowerCase()) ||
       i.seller.toLowerCase().includes(search.toLowerCase())
     );
 
@@ -46,7 +46,7 @@ export default function ModerationQueue({ items, onAction }) {
         <div className="flex flex-wrap gap-3 w-full lg:w-auto">
           {/* Type Filter */}
           <div className="flex items-center gap-2 bg-white px-3 py-2 rounded-xl border border-slate-200 shadow-sm flex-1 lg:flex-none min-w-[120px]">
-            <FiLayers className="text-[#6C63FF]" />
+            <Layers className="text-[#6C63FF]" />
             <select className="text-xs font-bold outline-none bg-transparent w-full" value={filterType} onChange={(e) => setFilterType(e.target.value)}>
               <option value="All">All Types</option>
               <option value="Product">Products</option>
@@ -57,7 +57,7 @@ export default function ModerationQueue({ items, onAction }) {
 
           {/* Sort Filter */}
           <div className="flex items-center gap-2 bg-white px-3 py-2 rounded-xl border border-slate-200 shadow-sm flex-1 lg:flex-none min-w-[120px]">
-            <FiFilter className="text-slate-400" />
+            <Filter className="text-slate-400" />
             <select className="text-xs font-bold outline-none bg-transparent w-full" value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
               <option value="newest">Newest</option>
               <option value="severity">Severity</option>
@@ -67,9 +67,9 @@ export default function ModerationQueue({ items, onAction }) {
 
           {/* Search Bar (100% width on small screen, fixed on large) */}
           <div className="relative text-sm w-full lg:w-48">
-            <FiSearch className="absolute left-3 top-3 text-slate-400" />
-            <input 
-              type="text" placeholder="Search..." 
+            <Search className="absolute left-3 top-3 text-slate-400" />
+            <input
+              type="text" placeholder="Search..."
               className="pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-xl w-full focus:ring-2 focus:ring-[#6C63FF] outline-none"
               onChange={(e) => setSearch(e.target.value)}
             />
@@ -101,7 +101,7 @@ export default function ModerationQueue({ items, onAction }) {
                   <td className="p-4 font-bold text-[#3A3A6C]">{item.name}</td>
                   <td className="p-4">
                     <div className="flex items-center gap-2 text-[#6C63FF] text-xs font-bold">
-                      <FiUser size={12} /> @{item.seller}
+                      <User size={12} /> @{item.seller}
                     </div>
                   </td>
                   <td className="p-4 text-center font-bold text-slate-600">{item.userReports}</td>
@@ -131,7 +131,7 @@ export default function ModerationQueue({ items, onAction }) {
       {selectedItem && (
         <div className="fixed inset-0 bg-[#3A3A6C]/60 backdrop-blur-sm flex items-center justify-center z-50 p-2 md:p-4">
           <div className="bg-white rounded-[2rem] w-full max-w-xl max-h-[90vh] overflow-y-auto shadow-2xl animate-in zoom-in-95 duration-200">
-            
+
             <div className="p-6 md:p-8 space-y-6">
               {/* Modal Header */}
               <div className="flex justify-between items-start">
@@ -144,7 +144,7 @@ export default function ModerationQueue({ items, onAction }) {
 
               {/* Threat Level Banner */}
               <div className="bg-red-50 p-4 rounded-2xl border border-red-100 flex items-center gap-4">
-                <FiAlertTriangle className="text-red-500 shrink-0" size={24} />
+                <AlertTriangle className="text-red-500 shrink-0" size={24} />
                 <p className="text-red-900 text-sm font-bold uppercase">{selectedItem.reason}</p>
               </div>
 

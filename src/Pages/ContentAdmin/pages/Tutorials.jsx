@@ -34,7 +34,7 @@ export default function Tutorials({ showToast }) {
               <h3 className="font-bold text-xl">{item.title}</h3>
               <p className="text-sm text-[#6C63FF]">By {item.seller}</p>
             </div>
-            <button 
+            <button
               onClick={() => setSelectedItem(item)}
               className="w-full bg-[#6C63FF] text-white py-3 rounded-xl font-bold hover:bg-[#5A52E0] transition-colors"
             >
@@ -51,8 +51,8 @@ export default function Tutorials({ showToast }) {
             <h3 className="text-2xl font-bold">{selectedItem.title}</h3>
             <p className="text-gray-600">{selectedItem.description}</p>
             <div className="grid grid-cols-2 gap-4">
-              <button onClick={() => handleAction(selectedItem.id, "Rejected")} className="bg-red-500 text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2"><FiX/> Reject</button>
-              <button onClick={() => handleAction(selectedItem.id, "Approved")} className="bg-green-500 text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2"><FiCheck/> Approve</button>
+              <button onClick={() => handleAction(selectedItem.id, "Rejected")} className="bg-red-500 text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2"><FiX /> Reject</button>
+              <button onClick={() => handleAction(selectedItem.id, "Approved")} className="bg-green-500 text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2"><FiCheck /> Approve</button>
             </div>
           </div>
         </div>
