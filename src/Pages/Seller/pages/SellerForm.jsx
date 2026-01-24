@@ -1,17 +1,27 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { API_BASE_URL } from "../config";
+import { API_BASE_URL } from "../../../config";
+import { Upload, X } from 'lucide-react';
 
 const SellerForm = () => {
   const navigate = useNavigate();
-  // 1. Added loading state here
   const [loading, setLoading] = useState(false);
-  
+
   const [shopName, setShopName] = useState("");
   const [description, setDescription] = useState("");
   const [businessAddress, setBusinessAddress] = useState("");
   const [category, setCategory] = useState("");
-  const [contactNumber, setContactNumber] = useState("");   
+  const [contactNumber, setContactNumber] = useState("");
+  const [shopLogo, setShopLogo] = useState(null);
+  const [preview, setPreview] = useState(null);
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setShopLogo(file);
+      setPreview(URL.createObjectURL(file));
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -20,48 +30,72 @@ const SellerForm = () => {
     const token = localStorage.getItem("token");
 
     if (!token) {
-        alert("Session expired. Please login/signup again.");
-        navigate("/login");
-        return;
+      alert("Session expired. Please login/signup again.");
+      navigate("/login");
+      return;
     }
 
     try {
-        const response = await fetch(`${API_BASE_URL}/api/profile/seller`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`
-            },
-            // 2. FIXED: Added category and contactNumber to the payload
-            body: JSON.stringify({
-                shopName,
-                description,
-                businessAddress,
-                category,
-                contactNumber
-            })
-        });
+      const formData = new FormData();
+      formData.append("shopName", shopName);
+      formData.append("description", description);
+      formData.append("businessAddress", businessAddress);
+      formData.append("category", category);
+      formData.append("contactNumber", contactNumber);
 
-        if (response.ok) {
-            navigate("/waiting-approval");
-        } else {
-            alert("Failed to create shop.");
-        }
+      if (shopLogo) {
+        formData.append("shopLogo", shopLogo);
+      }
+
+      const response = await fetch(`${API_BASE_URL}/api/profile/seller`, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`
+          // Note: Do NOT set Content-Type to application/json manually for FormData
+        },
+        body: formData
+      });
+
+      if (response.ok) {
+        navigate("/waiting-approval");
+      } else {
+        const errorText = await response.text();
+        alert(`Failed to create shop: ${errorText}`);
+      }
     } catch (err) {
-        console.error(err);
-        alert("Error connecting to server.");
+      console.error(err);
+      alert("Error connecting to server.");
     } finally {
-        setLoading(false);
+      setLoading(false);
     }
   };
 
   return (
     <div className="min-h-screen w-screen bg-gradient-to-br from-purple-200 to-blue-100 flex items-center justify-center p-4">
-      <div className="bg-white/80 backdrop-blur-md p-8 rounded-2xl shadow-lg w-full max-w-md border border-white">
+      <div className="bg-white/80 backdrop-blur-md p-8 rounded-2xl shadow-lg w-full max-w-md border border-white my-8">
         <h2 className="text-3xl font-serif text-slate-800 mb-2 text-center">Open Your Shop</h2>
         <p className="text-slate-500 text-center mb-6">Let's get your business ready.</p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
+
+          {/* Logo Upload */}
+          <div className="flex justify-center mb-6">
+            <div className="relative w-24 h-24 rounded-full bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center overflow-hidden hover:border-purple-400 transition-colors cursor-pointer group">
+              {preview ? (
+                <img src={preview} alt="Logo Preview" className="w-full h-full object-cover" />
+              ) : (
+                <Upload className="text-gray-400 group-hover:text-purple-500" size={24} />
+              )}
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                className="absolute inset-0 opacity-0 cursor-pointer"
+              />
+            </div>
+          </div>
+          <p className="text-center text-xs text-slate-500 -mt-4 mb-4">Upload Shop Logo</p>
+
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-1">Shop Name</label>
             <input
@@ -111,7 +145,6 @@ const SellerForm = () => {
 
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-1">Phone Number</label>
-            {/* 3. FIXED: Changed type to tel and fixed placeholder */}
             <input
               type="tel"
               required

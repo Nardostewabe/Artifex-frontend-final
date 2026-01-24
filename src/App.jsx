@@ -1,12 +1,12 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import HomePage from './Pages/HomePage.jsx';
-import Shop from './Pages/Shop.jsx';
-import Signup from './Pages/Signup.jsx';
-import CompleteSignup from './Pages/CompleteSignup.jsx';
-import Login from './Pages/Login.jsx';
-import Role from './Pages/RoleSelection.jsx';
-import SellerForm from './Pages/SellerForm.jsx';
-import CustomerForm from './Pages/CustomerForm.jsx';
+import HomePage from './Pages/Public/HomePage.jsx';
+import Shop from './Pages/Public/Shop.jsx';
+import Signup from './Pages/Auth/Signup.jsx';
+import CompleteSignup from './Pages/Auth/CompleteSignup.jsx';
+import Login from './Pages/Auth/Login.jsx';
+import Role from './Pages/Auth/RoleSelection.jsx';
+import SellerForm from './Pages/Seller/pages/SellerForm.jsx';
+import CustomerForm from './Pages/Customer/pages/CustomerForm.jsx';
 import CustomerHome from './Pages/Customer/pages/HomePage.jsx';
 import SellerHome from './Pages/Seller/pages/HomePage.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
@@ -29,10 +29,13 @@ import SellerInventory from './Pages/Seller/pages/SellerInventory.jsx';
 import EditProduct from './Pages/Seller/pages/EditProducts.jsx';
 import CHomepage from "./Pages/Customer/pages/HomePage.jsx";
 import ProductDetails from './Pages/Seller/pages/ProductDetails.jsx';
-import CustomerCollection from './Pages/Customer/pages/views/CustomerCollection.jsx';
-import CustomerProduct from './Pages/Customer/pages/views/CustomerProduct.jsx';
-import CartPage from './Pages/CartPage.jsx';
+import CustomerCollection from './Pages/Customer/pages/CustomerCollection.jsx';
+import CustomerProduct from './Pages/Customer/pages/CustomerProduct.jsx';
+import CartPage from './Pages/Customer/pages/CartPage.jsx';
+import MyProfile from './Pages/Customer/pages/MyProfile.jsx';
+import SellerProfile from './Pages/Seller/pages/SellerProfile.jsx';
 import ContentAdminDashboard from './Pages/ContentAdmin/index.jsx';
+import SellerOrders from './Pages/Seller/pages/SellerOrders.jsx';
 
 const App = () => {
   return (
@@ -82,6 +85,7 @@ const App = () => {
                     <Route path="/customer-home" element={<CustomerHome />} />
                     <Route path="/collections/:category" element={<CustomerCollection />} />
                     <Route path="customer/product/:id" element={<CustomerProduct />} />
+                    <Route path="/my-profile" element={<MyProfile />} />
                   </Route>
 
                 </Route>
@@ -99,6 +103,8 @@ const App = () => {
                     <Route path="/seller-shop" element={<SellerShop />} />
                     <Route path="/product/edit/:id" element={<EditProduct />} />
                     <Route path="/product/:id" element={<ProductDetails />} />
+                    <Route path="/seller-orders" element={<SellerOrders />} />
+                    <Route path="/seller-profile" element={<SellerProfile />} />
                   </Route>
                 </Route>
 

@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Eye, Trash2, Check, AlertTriangle, Search, Filter, Layers, User } from "lucide-react";
+import { Eye, Trash2, Check, AlertTriangle, Search, Filter, Layers, User, X } from "lucide-react";
 
 export default function ModerationQueue({ items, onAction }) {
   // SEARCH & FILTER STATES
@@ -139,7 +139,7 @@ export default function ModerationQueue({ items, onAction }) {
                   <h3 className="text-xl font-bold">Threat Analysis</h3>
                   <p className="text-xs font-bold text-[#6C63FF] uppercase tracking-widest">Reported {selectedItem.type}</p>
                 </div>
-                <button onClick={() => setSelectedItem(null)} className="text-slate-400 hover:text-slate-600 font-bold text-xl">✕</button>
+                <button onClick={() => setSelectedItem(null)} className="text-slate-400 hover:text-slate-600 transition-colors"><X size={24} /></button>
               </div>
 
               {/* Threat Level Banner */}

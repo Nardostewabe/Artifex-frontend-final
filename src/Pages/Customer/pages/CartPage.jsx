@@ -1,12 +1,12 @@
 import React from 'react';
-import { useCart } from '../context/CartContext';
-import { useAuth } from '../context/AuthContext';
-import { API_BASE_URL } from '../config';
+import { useCart } from '../../../context/CartContext';
+import { useAuth } from '../../../context/AuthContext';
+import { API_BASE_URL } from '../../../config';
 import { Trash2, ShoppingBag, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import ConfirmationModal from '../components/ConfirmationModal';
+import ConfirmationModal from '../../../components/ConfirmationModal';
 import { useState } from 'react';
-import { recordPurchase } from '../services/purchaseService';
+import { recordPurchase } from '../../../services/purchaseService';
 
 const CartPage = () => {
     const { cartItems, removeFromCart, updateQuantity, getCartTotal, clearCart } = useCart();

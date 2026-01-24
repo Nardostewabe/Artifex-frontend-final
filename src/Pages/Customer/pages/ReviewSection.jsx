@@ -1,68 +1,86 @@
 import React, { useState, useEffect } from 'react';
-import { Star, User, MessageSquare } from 'lucide-react';
-import { hasPurchased } from '../services/purchaseService';
+import { Star, MessageSquare } from 'lucide-react';
+import { API_BASE_URL } from '../../../config'; // Ensure this path is correct for your project
+import { useAuth } from '../../../context/AuthContext'; // Ensure this path is correct
 
 const ReviewSection = ({ productId }) => {
+    const { token } = useAuth(); // Get the token to verify if they can review
+
     const [reviews, setReviews] = useState([]);
     const [canReview, setCanReview] = useState(false);
     const [newReview, setNewReview] = useState({ rating: 5, comment: '' });
     const [averageRating, setAverageRating] = useState(0);
+    const [loading, setLoading] = useState(true);
 
-    // Load reviews and check purchase status
+    // 1. Fetch Reviews & Check Permission
     useEffect(() => {
-        // 1. Load Reviews
-        const loadReviews = () => {
+        const fetchData = async () => {
+            if (!productId) return;
+
             try {
-                const stored = localStorage.getItem(`reviews_${productId}`);
-                if (stored) {
-                    const parsed = JSON.parse(stored);
-                    setReviews(parsed);
+                // A. Get Public Reviews
+                const response = await fetch(`${API_BASE_URL}/api/Reviews/${productId}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    setReviews(data);
 
                     // Calculate Average
-                    if (parsed.length > 0) {
-                        const sum = parsed.reduce((acc, r) => acc + r.rating, 0);
-                        setAverageRating((sum / parsed.length).toFixed(1));
+                    if (data.length > 0) {
+                        const sum = data.reduce((acc, r) => acc + r.rating, 0);
+                        setAverageRating((sum / data.length).toFixed(1));
+                    }
+                }
+
+                // B. Check if Logged-in User can review (Only if they have a token)
+                if (token) {
+                    const permResponse = await fetch(`${API_BASE_URL}/api/Reviews/can-review/${productId}`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    if (permResponse.ok) {
+                        const allowed = await permResponse.json();
+                        setCanReview(allowed);
                     }
                 }
             } catch (error) {
-                console.error("Failed to load reviews", error);
+                console.error("Error loading reviews:", error);
+            } finally {
+                setLoading(false);
             }
         };
 
-        // 2. Check Permission
-        const checkPermission = async () => {
-            const purchased = await hasPurchased(productId);
-            setCanReview(purchased);
-        };
+        fetchData();
+    }, [productId, token]);
 
-        if (productId) {
-            loadReviews();
-            checkPermission();
-        }
-    }, [productId]);
-
-    const handleSubmit = (e) => {
+    // 2. Submit New Review
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
-        const review = {
-            id: Date.now(),
-            user: "Verified Buyer", // Mock User
-            date: new Date().toLocaleDateString(),
-            rating: parseInt(newReview.rating),
-            comment: newReview.comment
-        };
+        if (!token) return alert("You must be logged in.");
 
-        const updatedReviews = [review, ...reviews];
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/Reviews`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    productId: productId,
+                    rating: parseInt(newReview.rating),
+                    comment: newReview.comment
+                })
+            });
 
-        // Save to LocalStorage
-        localStorage.setItem(`reviews_${productId}`, JSON.stringify(updatedReviews));
-
-        setReviews(updatedReviews);
-        setNewReview({ rating: 5, comment: '' }); // Reset form
-
-        // Recalculate Average
-        const sum = updatedReviews.reduce((acc, r) => acc + r.rating, 0);
-        setAverageRating((sum / updatedReviews.length).toFixed(1));
+            if (response.ok) {
+                alert("Review submitted!");
+                window.location.reload(); // Reload to show the new review
+            } else {
+                const errorMsg = await response.text();
+                alert("Error: " + errorMsg);
+            }
+        } catch (error) {
+            console.error("Failed to submit review", error);
+        }
     };
 
     return (
@@ -80,18 +98,20 @@ const ReviewSection = ({ productId }) => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
                 {/* LIST REVIEWS */}
                 <div className="space-y-6">
-                    {reviews.length === 0 ? (
-                        <div className="text-gray-500 italic">No reviews yet.</div>
+                    {loading ? (
+                        <div>Loading reviews...</div>
+                    ) : reviews.length === 0 ? (
+                        <div className="text-gray-500 italic">No reviews yet. Be the first!</div>
                     ) : (
                         reviews.map((review) => (
                             <div key={review.id} className="bg-gray-50 p-6 rounded-xl">
                                 <div className="flex justify-between items-start mb-2">
                                     <div className="flex items-center gap-2">
                                         <div className="w-8 h-8 rounded-full bg-purple-200 flex items-center justify-center text-purple-700 font-bold text-xs">
-                                            {review.user.charAt(0)}
+                                            {review.userName.charAt(0).toUpperCase()}
                                         </div>
                                         <div>
-                                            <div className="font-semibold text-gray-900 text-sm">{review.user}</div>
+                                            <div className="font-semibold text-gray-900 text-sm">{review.userName}</div>
                                             <div className="text-xs text-gray-400">{review.date}</div>
                                         </div>
                                     </div>
@@ -125,8 +145,7 @@ const ReviewSection = ({ productId }) => {
                                                 type="button"
                                                 key={star}
                                                 onClick={() => setNewReview({ ...newReview, rating: star })}
-                                                className={`p-1 hover:scale-110 transition-transform ${newReview.rating >= star ? 'text-yellow-400' : 'text-gray-300'
-                                                    }`}
+                                                className={`p-1 hover:scale-110 transition-transform ${newReview.rating >= star ? 'text-yellow-400' : 'text-gray-300'}`}
                                             >
                                                 <Star size={24} className={newReview.rating >= star ? 'fill-current' : ''} />
                                             </button>
@@ -154,8 +173,10 @@ const ReviewSection = ({ productId }) => {
                     ) : (
                         <div className="bg-blue-50 border border-blue-100 p-6 rounded-xl text-center">
                             <MessageSquare className="mx-auto text-blue-400 mb-2" size={32} />
-                            <h3 className="font-bold text-blue-900 mb-1">Have you bought this?</h3>
-                            <p className="text-blue-700 text-sm">Purchase this item to leave a review.</p>
+                            <h3 className="font-bold text-blue-900 mb-1">Want to review?</h3>
+                            <p className="text-blue-700 text-sm">
+                                {token ? "You can only review products you have purchased." : "Please log in and purchase this item to leave a review."}
+                            </p>
                         </div>
                     )}
                 </div>

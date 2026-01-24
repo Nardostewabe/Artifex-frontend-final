@@ -12,11 +12,13 @@ import {
   ChevronRight,
   MoreHorizontal,
   DollarSign,
-  Loader2
+  Loader2,
+  Store
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { API_BASE_URL } from '../../../config';
 import { useAuth } from '../../../context/AuthContext';
+
 
 const SellerDashboard = () => {
   const { token } = useAuth();
@@ -138,24 +140,23 @@ const SellerDashboard = () => {
 
             <nav className="space-y-1">
               {[
-                { name: 'Overview', icon: BarChart2 },
-                { name: 'Orders', icon: Package },
-                { name: 'Inventory', icon: ShoppingBag },
-                { name: 'Messages', icon: MessageSquare },
-                { name: 'Reviews', icon: Star },
-                { name: 'Tutorials', icon: Video },
+                { name: 'Overview', icon: BarChart2, path: '/seller-home' }, // Add paths
+                { name: 'Orders', icon: Package, path: '/seller-orders' },   // Link to new route
+                { name: 'Inventory', icon: ShoppingBag, path: '/seller-inventory' },
+                { name: 'Shop Profile', icon: Store, path: '/seller-profile' },
               ].map((item) => (
-                <button
+                /* CHANGE BUTTON TO LINK */
+                <Link
+                  to={item.path}
                   key={item.name}
-                  onClick={() => setActiveTab(item.name)}
-                  className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${activeTab === item.name
-                      ? 'bg-purple-50 text-purple-700'
-                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                  className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${location.pathname === item.path
+                    ? 'bg-purple-50 text-purple-700'
+                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                     }`}
                 >
                   <item.icon size={18} strokeWidth={2} />
                   <span>{item.name}</span>
-                </button>
+                </Link>
               ))}
             </nav>
 

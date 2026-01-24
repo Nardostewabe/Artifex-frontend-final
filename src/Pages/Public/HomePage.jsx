@@ -1,6 +1,6 @@
 import React from 'react';
 // 👇 1. Import the new component (Adjust the path if needed)
-import TrendingSection from '../Pages/TrendingSection';
+import TrendingSection from './TrendingSection';
 
 const Home = () => {
   const scrollToSection = (id) => {

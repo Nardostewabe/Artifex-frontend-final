@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FiTrash2, FiFlag, FiUserCheck, FiAlertCircle } from "react-icons/fi";
+import { Trash2, Flag, UserCheck, AlertCircle } from "lucide-react";
 
 // DUMMY DATA: Focuses on reporter and reported message
 const INITIAL_FLAGGED = [
@@ -63,7 +63,7 @@ export default function FlaggedContent({ showToast }) {
 
             {/* SELLER ALERT: Identifies if the target user is a repeat offender */}
             <div className="flex items-center gap-3 text-orange-600 bg-orange-50 p-3 rounded-lg border border-orange-100">
-              <FiAlertCircle />
+              <AlertCircle size={18} />
               <p className="text-xs font-bold uppercase">Seller has {selectedItem.sellerReports} previous reports</p>
             </div>
 

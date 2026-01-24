@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Menu, X, LogOut, User, Store, PlusCircle, FileText, Home } from 'lucide-react';
-import logo from '../assets/Artifex logo 2_2/6.png';
+import logo from '../../../assets/Artifex logo 2_2/6.png';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../../../context/AuthContext';
 
 const SellerNavigationBar = () => {
     const [isScrolled, setIsScrolled] = useState(false);
@@ -32,7 +32,7 @@ const SellerNavigationBar = () => {
     const navLinks = [
         { name: 'Dashboard', path: '/seller-home', icon: <Home size={18} /> },
         { name: 'Inventory', path: '/seller-inventory', icon: <Store size={18} /> },
-        { name: 'My Shop', path: '/seller-shop', icon: <Store size={18} /> },
+        { name: 'Shop Profile', path: '/seller-profile', icon: <Store size={18} /> },
         { name: 'Add Product', path: '/add-product', icon: <PlusCircle size={18} /> },
         { name: 'Applications', path: '/waiting-approval', icon: <FileText size={18} /> },
     ];

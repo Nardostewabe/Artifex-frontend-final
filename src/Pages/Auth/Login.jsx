@@ -1,21 +1,21 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { API_BASE_URL } from "../config"; 
-import { useAuth } from '../context/AuthContext';
+import { API_BASE_URL } from "../../config";
+import { useAuth } from '../../context/AuthContext';
 
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  
+
   // UI States
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
- 
+
   const navigate = useNavigate();
   const { login } = useAuth();
 
   const handleLogin = async (e) => {
-    e.preventDefault(); 
+    e.preventDefault();
     setLoading(true);
     setError(null);
 
@@ -25,66 +25,66 @@ const Login = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ 
-            UsernameOrEmail: username, 
-            Password: password 
+        body: JSON.stringify({
+          UsernameOrEmail: username,
+          Password: password
         }),
       });
 
       if (response.ok) {
         const data = await response.json();
-        const token = data.token || data.Token; 
+        const token = data.token || data.Token;
 
         if (token) {
-           // 1. Save Data
-           login(token, data.user);
-           localStorage.setItem("token", token);
-           localStorage.setItem("user", JSON.stringify(data.user));
-           
-           console.log("FULL BACKEND DATA:", data.user);
+          // 1. Save Data
+          login(token, data.user);
+          localStorage.setItem("token", token);
+          localStorage.setItem("user", JSON.stringify(data.user));
 
-           // ---------------------------------------------------------
-           // THE FIX: NORMALIZE DATA BEFORE CHECKING
-           // ---------------------------------------------------------
+          console.log("FULL BACKEND DATA:", data.user);
 
-           // 1. Force Role to String (Safety check)
-           const role = String(data.user.role); 
+          // ---------------------------------------------------------
+          // THE FIX: NORMALIZE DATA BEFORE CHECKING
+          // ---------------------------------------------------------
 
-           // 2. Use the correct field name from your console log (.isApproved)
-           const rawApproved = data.user.isApproved; 
-           
-           // 3. Robust check: handles true, "true", 1, "1"
-           const isSellerApproved = rawApproved === true || rawApproved === "true" || rawApproved === 1 || rawApproved === "1";
+          // 1. Force Role to String (Safety check)
+          const role = String(data.user.role);
 
-           console.log("NAVIGATION DEBUG:", { role, isSellerApproved, rawValue: rawApproved });
+          // 2. Use the correct field name from your console log (.isApproved)
+          const rawApproved = data.user.isApproved;
 
-           // 4. Navigate based on normalized data
-           if (role === "1") {
-               navigate("/customer-home");
-           }
-           else if (role === "2") {
-               if (isSellerApproved) {
-                   console.log("Seller is approved. Going to dashboard.");
-                   navigate("/seller-home");
-               } else {
-                   console.log("Seller NOT approved. Going to waiting room.");
-                   navigate("/waiting-approval");
-               }
-           }
-           else if (role === "3") {
-               navigate("/ContentAdmin-dashboard");
-           }
-           else if (role === "4") {
-               navigate("/PlatformAdmin-dashboard");
-           }
-           else {
-               console.warn("Unknown Role:", role);
-               setError("User role not recognized.");
-               navigate("/");
-           }
-           
+          // 3. Robust check: handles true, "true", 1, "1"
+          const isSellerApproved = rawApproved === true || rawApproved === "true" || rawApproved === 1 || rawApproved === "1";
+
+          console.log("NAVIGATION DEBUG:", { role, isSellerApproved, rawValue: rawApproved });
+
+          // 4. Navigate based on normalized data
+          if (role === "1") {
+            navigate("/customer-home");
+          }
+          else if (role === "2") {
+            if (isSellerApproved) {
+              console.log("Seller is approved. Going to dashboard.");
+              navigate("/seller-home");
+            } else {
+              console.log("Seller NOT approved. Going to waiting room.");
+              navigate("/waiting-approval");
+            }
+          }
+          else if (role === "3") {
+            navigate("/ContentAdmin-dashboard");
+          }
+          else if (role === "4") {
+            navigate("/PlatformAdmin-dashboard");
+          }
+          else {
+            console.warn("Unknown Role:", role);
+            setError("User role not recognized.");
+            navigate("/");
+          }
+
         } else {
-            setError("Login succeeded but no token was returned.");
+          setError("Login succeeded but no token was returned.");
         }
 
       } else {
@@ -109,9 +109,9 @@ const Login = () => {
         <h2 className="text-2xl font-semibold mb-4 text-center">Login</h2>
 
         {error && (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded mb-4 text-sm text-center">
-              {error}
-            </div>
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded mb-4 text-sm text-center">
+            {error}
+          </div>
         )}
 
         <input

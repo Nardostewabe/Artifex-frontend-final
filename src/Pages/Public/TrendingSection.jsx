@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { API_BASE_URL } from "../config.js";
+import { API_BASE_URL } from "../../config.js";
 import { ArrowRight, Package, Flame as Fire } from 'lucide-react';
 // Re-reading user code: "import { ArrowRight, Package } from 'lucide-react';" and usage "<Fire size={24} ... />"
 // I will import Flame as Fire to match the usage.

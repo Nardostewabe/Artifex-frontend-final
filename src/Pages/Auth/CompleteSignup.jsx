@@ -1,8 +1,8 @@
 
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "../supabaseClient";
-import { API_BASE_URL } from "../config";
+import { supabase } from "../../supabaseClient";
+import { API_BASE_URL } from "../../config";
 
 const CompleteSignup = () => {
     const navigate = useNavigate();

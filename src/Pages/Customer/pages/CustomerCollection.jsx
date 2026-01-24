@@ -1,5 +1,5 @@
 import React from 'react';
-import { MOCK_PRODUCTS } from '../data';
+import { MOCK_PRODUCTS } from './data';
 
 const CustomerCollection = ({ category, onNavigate, onProductClick }) => {
   

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Search, ShoppingBag, Heart, Menu, X, User, LogOut } from 'lucide-react';
-import logo from '../assets/Artifex logo 2_2/6.png'; // Make sure this path is correct
+import logo from '../../../assets/Artifex logo 2_2/6.png'; // Make sure this path is correct
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { useCart } from '../context/CartContext';
+import { useAuth } from '../../../context/AuthContext';
+import { useCart } from '../../../context/CartContext';
 
 const Navigationbar = () => {
     const [isScrolled, setIsScrolled] = useState(false);
@@ -89,9 +89,14 @@ const Navigationbar = () => {
                                 <User size={20} strokeWidth={1.5} />
                             </Link>
                         ) : (
-                            <button onClick={handleLogout} className="hidden md:flex items-center gap-2 px-3 py-1 bg-red-50 text-red-500 border border-red-200 rounded-full hover:bg-red-100 text-xs uppercase tracking-wider">
-                                <LogOut size={14} /> Logout
-                            </button>
+                            <div className="hidden md:flex items-center gap-3">
+                                <Link to="/my-profile" className="text-gray-700 hover:text-purple-600 p-1" title="My Profile">
+                                    <User size={20} strokeWidth={1.5} />
+                                </Link>
+                                <button onClick={handleLogout} className="flex items-center gap-2 px-3 py-1 bg-red-50 text-red-500 border border-red-200 rounded-full hover:bg-red-100 text-xs uppercase tracking-wider">
+                                    <LogOut size={14} /> Logout
+                                </button>
+                            </div>
                         )}
 
                         <button className="text-gray-700 hover:text-blue-400 p-1 transition-colors">
@@ -145,7 +150,10 @@ const Navigationbar = () => {
                                     <Link to="/signup" onClick={() => setIsMobileMenuOpen(false)} className="w-full max-w-xs bg-gray-900 text-white text-center py-3 rounded-full text-xs uppercase tracking-widest">Sign Up</Link>
                                 </>
                             ) : (
-                                <button onClick={handleLogout} className="w-full max-w-xs bg-red-400 text-white text-center py-3 rounded-full text-xs uppercase tracking-widest hover:bg-red-500">Logout</button>
+                                <>
+                                    <Link to="/my-profile" onClick={() => setIsMobileMenuOpen(false)} className="text-gray-800 text-sm uppercase tracking-widest hover:text-purple-500">My Profile</Link>
+                                    <button onClick={handleLogout} className="w-full max-w-xs bg-red-400 text-white text-center py-3 rounded-full text-xs uppercase tracking-widest hover:bg-red-500">Logout</button>
+                                </>
                             )}
                         </div>
                     </div>

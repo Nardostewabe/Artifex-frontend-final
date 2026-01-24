@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Loader2, ShoppingBag, Share2 } from 'lucide-react';
-import { API_BASE_URL } from "../../../../config.js";
-import { useAuth } from '../../../../context/AuthContext.jsx';
-import { useCart } from '../../../../context/CartContext.jsx';
-import ConfirmationModal from '../../../../components/ConfirmationModal';
-import ReviewSection from '../../../../components/ReviewSection';
+import { API_BASE_URL } from "../../../config.js";
+import { useAuth } from '../../../context/AuthContext.jsx';
+import { useCart } from '../../../context/CartContext.jsx';
+import ConfirmationModal from '../../../components/ConfirmationModal.jsx';
+import ReviewSection from './ReviewSection.jsx';
 
 const CustomerProduct = () => {
   const { id } = useParams();

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FiCheck, FiX, FiPlay } from "react-icons/fi";
+import { Check, X, Play } from "lucide-react";
 
 const INITIAL_TUTORIALS = [
   { id: 1, title: "Crochet Bag Guide", seller: "CraftByLina", description: "Advanced stitching tutorial.", date: "2025-02-15" },
@@ -28,7 +28,7 @@ export default function Tutorials({ showToast }) {
           <div key={item.id} className="bg-white rounded-3xl p-6 shadow-md border border-gray-100 space-y-4">
             {/* PREVIEW BOX */}
             <div className="w-full h-32 bg-[#F8F8FF] rounded-2xl flex items-center justify-center text-[#6C63FF]">
-              <FiPlay size={40} />
+              <Play size={40} />
             </div>
             <div>
               <h3 className="font-bold text-xl">{item.title}</h3>
@@ -51,8 +51,8 @@ export default function Tutorials({ showToast }) {
             <h3 className="text-2xl font-bold">{selectedItem.title}</h3>
             <p className="text-gray-600">{selectedItem.description}</p>
             <div className="grid grid-cols-2 gap-4">
-              <button onClick={() => handleAction(selectedItem.id, "Rejected")} className="bg-red-500 text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2"><FiX /> Reject</button>
-              <button onClick={() => handleAction(selectedItem.id, "Approved")} className="bg-green-500 text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2"><FiCheck /> Approve</button>
+              <button onClick={() => handleAction(selectedItem.id, "Rejected")} className="bg-red-500 text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2"><X size={18} /> Reject</button>
+              <button onClick={() => handleAction(selectedItem.id, "Approved")} className="bg-green-500 text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2"><Check size={18} /> Approve</button>
             </div>
           </div>
         </div>

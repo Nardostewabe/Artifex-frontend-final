@@ -1,5 +1,5 @@
 import { Outlet } from "react-router-dom";
-import SellerNavigationBar from "../components/SellerNavigationBar";
+import SellerNavigationBar from "../Pages/Seller/components/SellerNavigationBar";
 import Footer from "../components/Footer";
 
 const SellerLayout = () => {
