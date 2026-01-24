@@ -24,8 +24,8 @@ const SellerDetailsModal = ({ seller, isOpen, onClose, onApprove, onReject, isPr
 
         {/* Header */}
         <div className="bg-gradient-to-r from-purple-100 to-blue-100 p-6 border-b border-white">
-          <h2 className="text-2xl font-serif text-slate-800">Review Application</h2>
-          <p className="text-slate-500 text-sm">Review details for <strong>{seller.shopName}</strong></p>
+          <h2 className="text-2xl font-black text-slate-800 tracking-tight">Review Application</h2>
+          <p className="text-slate-500 text-sm font-medium">Review details for <strong>{seller.shopName}</strong></p>
         </div>
 
         {/* Scrollable Content */}
@@ -196,13 +196,13 @@ export default function SellerApproval() {
     }
   };
 
-  // 3. Handle Reject (Calls DELETE /delete-seller)
+  // 3. Handle Reject (Calls PATCH /deactivate-seller)
   const confirmReject = (id) => {
     showModal({
-      title: "Reject Application",
-      message: "Are you sure you want to REJECT and DELETE this application? This action cannot be undone.",
+      title: "Deactivate Application",
+      message: "Are you sure you want to REJECT and DEACTIVATE this seller application?",
       type: "danger",
-      confirmText: "Reject & Delete",
+      confirmText: "Reject & Deactivate",
       onConfirm: () => executeReject(id)
     });
   };
@@ -211,15 +211,15 @@ export default function SellerApproval() {
     closeModal();
     setProcessing(true);
     try {
-      const response = await fetch(`${API_BASE_URL}/api/PlatformAdminSeller/delete-seller/${id}`, {
-        method: "DELETE",
+      const response = await fetch(`${API_BASE_URL}/api/PlatformAdminSeller/deactivate-seller/${id}`, {
+        method: "PATCH",
         headers: getAuthHeaders()
       });
 
       if (response.ok) {
-        setSellers(prev => prev.filter(s => s.id !== id));
+        setSellers(prev => prev.filter(s => (s.id ?? s.Id) !== id));
         setSelectedSeller(null);
-        showModal({ title: "Rejected", message: "Application rejected and deleted.", type: "info", isAlert: true });
+        showModal({ title: "Rejected", message: "Application rejected and seller deactivated.", type: "info", isAlert: true });
       } else {
         const err = await response.text();
         showModal({ title: "Error", message: err, type: "danger", isAlert: true });
@@ -236,9 +236,9 @@ export default function SellerApproval() {
   const columns = ["Shop Name", "Category", "Contact", "Status", "Action"];
 
   const tableData = sellers.map(seller => ({
-    "Shop Name": seller.shopName,
-    "Category": seller.category || "General", // Fallback if null
-    "Contact": seller.contactNumber || seller.email || "N/A",
+    "Shop Name": seller.shopName ?? seller.ShopName,
+    "Category": seller.category ?? seller.Category ?? "General", // Fallback if null
+    "Contact": seller.contactNumber ?? seller.ContactNumber ?? seller.email ?? seller.Email ?? "N/A",
     "Status": "Pending",
     "Action": (
       <button
@@ -263,8 +263,8 @@ export default function SellerApproval() {
     <div className="p-6 max-w-7xl mx-auto">
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-3xl font-serif text-slate-800">Seller Requests</h1>
-          <p className="text-slate-500 mt-1">Manage incoming shop applications</p>
+          <h1 className="text-3xl font-black text-slate-900 tracking-tight">Seller Requests</h1>
+          <p className="text-slate-500 mt-1 font-medium italic">Manage incoming shop applications</p>
         </div>
         <div className="bg-purple-100 text-purple-800 px-4 py-2 rounded-lg text-sm font-bold">
           {sellers.length} Pending

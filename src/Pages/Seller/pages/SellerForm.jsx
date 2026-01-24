@@ -71,10 +71,10 @@ const SellerForm = () => {
   };
 
   return (
-    <div className="min-h-screen w-screen bg-gradient-to-br from-purple-200 to-blue-100 flex items-center justify-center p-4">
-      <div className="bg-white/80 backdrop-blur-md p-8 rounded-2xl shadow-lg w-full max-w-md border border-white my-8">
-        <h2 className="text-3xl font-serif text-slate-800 mb-2 text-center">Open Your Shop</h2>
-        <p className="text-slate-500 text-center mb-6">Let's get your business ready.</p>
+    <div className="min-h-screen w-screen bg-gradient-to-br from-[#bfdbfe] to-[#e9d5ff] flex items-center justify-center p-4">
+      <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md border border-gray-100 my-8">
+        <h2 className="text-3xl font-bold text-gray-900 mb-2 text-center">Open Your Shop</h2>
+        <p className="text-gray-500 text-center mb-6">Let's get your business ready.</p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
 

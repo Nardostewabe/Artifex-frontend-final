@@ -259,8 +259,8 @@ const SellerInventory = () => {
 
                 </div>
             </div>
-            </div>
-            );
+        </div>
+    );
 };
 
-            export default SellerInventory;
+export default SellerInventory;

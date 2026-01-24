@@ -16,24 +16,125 @@ const CompleteSignup = () => {
         // 1. Verify we have a Supabase session (meaning they clicked the email link)
         const checkSession = async () => {
             try {
-                const { data: { session }, error } = await supabase.auth.getSession();
+                // Debug: Log the full URL to see what we're working with
+                console.log("Full URL:", window.location.href);
+                console.log("Hash:", window.location.hash);
+                console.log("Search:", window.location.search);
 
-                if (error || !session) {
-                    console.error("No session found:", error);
-                    setError("Verification link invalid or expired. Please try signing up again.");
+                // Check for PKCE flow (query parameters with code)
+                const queryParams = new URLSearchParams(window.location.search);
+                const code = queryParams.get('code');
+                const error_code = queryParams.get('error_code');
+                const error_description = queryParams.get('error_description');
+
+                console.log("Query Params:", { code: !!code, error_code, error_description });
+
+                // Handle errors from Supabase
+                if (error_code) {
+                    console.error("Supabase error:", error_code, error_description);
+                    if (error_code === 'otp_expired') {
+                        setError("Verification link has expired. Please sign up again to receive a new verification email.");
+                    } else {
+                        setError(error_description || "Verification failed. Please try again.");
+                    }
                     setLoading(false);
                     return;
                 }
 
-                console.log("Supabase Verification Success:", session.user);
-                setUserData(session.user);
+                // PKCE flow: Exchange code for session
+                if (code) {
+                    console.log("PKCE flow detected, exchanging code for session...");
+                    const { data: { session }, error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
 
-                // Optional: If you want to auto-fill or check if user already exists in your backend
-                // (But we will just wait for password confirmation)
+                    if (exchangeError) {
+                        console.error("Code exchange error:", exchangeError);
+                        if (exchangeError.message?.includes('expired')) {
+                            setError("Verification link has expired. Please sign up again to receive a new verification email.");
+                        } else {
+                            setError("Verification failed. Please try signing up again.");
+                        }
+                        setLoading(false);
+                        return;
+                    }
+
+                    if (session) {
+                        console.log("Supabase Verification Success (PKCE):", session.user);
+                        setUserData(session.user);
+                        setLoading(false);
+                        return;
+                    }
+                }
+
+                // Legacy flow: Check hash fragment for tokens
+                const hashParams = new URLSearchParams(window.location.hash.substring(1));
+                const accessToken = hashParams.get('access_token');
+                const refreshToken = hashParams.get('refresh_token');
+                const type = hashParams.get('type');
+
+                // Check for errors in hash fragment
+                const hashError = hashParams.get('error');
+                const hashErrorCode = hashParams.get('error_code');
+                const hashErrorDescription = hashParams.get('error_description');
+
+                console.log("Hash Params:", {
+                    accessToken: !!accessToken,
+                    refreshToken: !!refreshToken,
+                    type,
+                    error: hashError,
+                    error_code: hashErrorCode,
+                    error_description: hashErrorDescription
+                });
+
+                // Handle errors from hash fragment
+                if (hashError || hashErrorCode) {
+                    console.error("Supabase hash error:", hashErrorCode, hashErrorDescription);
+                    if (hashErrorCode === 'otp_expired') {
+                        setError("Verification link has expired. Please sign up again to receive a new verification email.");
+                    } else {
+                        setError(decodeURIComponent(hashErrorDescription || hashError || "Verification failed. Please try again."));
+                    }
+                    setLoading(false);
+                    return;
+                }
+
+                // If we have tokens in the URL, set the session explicitly
+                if (accessToken && type === 'signup') {
+                    const { data: { session }, error: sessionError } = await supabase.auth.setSession({
+                        access_token: accessToken,
+                        refresh_token: refreshToken || ''
+                    });
+
+                    if (sessionError) {
+                        console.error("Session set error:", sessionError);
+                        setError("Verification link has expired. Please sign up again to receive a new verification email.");
+                        setLoading(false);
+                        return;
+                    }
+
+                    if (session) {
+                        console.log("Supabase Verification Success (Hash):", session.user);
+                        setUserData(session.user);
+                        setLoading(false);
+                        return;
+                    }
+                }
+
+                // Final fallback: Try to get existing session
+                const { data: { session }, error } = await supabase.auth.getSession();
+
+                if (error || !session) {
+                    console.error("No session found:", error);
+                    setError("Verification link invalid or expired. Please try signing up again to receive a new verification email.");
+                    setLoading(false);
+                    return;
+                }
+
+                console.log("Supabase Verification Success (Existing):", session.user);
+                setUserData(session.user);
 
             } catch (err) {
                 console.error("Session check error:", err);
-                setError("An error occurred verifying your email.");
+                setError("An error occurred verifying your email. The verification link may have expired.");
             } finally {
                 setLoading(false);
             }

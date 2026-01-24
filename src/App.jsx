@@ -20,7 +20,6 @@ import UserMonitoring from "./Pages/PlatformAdmin/pages/UserMonitoring";
 import SellerManagement from "./Pages/PlatformAdmin/pages/SellerManagement";
 import AdminManagement from "./Pages/PlatformAdmin/pages/AdminManagement";
 import Reports from "./Pages/PlatformAdmin/pages/Reports";
-import SystemLogs from "./Pages/PlatformAdmin/pages/SystemLogs";
 import SellerApproval from './Pages/PlatformAdmin/pages/SellerApproval.jsx';
 import WaitingApproval from './Pages/Seller/pages/WaitingApproval.jsx';
 import AddProduct from './Pages/Seller/pages/AddProducts.jsx';
@@ -120,7 +119,6 @@ const App = () => {
                     <Route path="/sellers" element={<SellerManagement />} />
                     <Route path="/admins" element={<AdminManagement />} />
                     <Route path="/reports" element={<Reports />} />
-                    <Route path="/logs" element={<SystemLogs />} />
                     <Route path="/sellers-approval" element={<SellerApproval />} />
                   </Route>
                 </Route>

@@ -34,7 +34,6 @@ const SellerNavigationBar = () => {
         { name: 'Inventory', path: '/seller-inventory', icon: <Store size={18} /> },
         { name: 'Shop Profile', path: '/seller-profile', icon: <Store size={18} /> },
         { name: 'Add Product', path: '/add-product', icon: <PlusCircle size={18} /> },
-        { name: 'Applications', path: '/waiting-approval', icon: <FileText size={18} /> },
     ];
 
     return (
@@ -47,7 +46,7 @@ const SellerNavigationBar = () => {
                     {/* LEFT SECTION: MOBILE MENU & LINKS */}
                     <div className="flex-1 flex items-center justify-start">
                         <button
-                            className="md:hidden text-gray-700 p-2 hover:bg-gray-100 rounded-full transition-colors"
+                            className="md:hidden text-gray-700 p-2 hover:bg-purple-50 rounded-full transition-colors"
                             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                             aria-label="Toggle menu"
                         >
@@ -58,7 +57,7 @@ const SellerNavigationBar = () => {
                                 <Link
                                     key={link.name}
                                     to={link.path}
-                                    className={`flex items-center gap-2 text-xs uppercase tracking-[0.15em] font-medium transition-colors duration-200 
+                                    className={`flex items-center gap-2 text-xs uppercase font-medium transition-colors duration-200 
                                         ${location.pathname === link.path ? 'text-purple-600' : (isScrolled ? 'text-gray-600' : 'text-gray-800')} 
                                         hover:text-purple-400`}
                                 >
@@ -68,7 +67,7 @@ const SellerNavigationBar = () => {
                         </div>
                     </div>
 
-                    {/* MIDDLE SECTION: LOGO */}
+                    {/* MIDDLE SECTION: LOGO ... */}
                     <div className="flex-shrink-0 flex justify-center">
                         <Link to="/seller-home">
                             <img
@@ -81,11 +80,11 @@ const SellerNavigationBar = () => {
 
                     {/* RIGHT SECTION: ICONS & ACTIONS */}
                     <div className="flex-1 flex justify-end items-center space-x-3 md:space-x-6">
-                        <div className="flex items-center gap-2 px-3 py-1 bg-purple-50 text-purple-700 border border-purple-100 rounded-full text-xs font-bold uppercase tracking-wider">
+                        <div className="flex items-center gap-2 px-4 py-1.5 bg-purple-50 text-purple-700 border border-purple-100 rounded-full text-xs font-bold uppercase shadow-sm">
                             <User size={14} /> Seller Portal
                         </div>
 
-                        <button onClick={handleLogout} className="hidden md:flex items-center gap-2 px-3 py-1 bg-red-50 text-red-500 border border-red-200 rounded-full hover:bg-red-100 text-xs uppercase tracking-wider transition-colors">
+                        <button onClick={handleLogout} className="hidden md:flex items-center gap-2 px-4 py-1.5 bg-red-50 text-red-500 border border-red-100 rounded-full hover:bg-red-100 text-xs font-bold uppercase transition-colors shadow-sm">
                             <LogOut size={14} /> Logout
                         </button>
                     </div>
@@ -93,24 +92,24 @@ const SellerNavigationBar = () => {
 
                 {/* MOBILE MENU DROPDOWN */}
                 <div
-                    className={`md:hidden absolute top-full left-0 w-full bg-white border-t border-gray-100 shadow-lg transition-all duration-300 ease-in-out overflow-hidden ${isMobileMenuOpen ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'
+                    className={`md:hidden absolute top-full left-0 w-full bg-white border-t border-purple-50 shadow-2xl transition-all duration-300 ease-in-out overflow-hidden ${isMobileMenuOpen ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'
                         }`}
                 >
-                    <div className="flex flex-col items-center py-8 space-y-6">
+                    <div className="flex flex-col items-center py-10 space-y-8">
                         {navLinks.map((link) => (
                             <Link
                                 key={link.name}
                                 to={link.path}
-                                className={`flex items-center gap-2 text-sm uppercase tracking-widest font-medium ${location.pathname === link.path ? 'text-purple-600' : 'text-gray-800 hover:text-purple-500'}`}
+                                className={`flex items-center gap-3 text-sm uppercase font-bold ${location.pathname === link.path ? 'text-purple-600' : 'text-gray-800 hover:text-purple-500'}`}
                                 onClick={() => setIsMobileMenuOpen(false)}
                             >
                                 {link.icon} {link.name}
                             </Link>
                         ))}
 
-                        <div className="w-16 h-px bg-gray-200 my-2"></div>
+                        <div className="w-16 h-px bg-purple-50 my-2"></div>
 
-                        <button onClick={handleLogout} className="w-full max-w-xs bg-red-400 text-white text-center py-3 rounded-full text-xs uppercase tracking-widest hover:bg-red-500">Logout</button>
+                        <button onClick={handleLogout} className="w-full max-w-xs bg-red-400 text-white text-center py-4 rounded-full text-xs font-bold uppercase shadow-lg shadow-red-100">Logout</button>
                     </div>
                 </div>
             </nav>

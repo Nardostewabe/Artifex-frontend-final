@@ -40,7 +40,7 @@ export default function ContentAdminDashboard() {
     };
 
     return (
-        <div className="flex min-h-screen bg-[#F0F2FF] font-sans text-[#3A3A6C]">
+        <div className="flex min-h-screen w-screen bg-[#F8FAFC] text-slate-900">
 
             {/* SIDEBAR */}
             <Sidebar

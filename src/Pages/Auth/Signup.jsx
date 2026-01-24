@@ -14,6 +14,38 @@ const Signup = () => {
 
   const navigate = useNavigate();
 
+  const handleResendEmail = async () => {
+    if (!email) {
+      setError("Please enter your email address first.");
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+    setMsg(null);
+
+    try {
+      const { error: resendError } = await supabase.auth.resend({
+        type: 'signup',
+        email: email,
+        options: {
+          emailRedirectTo: `${window.location.origin}/complete-signup`
+        }
+      });
+
+      if (resendError) {
+        throw resendError;
+      }
+
+      setMsg("Verification email resent! Please check your inbox.");
+    } catch (err) {
+      console.error("Resend error:", err);
+      setError(err.message || "Unable to resend verification email.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleSignup = async (e) => {
     e.preventDefault();
     setError(null);
@@ -44,7 +76,7 @@ const Signup = () => {
       }
 
       // Success!
-      setMsg("Please check your email to verify your account. You will be redirected to complete your registration after verification.");
+      setMsg("Please check your email to verify your account. The verification link will expire in 1 hour. You will be redirected to complete your registration after verification.");
 
       // Optional: Clear form
       // setUsername("");
@@ -120,6 +152,17 @@ const Signup = () => {
         >
           {loading ? "Sending Verification..." : "Signup"}
         </button>
+
+        {msg && (
+          <button
+            type="button"
+            onClick={handleResendEmail}
+            className="w-full mt-3 bg-gray-200 text-gray-700 py-2 rounded hover:bg-gray-300 disabled:opacity-50 text-sm"
+            disabled={loading}
+          >
+            Resend Verification Email
+          </button>
+        )}
 
         <p className="mt-4 text-center text-sm">
           Already have an account?{" "}
