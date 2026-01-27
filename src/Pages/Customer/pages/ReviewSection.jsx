@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Star, MessageSquare } from 'lucide-react';
 import { API_BASE_URL } from '../../../config'; // Ensure this path is correct for your project
-import { useAuth } from '../../../context/AuthContext'; // Ensure this path is correct
+import { useAuth } from '../../../context/AuthContext';
+import { Pencil, Trash2, X, Check } from 'lucide-react';
 
 const ReviewSection = ({ productId }) => {
     const { token } = useAuth(); // Get the token to verify if they can review
@@ -11,6 +12,8 @@ const ReviewSection = ({ productId }) => {
     const [newReview, setNewReview] = useState({ rating: 5, comment: '' });
     const [averageRating, setAverageRating] = useState(0);
     const [loading, setLoading] = useState(true);
+    const [editingReviewId, setEditingReviewId] = useState(null);
+    const [editData, setEditData] = useState({ rating: 5, comment: '' });
 
     // 1. Fetch Reviews & Check Permission
     useEffect(() => {
@@ -51,7 +54,54 @@ const ReviewSection = ({ productId }) => {
         fetchData();
     }, [productId, token]);
 
-    // 2. Submit New Review
+    // 2. Helper Functions for Edit/Delete
+    const handleDelete = async (id) => {
+        if (!window.confirm("Are you sure you want to delete this review?")) return;
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/Reviews/${id}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            if (response.ok) {
+                setReviews(reviews.filter(r => r.id !== id));
+            } else {
+                alert("Failed to delete review.");
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    const handleEditStart = (review) => {
+        setEditingReviewId(review.id);
+        setEditData({ rating: review.rating, comment: review.comment });
+    };
+
+    const handleEditSave = async (id) => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/Reviews/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(editData)
+            });
+
+            if (response.ok) {
+                setReviews(reviews.map(r => r.id === id ? { ...r, ...editData } : r));
+                setEditingReviewId(null);
+            } else {
+                alert("Failed to update review.");
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    // 3. Submit New Review
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -125,7 +175,63 @@ const ReviewSection = ({ productId }) => {
                                         ))}
                                     </div>
                                 </div>
-                                <p className="text-gray-600 text-sm leading-relaxed">{review.comment}</p>
+                                {editingReviewId === review.id ? (
+                                    <div className="space-y-4">
+                                        <div className="flex gap-1">
+                                            {[1, 2, 3, 4, 5].map((star) => (
+                                                <button
+                                                    key={star}
+                                                    onClick={() => setEditData({ ...editData, rating: star })}
+                                                    className={`p-0.5 ${editData.rating >= star ? 'text-yellow-400' : 'text-gray-300'}`}
+                                                >
+                                                    <Star size={16} className={editData.rating >= star ? 'fill-current' : ''} />
+                                                </button>
+                                            ))}
+                                        </div>
+                                        <textarea
+                                            value={editData.comment}
+                                            onChange={(e) => setEditData({ ...editData, comment: e.target.value })}
+                                            className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-200 outline-none"
+                                            rows={3}
+                                        />
+                                        <div className="flex gap-2">
+                                            <button
+                                                onClick={() => handleEditSave(review.id)}
+                                                className="flex items-center gap-1 px-3 py-1 bg-green-600 text-white text-xs font-bold rounded-md hover:bg-green-700"
+                                            >
+                                                <Check size={14} /> Save
+                                            </button>
+                                            <button
+                                                onClick={() => setEditingReviewId(null)}
+                                                className="flex items-center gap-1 px-3 py-1 bg-gray-200 text-gray-700 text-xs font-bold rounded-md hover:bg-gray-300"
+                                            >
+                                                <X size={14} /> Cancel
+                                            </button>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <>
+                                        <p className="text-gray-600 text-sm leading-relaxed">{review.comment}</p>
+                                        {/* Ownership check - simple check using userName for now as backend returns it */}
+                                        {/* In a real app, you'd check UUID, but using username is a quick fix if ID isn't in ReviewDto */}
+                                        {(review.userName === (useAuth()?.user?.fullName || "Anonymous")) && (
+                                            <div className="flex gap-4 mt-4 pt-4 border-t border-gray-100">
+                                                <button
+                                                    onClick={() => handleEditStart(review)}
+                                                    className="flex items-center gap-1 text-xs font-bold text-gray-500 hover:text-purple-600 transition-colors"
+                                                >
+                                                    <Pencil size={14} /> Edit
+                                                </button>
+                                                <button
+                                                    onClick={() => handleDelete(review.id)}
+                                                    className="flex items-center gap-1 text-xs font-bold text-gray-500 hover:text-red-600 transition-colors"
+                                                >
+                                                    <Trash2 size={14} /> Delete
+                                                </button>
+                                            </div>
+                                        )}
+                                    </>
+                                )}
                             </div>
                         ))
                     )}

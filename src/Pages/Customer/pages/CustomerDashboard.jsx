@@ -25,7 +25,6 @@ const getCategoryImage = (categoryName) => {
     'crochet': crochetImg,
     'woodwork': woodworkImg,
     'jewelry': jewleryImg,
-    'jewlery': jewleryImg,
     'art prints': printsImg,
     'stickers': stickersImg,
     'ceramics': ceramicsImg,
