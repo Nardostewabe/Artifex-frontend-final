@@ -1,20 +1,19 @@
 import { useState, useMemo } from "react";
-import { Eye, Trash2, Check, AlertTriangle, Search, Filter, Layers, User, X } from "lucide-react";
+import { FiEye, FiTrash2, FiCheck, FiAlertTriangle, FiSearch, FiFilter, FiLayers, FiUser, FiSend } from "react-icons/fi";
 
 export default function ModerationQueue({ items, onAction }) {
   // SEARCH & FILTER STATES
   const [search, setSearch] = useState("");
   const [sortBy, setSortBy] = useState("newest");
-  const [filterType, setFilterType] = useState("All");
+  const [filterType, setFilterType] = useState("All"); 
   const [selectedItem, setSelectedItem] = useState(null);
 
   /**
    * DATA ENGINE
-   * useMemo ensures filtering and sorting don't run unnecessarily.
    */
   const processedItems = useMemo(() => {
-    let result = items.filter(i =>
-      i.name.toLowerCase().includes(search.toLowerCase()) ||
+    let result = items.filter(i => 
+      i.name.toLowerCase().includes(search.toLowerCase()) || 
       i.seller.toLowerCase().includes(search.toLowerCase())
     );
 
@@ -32,21 +31,16 @@ export default function ModerationQueue({ items, onAction }) {
 
   return (
     <div className="space-y-6">
-      {/* 
-          RESPONSIVE HEADER
-          flex-col lg:flex-row: Stacks vertically on narrow windows, horizontally on large. 
-      */}
+      {/* HEADER SECTION */}
       <header className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-4">
         <div>
           <h2 className="text-2xl font-bold text-[#3A3A6C]">Moderation Queue</h2>
           <p className="text-sm text-slate-400">Total reported items: {items.length}</p>
         </div>
 
-        {/* Toolbar uses flex-wrap to ensure buttons don't get cut off */}
         <div className="flex flex-wrap gap-3 w-full lg:w-auto">
-          {/* Type Filter */}
           <div className="flex items-center gap-2 bg-white px-3 py-2 rounded-xl border border-slate-200 shadow-sm flex-1 lg:flex-none min-w-[120px]">
-            <Layers className="text-[#6C63FF]" />
+            <FiLayers className="text-[#6C63FF]" />
             <select className="text-xs font-bold outline-none bg-transparent w-full" value={filterType} onChange={(e) => setFilterType(e.target.value)}>
               <option value="All">All Types</option>
               <option value="Product">Products</option>
@@ -55,9 +49,8 @@ export default function ModerationQueue({ items, onAction }) {
             </select>
           </div>
 
-          {/* Sort Filter */}
           <div className="flex items-center gap-2 bg-white px-3 py-2 rounded-xl border border-slate-200 shadow-sm flex-1 lg:flex-none min-w-[120px]">
-            <Filter className="text-slate-400" />
+            <FiFilter className="text-slate-400" />
             <select className="text-xs font-bold outline-none bg-transparent w-full" value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
               <option value="newest">Newest</option>
               <option value="severity">Severity</option>
@@ -65,11 +58,10 @@ export default function ModerationQueue({ items, onAction }) {
             </select>
           </div>
 
-          {/* Search Bar (100% width on small screen, fixed on large) */}
           <div className="relative text-sm w-full lg:w-48">
-            <Search className="absolute left-3 top-3 text-slate-400" />
-            <input
-              type="text" placeholder="Search..."
+            <FiSearch className="absolute left-3 top-3 text-slate-400" />
+            <input 
+              type="text" placeholder="Search..." 
               className="pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-xl w-full focus:ring-2 focus:ring-[#6C63FF] outline-none"
               onChange={(e) => setSearch(e.target.value)}
             />
@@ -77,10 +69,7 @@ export default function ModerationQueue({ items, onAction }) {
         </div>
       </header>
 
-      {/* 
-          RESPONSIVE TABLE WRAPPER
-          overflow-x-auto: Crucial for minimized windows. User can swipe/scroll the table sideways. 
-      */}
+      {/* TABLE SECTION */}
       <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left min-w-[700px]">
@@ -101,7 +90,7 @@ export default function ModerationQueue({ items, onAction }) {
                   <td className="p-4 font-bold text-[#3A3A6C]">{item.name}</td>
                   <td className="p-4">
                     <div className="flex items-center gap-2 text-[#6C63FF] text-xs font-bold">
-                      <User size={12} /> @{item.seller}
+                      <FiUser size={12} /> @{item.seller}
                     </div>
                   </td>
                   <td className="p-4 text-center font-bold text-slate-600">{item.userReports}</td>
@@ -122,33 +111,25 @@ export default function ModerationQueue({ items, onAction }) {
         </div>
       </div>
 
-      {/* 
-          RESPONSIVE MODAL
-          max-w-xl: Width on large windows.
-          max-w-[95vw]: Prevents cutoff on narrow windows.
-          max-h-[90vh]: Prevents vertical cutoff on short windows. 
-      */}
+      {/* MODAL SECTION WITH ESCALATION */}
       {selectedItem && (
         <div className="fixed inset-0 bg-[#3A3A6C]/60 backdrop-blur-sm flex items-center justify-center z-50 p-2 md:p-4">
           <div className="bg-white rounded-[2rem] w-full max-w-xl max-h-[90vh] overflow-y-auto shadow-2xl animate-in zoom-in-95 duration-200">
-
+            
             <div className="p-6 md:p-8 space-y-6">
-              {/* Modal Header */}
               <div className="flex justify-between items-start">
                 <div>
                   <h3 className="text-xl font-bold">Threat Analysis</h3>
                   <p className="text-xs font-bold text-[#6C63FF] uppercase tracking-widest">Reported {selectedItem.type}</p>
                 </div>
-                <button onClick={() => setSelectedItem(null)} className="text-slate-400 hover:text-slate-600 transition-colors"><X size={24} /></button>
+                <button onClick={() => setSelectedItem(null)} className="text-slate-400 hover:text-slate-600 font-bold text-xl">✕</button>
               </div>
 
-              {/* Threat Level Banner */}
               <div className="bg-red-50 p-4 rounded-2xl border border-red-100 flex items-center gap-4">
-                <AlertTriangle className="text-red-500 shrink-0" size={24} />
+                <FiAlertTriangle className="text-red-500 shrink-0" size={24} />
                 <p className="text-red-900 text-sm font-bold uppercase">{selectedItem.reason}</p>
               </div>
 
-              {/* Dynamic Content Preview Section */}
               <div className="bg-[#F8F8FF] border border-slate-200 rounded-3xl p-6">
                 {selectedItem.type === "Tutorial" && (
                   <video controls className="w-full rounded-2xl mb-4 shadow-lg">
@@ -165,9 +146,15 @@ export default function ModerationQueue({ items, onAction }) {
                 <div className="p-4 bg-white/70 rounded-xl italic text-sm text-slate-600 border border-white">"{selectedItem.reportedContent}"</div>
               </div>
 
-              {/* Actions Footer */}
-              <div className="grid grid-cols-2 gap-4">
+              {/* ACTION BUTTONS: ADDED ESCALATE */}
+              <div className="grid grid-cols-3 gap-3">
                 <button onClick={() => { onAction(selectedItem, "Approve"); setSelectedItem(null); }} className="bg-slate-100 py-4 rounded-xl font-bold text-slate-600 hover:bg-slate-200 transition-all">Keep</button>
+                
+                {/* NEW ESCALATE BUTTON */}
+                <button onClick={() => { onAction(selectedItem, "Escalated"); setSelectedItem(null); }} className="bg-orange-500 text-white py-4 rounded-xl font-bold shadow-lg shadow-orange-100 hover:bg-orange-600 transition-all flex flex-col items-center justify-center text-xs gap-1">
+                  <FiSend size={16} /> <span>Escalate to PA</span>
+                </button>
+
                 <button onClick={() => { onAction(selectedItem, "Remove"); setSelectedItem(null); }} className="bg-red-500 text-white py-4 rounded-xl font-bold shadow-xl shadow-red-100 hover:bg-red-600 transition-all">Remove</button>
               </div>
             </div>
