@@ -102,7 +102,7 @@ const MyProfile = () => {
     );
 
     return (
-        <div className="min-h-screen pt-24 pb-12 px-4 sm:px-6 bg-gray-50">
+        <div className="min-h-screen w-screen bg-gradient-to-br from-[#bfdbfe] to-[#e9d5ff] pt-32 pb-12 px-4 sm:px-6">
             <div className="max-w-2xl mx-auto">
                 <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                     <div className="h-32 bg-gradient-to-r from-blue-400 to-indigo-500 relative"></div>

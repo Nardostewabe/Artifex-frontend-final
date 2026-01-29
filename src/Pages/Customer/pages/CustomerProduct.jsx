@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Loader2, ShoppingBag, Share2 } from 'lucide-react';
+import { Loader2, ShoppingBag, Share2, Star } from 'lucide-react';
 import { API_BASE_URL } from "../../../config.js";
 import { useAuth } from '../../../context/AuthContext.jsx';
 import { useCart } from '../../../context/CartContext.jsx';
@@ -17,6 +17,7 @@ const CustomerProduct = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [buying, setBuying] = useState(false);
+  const [reviewRating, setReviewRating] = useState({ avg: 0, count: 0 });
 
   // Modal State
   const [modalConfig, setModalConfig] = useState({
@@ -39,6 +40,10 @@ const CustomerProduct = () => {
 
   const closeModal = () => {
     setModalConfig(prev => ({ ...prev, isOpen: false }));
+  };
+
+  const handleRatingUpdate = (avg, count) => {
+    setReviewRating({ avg, count });
   };
 
   // ✅ NEW: State to track which image is being shown
@@ -134,6 +139,13 @@ const CustomerProduct = () => {
             <h1 className="text-3xl font-bold text-gray-900 mb-2">{product.name}</h1>
             <div className="flex items-center gap-4">
               <span className="text-2xl font-bold text-gray-800">${product.price}</span>
+              {reviewRating.count > 0 && (
+                <div className="flex items-center gap-1 bg-purple-50 text-purple-700 px-3 py-1 rounded-full text-sm">
+                  <Star size={16} className="fill-purple-700 text-purple-700" />
+                  <span className="font-bold">{reviewRating.avg}</span>
+                  <span className="text-purple-400 text-xs text-nowrap">({reviewRating.count} reviews)</span>
+                </div>
+              )}
               {product.stockQuantity > 0 ? (
                 <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-medium">In Stock ({product.stockQuantity})</span>
               ) : (
@@ -171,7 +183,7 @@ const CustomerProduct = () => {
       </div>
 
       {/* ✅ NEW: Review Section */}
-      {product && <ReviewSection productId={product.id} />}
+      {product && <ReviewSection productId={product.id} onRatingUpdate={handleRatingUpdate} />}
 
       <ConfirmationModal
         isOpen={modalConfig.isOpen}

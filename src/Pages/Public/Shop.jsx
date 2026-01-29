@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Filter, Loader2, Package, Search } from 'lucide-react';
 import { API_BASE_URL } from "../../config.js";
+import RatingDisplay from '../../components/RatingDisplay.jsx';
 
 const Shop = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -145,7 +146,7 @@ const Shop = () => {
                       <h3 className="font-bold text-gray-900 mb-1 group-hover:text-purple-600 transition-colors">{product.name}</h3>
                       <div className="flex justify-between items-center">
                         <span className="text-gray-900 font-medium">${product.price}</span>
-                        <span className="text-xs text-gray-400">View Details</span>
+                        <RatingDisplay productId={product.id} initialRating={product.averageRating || product.rating} />
                       </div>
                     </div>
                   </div>

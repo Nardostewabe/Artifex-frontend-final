@@ -4,11 +4,10 @@ import Footer from "../components/Footer";
 
 const SellerLayout = () => {
     return (
-        <div className="flex flex-col min-h-screen">
+        <div className="flex flex-col min-h-screen w-screen bg-gradient-to-br from-[#bfdbfe] to-[#e9d5ff]">
             <SellerNavigationBar />
 
-            <div className="flex-1 bg-gradient-to-br from-[#F5F3FF] to-[#EDE9FE]">
-                {/* Use a subtle purple bg for sellers, or standard white */}
+            <div className="flex-1">
                 <Outlet />
             </div>
 

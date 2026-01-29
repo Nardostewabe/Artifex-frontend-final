@@ -3,9 +3,10 @@ import { Star, MessageSquare } from 'lucide-react';
 import { API_BASE_URL } from '../../../config'; // Ensure this path is correct for your project
 import { useAuth } from '../../../context/AuthContext';
 import { Pencil, Trash2, X, Check } from 'lucide-react';
+import ConfirmationModal from '../../../components/ConfirmationModal';
 
-const ReviewSection = ({ productId }) => {
-    const { token } = useAuth(); // Get the token to verify if they can review
+const ReviewSection = ({ productId, onRatingUpdate }) => {
+    const { token, user } = useAuth(); // Get the token to verify if they can review
 
     const [reviews, setReviews] = useState([]);
     const [canReview, setCanReview] = useState(false);
@@ -14,8 +15,42 @@ const ReviewSection = ({ productId }) => {
     const [loading, setLoading] = useState(true);
     const [editingReviewId, setEditingReviewId] = useState(null);
     const [editData, setEditData] = useState({ rating: 5, comment: '' });
+    const [modalConfig, setModalConfig] = useState({
+        isOpen: false,
+        title: '',
+        message: '',
+        type: 'info',
+        onConfirm: null,
+        isAlert: true
+    });
+
+    const handleOpenModal = (title, message, type = 'info', onConfirm = null, isAlert = true) => {
+        setModalConfig({
+            isOpen: true,
+            title,
+            message,
+            type,
+            onConfirm,
+            isAlert
+        });
+    };
+
+    const handleCloseModal = () => {
+        setModalConfig(prev => ({ ...prev, isOpen: false }));
+    };
 
     // 1. Fetch Reviews & Check Permission
+    useEffect(() => {
+        if (reviews.length > 0 && user) {
+            console.log("Review Ownership Debug:", {
+                currentUser: user,
+                sampleReview: reviews[0],
+                userIdMatch: reviews[0].userId === user.id || reviews[0].UserId === user.Id || reviews[0].userId === user.Id || reviews[0].UserId === user.id,
+                nameMatch: reviews[0].userName === user.fullName || reviews[0].userName === user.userName || reviews[0].userName === user.username
+            });
+        }
+    }, [reviews, user]);
+
     useEffect(() => {
         const fetchData = async () => {
             if (!productId) return;
@@ -30,7 +65,12 @@ const ReviewSection = ({ productId }) => {
                     // Calculate Average
                     if (data.length > 0) {
                         const sum = data.reduce((acc, r) => acc + r.rating, 0);
-                        setAverageRating((sum / data.length).toFixed(1));
+                        const avg = (sum / data.length).toFixed(1);
+                        setAverageRating(avg);
+                        if (onRatingUpdate) onRatingUpdate(avg, data.length);
+                    } else {
+                        setAverageRating(0);
+                        if (onRatingUpdate) onRatingUpdate(0, 0);
                     }
                 }
 
@@ -67,7 +107,7 @@ const ReviewSection = ({ productId }) => {
             if (response.ok) {
                 setReviews(reviews.filter(r => r.id !== id));
             } else {
-                alert("Failed to delete review.");
+                handleOpenModal("Error", "Failed to delete review.", "danger");
             }
         } catch (err) {
             console.error(err);
@@ -94,7 +134,7 @@ const ReviewSection = ({ productId }) => {
                 setReviews(reviews.map(r => r.id === id ? { ...r, ...editData } : r));
                 setEditingReviewId(null);
             } else {
-                alert("Failed to update review.");
+                handleOpenModal("Error", "Failed to update review.", "danger");
             }
         } catch (err) {
             console.error(err);
@@ -105,7 +145,7 @@ const ReviewSection = ({ productId }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!token) return alert("You must be logged in.");
+        if (!token) return handleOpenModal("Authentication Required", "You must be logged in to submit a review.", "info");
 
         try {
             const response = await fetch(`${API_BASE_URL}/api/Reviews`, {
@@ -122,11 +162,16 @@ const ReviewSection = ({ productId }) => {
             });
 
             if (response.ok) {
-                alert("Review submitted!");
-                window.location.reload(); // Reload to show the new review
+                handleOpenModal(
+                    "Success",
+                    "Review submitted successfully!",
+                    "success",
+                    () => window.location.reload(),
+                    true
+                );
             } else {
                 const errorMsg = await response.text();
-                alert("Error: " + errorMsg);
+                handleOpenModal("Error", "Error: " + errorMsg, "danger");
             }
         } catch (error) {
             console.error("Failed to submit review", error);
@@ -212,24 +257,32 @@ const ReviewSection = ({ productId }) => {
                                 ) : (
                                     <>
                                         <p className="text-gray-600 text-sm leading-relaxed">{review.comment}</p>
-                                        {/* Ownership check - simple check using userName for now as backend returns it */}
-                                        {/* In a real app, you'd check UUID, but using username is a quick fix if ID isn't in ReviewDto */}
-                                        {(review.userName === (useAuth()?.user?.fullName || "Anonymous")) && (
-                                            <div className="flex gap-4 mt-4 pt-4 border-t border-gray-100">
-                                                <button
-                                                    onClick={() => handleEditStart(review)}
-                                                    className="flex items-center gap-1 text-xs font-bold text-gray-500 hover:text-purple-600 transition-colors"
-                                                >
-                                                    <Pencil size={14} /> Edit
-                                                </button>
-                                                <button
-                                                    onClick={() => handleDelete(review.id)}
-                                                    className="flex items-center gap-1 text-xs font-bold text-gray-500 hover:text-red-600 transition-colors"
-                                                >
-                                                    <Trash2 size={14} /> Delete
-                                                </button>
-                                            </div>
-                                        )}
+                                        {/* Ownership check - robust check using both userId and userName with fallbacks */}
+                                        {(
+                                            (review.userId && user?.id && String(review.userId) === String(user.id)) ||
+                                            (review.UserId && user?.Id && String(review.UserId) === String(user.Id)) ||
+                                            (review.userId && user?.Id && String(review.userId) === String(user.Id)) ||
+                                            (review.UserId && user?.id && String(review.UserId) === String(user.id)) ||
+                                            (review.userName && user?.fullName && review.userName.trim().toLowerCase() === user.fullName.trim().toLowerCase()) ||
+                                            (review.userName && user?.username && review.userName.trim().toLowerCase() === user.username.trim().toLowerCase()) ||
+                                            (review.userName && user?.userName && review.userName.trim().toLowerCase() === user.userName.trim().toLowerCase()) ||
+                                            (review.userName && user?.fullName && review.userName.trim() === user.fullName.trim())
+                                        ) && (
+                                                <div className="flex gap-4 mt-4 pt-4 border-t border-gray-100">
+                                                    <button
+                                                        onClick={() => handleEditStart(review)}
+                                                        className="flex items-center gap-1 text-xs font-bold text-gray-500 hover:text-purple-600 transition-colors"
+                                                    >
+                                                        <Pencil size={14} /> Edit
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleDelete(review.id)}
+                                                        className="flex items-center gap-1 text-xs font-bold text-gray-500 hover:text-red-600 transition-colors"
+                                                    >
+                                                        <Trash2 size={14} /> Delete
+                                                    </button>
+                                                </div>
+                                            )}
                                     </>
                                 )}
                             </div>
@@ -287,6 +340,15 @@ const ReviewSection = ({ productId }) => {
                     )}
                 </div>
             </div>
+            <ConfirmationModal
+                isOpen={modalConfig.isOpen}
+                onClose={handleCloseModal}
+                onConfirm={modalConfig.onConfirm}
+                title={modalConfig.title}
+                message={modalConfig.message}
+                type={modalConfig.type}
+                isAlert={modalConfig.isAlert}
+            />
         </div>
     );
 };

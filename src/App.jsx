@@ -56,7 +56,7 @@ const App = () => {
                   <Route path="/" element={<HomePage />} />
                   <Route path="/shop" element={<Shop />} />
                   <Route path="/cart" element={<CartPage />} />
-                  <Route path="/collections" element={<div className="pt-32 text-center">Collections Page Coming Soon</div>} />
+                  <Route path="/collections" element= {<CustomerCollection/>}/>
                   <Route path="/about" element={<div className="pt-32 text-center">About Page Coming Soon</div>} />
                   <Route path="/contact" element={<div className="pt-32 text-center">Contact Page Coming Soon</div>} />
                   <Route path="/signup" element={<Signup />} />
@@ -83,6 +83,8 @@ const App = () => {
                   <Route element={<ProtectedRoute allowedRoles={[1, "Customer"]} />}>
                     <Route path="/customer-home" element={<CustomerHome />} />
                     <Route path="/collections/:category" element={<CustomerCollection />} />
+                    <Route path="/collection/:category" element={<CustomerCollection />} />
+                    <Route path="/collection" element={<CustomerCollection />} />
                     <Route path="customer/product/:id" element={<CustomerProduct />} />
                     <Route path="/my-profile" element={<MyProfile />} />
                   </Route>

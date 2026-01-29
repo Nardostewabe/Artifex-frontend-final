@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Star, Loader2, Package } from 'lucide-react';
 import { API_BASE_URL } from "../../../config.js";
+import RatingDisplay from '../../../components/RatingDisplay.jsx';
 
 // --- Static Images for Categories ---
 import knitwearImg from '../../../assets/Categories/knitwear.jpg';
@@ -82,7 +83,7 @@ const CustomerDashboard = () => {
   }
 
   return (
-    <div className="animate-fade-in w-full overflow-x-hidden w-screen bg-gradient-to-br from-[#bfdbfe] to-[#e9d5ff] ">
+    <div className="animate-fade-in w-full overflow-x-hidden min-h-screen w-screen bg-gradient-to-br from-[#bfdbfe] to-[#e9d5ff] pt-20">
 
       {/* --- Featured / Trending Section --- */}
       <section className="container mx-auto px-6 py-8">
@@ -124,10 +125,7 @@ const CustomerDashboard = () => {
                   <h3 className="font-semibold text-gray-900 truncate">{product.name}</h3>
                   <div className="flex justify-between items-center mt-2">
                     <span className="font-bold text-gray-800">${product.price}</span>
-                    <div className="flex items-center text-yellow-500 text-sm">
-                      <Star className="w-4 h-4 fill-current" />
-                      <span className="ml-1 text-gray-600">4.8</span>
-                    </div>
+                    <RatingDisplay productId={product.id} initialRating={product.averageRating || product.rating} />
                   </div>
                 </div>
               </div>
@@ -160,7 +158,7 @@ const CustomerDashboard = () => {
 
             {/* Dynamic Categories */}
             {categories.map((cat) => (
-              <Link to={`/shop?category=${cat.id}`} key={cat.id}>
+              <Link to={`/collection/${cat.name.toLowerCase()}`} key={cat.id}>
                 <div className="shrink-0">
                   <div className="overflow-hidden rounded-lg">
                     <div className='cursor-pointer transition-transform hover:scale-105'>
