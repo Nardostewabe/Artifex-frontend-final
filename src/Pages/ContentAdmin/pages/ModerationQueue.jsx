@@ -1,19 +1,81 @@
-import { useState, useMemo } from "react";
-import { FiEye, FiTrash2, FiCheck, FiAlertTriangle, FiSearch, FiFilter, FiLayers, FiUser, FiSend } from "react-icons/fi";
+import { useState, useEffect, useMemo } from "react";
+import { Eye, Trash2, Check, AlertTriangle, Search, Filter, Layers, User, Send, Loader2 } from "lucide-react";
+import { API_BASE_URL } from "../../../config";
+import { useAuth } from "../../../context/AuthContext";
 
-export default function ModerationQueue({ items, onAction }) {
+export default function ModerationQueue({ onAction }) {
+  const { token } = useAuth();
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+
   // SEARCH & FILTER STATES
   const [search, setSearch] = useState("");
   const [sortBy, setSortBy] = useState("newest");
-  const [filterType, setFilterType] = useState("All"); 
+  const [filterType, setFilterType] = useState("All");
   const [selectedItem, setSelectedItem] = useState(null);
+
+  useEffect(() => {
+    fetchItems();
+  }, []);
+
+  const fetchItems = async () => {
+    try {
+      setLoading(true);
+      const res = await fetch(`${API_BASE_URL}/api/ContentAdmin/reports`, {
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        // Map backend data to frontend view model
+        const mapped = data.map(r => ({
+          id: r.id,
+          type: r.targetType || "General",
+          name: r.targetType === "Product" ? `Product #${r.targetProductId}` : `Seller #${r.targetSellerId}`,
+          seller: r.seller?.shopName || "Unknown",
+          userReports: 1, // API doesn't aggregate yet, default to 1
+          severity: "Medium", // Default
+          date: r.createdAt,
+          reason: r.reason,
+          reportedContent: r.description,
+          img: "https://via.placeholder.com/60" // Placeholder for now
+        }));
+        setItems(mapped);
+      }
+    } catch (err) {
+      console.error("Failed to load queue", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleQueueAction = async (item, action) => {
+    // Optimistic Update
+    setItems(prev => prev.filter(i => i.id !== item.id));
+    setSelectedItem(null);
+
+    // Call API (Escalate or Dismiss)
+    try {
+      const endpoint = action === "Escalated"
+        ? `${API_BASE_URL}/api/ContentAdmin/escalate/${item.id}`
+        : `${API_BASE_URL}/api/ContentAdmin/dismiss/${item.id}`;
+
+      await fetch(endpoint, {
+        method: "POST",
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+      if (onAction) onAction(item, action); // Show toast in parent
+    } catch (err) {
+      console.error(err);
+      fetchItems(); // Revert on failure
+    }
+  };
 
   /**
    * DATA ENGINE
    */
   const processedItems = useMemo(() => {
-    let result = items.filter(i => 
-      i.name.toLowerCase().includes(search.toLowerCase()) || 
+    let result = items.filter(i =>
+      i.name.toLowerCase().includes(search.toLowerCase()) ||
       i.seller.toLowerCase().includes(search.toLowerCase())
     );
 
@@ -29,8 +91,10 @@ export default function ModerationQueue({ items, onAction }) {
     return result;
   }, [search, items, sortBy, filterType]);
 
+  if (loading) return <div className="flex justify-center p-20"><Loader2 className="animate-spin text-slate-400" /></div>;
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-in fade-in">
       {/* HEADER SECTION */}
       <header className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-4">
         <div>
@@ -40,17 +104,17 @@ export default function ModerationQueue({ items, onAction }) {
 
         <div className="flex flex-wrap gap-3 w-full lg:w-auto">
           <div className="flex items-center gap-2 bg-white px-3 py-2 rounded-xl border border-slate-200 shadow-sm flex-1 lg:flex-none min-w-[120px]">
-            <FiLayers className="text-[#6C63FF]" />
+            <Layers className="text-[#6C63FF]" />
             <select className="text-xs font-bold outline-none bg-transparent w-full" value={filterType} onChange={(e) => setFilterType(e.target.value)}>
               <option value="All">All Types</option>
               <option value="Product">Products</option>
               <option value="Review">Reviews</option>
-              <option value="Tutorial">Tutorials</option>
+              <option value="Seller">Sellers</option>
             </select>
           </div>
 
           <div className="flex items-center gap-2 bg-white px-3 py-2 rounded-xl border border-slate-200 shadow-sm flex-1 lg:flex-none min-w-[120px]">
-            <FiFilter className="text-slate-400" />
+            <Filter className="text-slate-400" />
             <select className="text-xs font-bold outline-none bg-transparent w-full" value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
               <option value="newest">Newest</option>
               <option value="severity">Severity</option>
@@ -59,9 +123,9 @@ export default function ModerationQueue({ items, onAction }) {
           </div>
 
           <div className="relative text-sm w-full lg:w-48">
-            <FiSearch className="absolute left-3 top-3 text-slate-400" />
-            <input 
-              type="text" placeholder="Search..." 
+            <Search className="absolute left-3 top-3 text-slate-400" />
+            <input
+              type="text" placeholder="Search..."
               className="pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-xl w-full focus:ring-2 focus:ring-[#6C63FF] outline-none"
               onChange={(e) => setSearch(e.target.value)}
             />
@@ -84,13 +148,15 @@ export default function ModerationQueue({ items, onAction }) {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {processedItems.map(item => (
+              {processedItems.length === 0 ? (
+                <tr><td colSpan="6" className="p-8 text-center text-slate-400 italic">No items in queue.</td></tr>
+              ) : (processedItems.map(item => (
                 <tr key={item.id} className="hover:bg-slate-50 transition-colors">
                   <td className="p-4"><span className="px-2 py-0.5 rounded text-[9px] font-bold uppercase bg-slate-100">{item.type}</span></td>
                   <td className="p-4 font-bold text-[#3A3A6C]">{item.name}</td>
                   <td className="p-4">
                     <div className="flex items-center gap-2 text-[#6C63FF] text-xs font-bold">
-                      <FiUser size={12} /> @{item.seller}
+                      <User size={12} /> @{item.seller}
                     </div>
                   </td>
                   <td className="p-4 text-center font-bold text-slate-600">{item.userReports}</td>
@@ -105,7 +171,7 @@ export default function ModerationQueue({ items, onAction }) {
                     </button>
                   </td>
                 </tr>
-              ))}
+              )))}
             </tbody>
           </table>
         </div>
@@ -115,7 +181,7 @@ export default function ModerationQueue({ items, onAction }) {
       {selectedItem && (
         <div className="fixed inset-0 bg-[#3A3A6C]/60 backdrop-blur-sm flex items-center justify-center z-50 p-2 md:p-4">
           <div className="bg-white rounded-[2rem] w-full max-w-xl max-h-[90vh] overflow-y-auto shadow-2xl animate-in zoom-in-95 duration-200">
-            
+
             <div className="p-6 md:p-8 space-y-6">
               <div className="flex justify-between items-start">
                 <div>
@@ -126,16 +192,11 @@ export default function ModerationQueue({ items, onAction }) {
               </div>
 
               <div className="bg-red-50 p-4 rounded-2xl border border-red-100 flex items-center gap-4">
-                <FiAlertTriangle className="text-red-500 shrink-0" size={24} />
+                <AlertTriangle className="text-red-500 shrink-0" size={24} />
                 <p className="text-red-900 text-sm font-bold uppercase">{selectedItem.reason}</p>
               </div>
 
               <div className="bg-[#F8F8FF] border border-slate-200 rounded-3xl p-6">
-                {selectedItem.type === "Tutorial" && (
-                  <video controls className="w-full rounded-2xl mb-4 shadow-lg">
-                    <source src={selectedItem.videoUrl} type="video/mp4" />
-                  </video>
-                )}
                 <div className="flex gap-4 items-center mb-4">
                   {selectedItem.type === "Product" && <img src={selectedItem.img} className="w-16 h-16 rounded-xl border-2 border-white shadow" />}
                   <div>
@@ -148,14 +209,14 @@ export default function ModerationQueue({ items, onAction }) {
 
               {/* ACTION BUTTONS: ADDED ESCALATE */}
               <div className="grid grid-cols-3 gap-3">
-                <button onClick={() => { onAction(selectedItem, "Approve"); setSelectedItem(null); }} className="bg-slate-100 py-4 rounded-xl font-bold text-slate-600 hover:bg-slate-200 transition-all">Keep</button>
-                
+                <button onClick={() => handleQueueAction(selectedItem, "Approve")} className="bg-slate-100 py-4 rounded-xl font-bold text-slate-600 hover:bg-slate-200 transition-all">Dismiss</button>
+
                 {/* NEW ESCALATE BUTTON */}
-                <button onClick={() => { onAction(selectedItem, "Escalated"); setSelectedItem(null); }} className="bg-orange-500 text-white py-4 rounded-xl font-bold shadow-lg shadow-orange-100 hover:bg-orange-600 transition-all flex flex-col items-center justify-center text-xs gap-1">
-                  <FiSend size={16} /> <span>Escalate to PA</span>
+                <button onClick={() => handleQueueAction(selectedItem, "Escalated")} className="bg-orange-500 text-white py-4 rounded-xl font-bold shadow-lg shadow-orange-100 hover:bg-orange-600 transition-all flex flex-col items-center justify-center text-xs gap-1">
+                  <Send size={16} /> <span>Escalate to PA</span>
                 </button>
 
-                <button onClick={() => { onAction(selectedItem, "Remove"); setSelectedItem(null); }} className="bg-red-500 text-white py-4 rounded-xl font-bold shadow-xl shadow-red-100 hover:bg-red-600 transition-all">Remove</button>
+                <button onClick={() => handleQueueAction(selectedItem, "Remove")} className="bg-red-500 text-white py-4 rounded-xl font-bold shadow-xl shadow-red-100 hover:bg-red-600 transition-all opacity-50 cursor-not-allowed" disabled>Remove (WIP)</button>
               </div>
             </div>
           </div>

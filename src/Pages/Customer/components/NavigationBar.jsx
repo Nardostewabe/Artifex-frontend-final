@@ -8,6 +8,8 @@ import { useCart } from '../../../context/CartContext';
 const Navigationbar = () => {
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [isSearchOpen, setIsSearchOpen] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
 
     const { token, logout } = useAuth();
     const { getCartCount } = useCart();
@@ -28,6 +30,14 @@ const Navigationbar = () => {
         logout();
         setIsMobileMenuOpen(false);
         navigate("/login");
+    };
+
+    const handleSearch = (e) => {
+        if (e.key === 'Enter' && searchQuery.trim()) {
+            navigate(`/shop?search=${encodeURIComponent(searchQuery.trim())}`);
+            setIsSearchOpen(false);
+            setSearchQuery('');
+        }
     };
 
     const navLinks = [
@@ -99,10 +109,16 @@ const Navigationbar = () => {
                             </div>
                         )}
 
-                        <button className="text-gray-700 hover:text-blue-400 p-1 transition-colors">
+                        <button
+                            onClick={() => setIsSearchOpen(true)}
+                            className="text-gray-700 hover:text-blue-400 p-1 transition-colors"
+                        >
                             <Search size={20} strokeWidth={1.5} />
                         </button>
-                        <button className="hidden sm:block text-gray-700 hover:text-purple-400 p-1 transition-colors">
+                        <button
+                            onClick={() => navigate('/favorites')}
+                            className="hidden sm:block text-gray-700 hover:text-purple-400 p-1 transition-colors"
+                        >
                             <Heart size={20} strokeWidth={1.5} />
                         </button>
                         <button
@@ -136,7 +152,7 @@ const Navigationbar = () => {
                             </Link>
                         ))}
 
-                        <Link to="/" className="text-gray-400 text-xs uppercase tracking-widest pt-4">
+                        <Link to="/favorites" onClick={() => setIsMobileMenuOpen(false)} className="text-gray-400 text-xs uppercase tracking-widest pt-4">
                             Wishlist
                         </Link>
 
@@ -167,6 +183,44 @@ const Navigationbar = () => {
                     onClick={() => setIsMobileMenuOpen(false)}
                 />
             )}
+
+            {/* SEARCH OVERLAY */}
+            <div className={`fixed inset-0 z-[60] bg-white/95 backdrop-blur-md transition-all duration-500 ${isSearchOpen ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0 pointer-events-none'}`}>
+                <div className="max-w-4xl mx-auto h-full flex flex-col px-6">
+                    <div className="flex justify-end pt-12">
+                        <button onClick={() => setIsSearchOpen(false)} className="p-3 hover:bg-gray-100 rounded-full transition-colors text-gray-500">
+                            <X size={32} />
+                        </button>
+                    </div>
+                    <div className="flex-1 flex flex-col justify-center pb-32">
+                        <p className="text-xs uppercase tracking-[0.3em] text-gray-400 mb-6 text-center font-bold">Search Products & Shops</p>
+                        <div className="relative group">
+                            <Search className="absolute left-0 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-purple-400 transition-colors" size={32} />
+                            <input
+                                type="text"
+                                autoFocus={isSearchOpen}
+                                placeholder="What are you looking for?"
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                onKeyDown={handleSearch}
+                                className="w-full bg-transparent border-b-2 border-gray-100 focus:border-purple-300 py-6 pl-12 pr-4 text-3xl md:text-5xl outline-none transition-all placeholder:text-gray-100 font-serif"
+                            />
+                        </div>
+                        <div className="mt-8 flex flex-wrap gap-3 justify-center">
+                            <p className="text-sm text-gray-400 w-full text-center mb-2">Popular Searches:</p>
+                            {['Handmade Jewelry', 'Ceramics', 'Wall Art', 'Textiles'].map(tag => (
+                                <button
+                                    key={tag}
+                                    onClick={() => { setSearchQuery(tag); navigate(`/shop?search=${encodeURIComponent(tag)}`); setIsSearchOpen(false); }}
+                                    className="px-4 py-2 bg-gray-50 text-gray-500 rounded-full text-sm hover:bg-purple-50 hover:text-purple-600 transition-all border border-gray-100"
+                                >
+                                    {tag}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            </div>
         </>
     );
 }

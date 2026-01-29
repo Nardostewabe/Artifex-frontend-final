@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { User, Phone, MapPin, Edit3, Camera, Save, X, Loader2 } from 'lucide-react';
+import { User, Phone, MapPin, Edit3, Camera, Save, X, Loader2, Package, AlertCircle } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { API_BASE_URL } from '../../../config';
 import { useAuth } from '../../../context/AuthContext';
 
 const MyProfile = () => {
     const { token } = useAuth();
+    const navigate = useNavigate();
     const [profile, setProfile] = useState(null);
     const [loading, setLoading] = useState(true);
     const [isEditing, setIsEditing] = useState(false);
@@ -200,6 +202,21 @@ const MyProfile = () => {
 
                                 <h1 className="text-2xl font-bold text-gray-900 mb-1">{profile.fullName}</h1>
                                 <p className="text-gray-500 text-sm mb-6">Valued Customer</p>
+
+                                <div className="flex gap-4 mb-8">
+                                    <button
+                                        onClick={() => navigate('/orders')}
+                                        className="flex-1 flex items-center justify-center gap-2 p-4 bg-white border border-gray-100 rounded-2xl text-sm font-bold text-gray-700 hover:bg-gray-50 hover:shadow-sm transition-all shadow-purple-900/5 shadow-xl"
+                                    >
+                                        <Package size={20} className="text-purple-600" /> My Orders
+                                    </button>
+                                    <button
+                                        onClick={() => navigate('/favorites')}
+                                        className="flex-1 flex items-center justify-center gap-2 p-4 bg-white border border-gray-100 rounded-2xl text-sm font-bold text-gray-700 hover:bg-gray-50 hover:shadow-sm transition-all shadow-purple-900/5 shadow-xl"
+                                    >
+                                        <AlertCircle size={20} className="text-pink-600" /> Favorites
+                                    </button>
+                                </div>
 
                                 <div className="space-y-4">
                                     <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl">

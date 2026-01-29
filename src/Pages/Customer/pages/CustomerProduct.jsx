@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Loader2, ShoppingBag, Share2, Star } from 'lucide-react';
+import { Loader2, ShoppingBag, Share2, Star, Flag, Heart, Store } from 'lucide-react';
 import { API_BASE_URL } from "../../../config.js";
 import { useAuth } from '../../../context/AuthContext.jsx';
 import { useCart } from '../../../context/CartContext.jsx';
 import ConfirmationModal from '../../../components/ConfirmationModal.jsx';
+import ReportModal from '../../../components/ReportModal.jsx';
 import ReviewSection from './ReviewSection.jsx';
 
 const CustomerProduct = () => {
@@ -18,6 +19,8 @@ const CustomerProduct = () => {
   const [error, setError] = useState('');
   const [buying, setBuying] = useState(false);
   const [reviewRating, setReviewRating] = useState({ avg: 0, count: 0 });
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+  const [isFavorited, setIsFavorited] = useState(false);
 
   // Modal State
   const [modalConfig, setModalConfig] = useState({
@@ -73,7 +76,60 @@ const CustomerProduct = () => {
     };
 
     if (id) fetchProduct();
-  }, [id]);
+
+    const checkFavoriteStatus = async () => {
+      if (!token) return;
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/Favorites/check/${id}`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setIsFavorited(data.isFavorited);
+        }
+      } catch (err) {
+        console.error("Failed to check favorite status", err);
+      }
+    };
+    if (id && token) checkFavoriteStatus();
+  }, [id, token]);
+
+  const toggleFavorite = async () => {
+    if (!token) {
+      showModal({
+        title: "Login Required",
+        message: "Please login to add items to your favorites.",
+        type: "info",
+        confirmText: "Login",
+        onConfirm: () => navigate('/login')
+      });
+      return;
+    }
+
+    try {
+      const method = isFavorited ? 'DELETE' : 'POST';
+      const endpoint = isFavorited
+        ? `${API_BASE_URL}/api/Favorites/${id}`
+        : `${API_BASE_URL}/api/Favorites`;
+
+      const body = isFavorited ? null : JSON.stringify({ productId: id });
+
+      const res = await fetch(endpoint, {
+        method,
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body
+      });
+
+      if (res.ok) {
+        setIsFavorited(!isFavorited);
+      }
+    } catch (err) {
+      console.error("Failed to toggle favorite", err);
+    }
+  };
 
   const handleAddToCart = () => {
     addToCart(product);
@@ -138,7 +194,7 @@ const CustomerProduct = () => {
           <div>
             <h1 className="text-3xl font-bold text-gray-900 mb-2">{product.name}</h1>
             <div className="flex items-center gap-4">
-              <span className="text-2xl font-bold text-gray-800">${product.price}</span>
+              <span className="text-2xl font-bold text-gray-800">ETB {product.price}</span>
               {reviewRating.count > 0 && (
                 <div className="flex items-center gap-1 bg-purple-50 text-purple-700 px-3 py-1 rounded-full text-sm">
                   <Star size={16} className="fill-purple-700 text-purple-700" />
@@ -169,9 +225,28 @@ const CustomerProduct = () => {
               <button className="p-4 rounded-xl border border-gray-200 text-gray-500 hover:bg-gray-50 hover:text-gray-900 transition-colors">
                 <Share2 size={20} />
               </button>
+              <button
+                onClick={() => setIsReportModalOpen(true)}
+                className="p-4 rounded-xl border border-red-100 text-red-400 hover:bg-red-50 hover:text-red-500 transition-colors"
+                title="Report this product"
+              >
+                <Flag size={20} />
+              </button>
+              <button
+                onClick={toggleFavorite}
+                className={`p-4 rounded-xl border transition-all ${isFavorited ? 'bg-red-50 border-red-200 text-red-500' : 'border-gray-200 text-gray-400 hover:bg-gray-50'}`}
+                title={isFavorited ? "Remove from favorites" : "Add to favorites"}
+              >
+                <Heart size={20} className={isFavorited ? "fill-red-500" : ""} />
+              </button>
             </div>
             <div className="grid grid-cols-2 gap-3">
-              <button className="px-6 py-3 rounded-md font-medium border border-gray-300 text-gray-800 hover:bg-gray-50">Message Seller</button>
+              <button
+                onClick={() => navigate(`/seller-shop/${product.sellerId}`, { state: { seller: product.seller || product.Seller } })}
+                className="px-6 py-3 rounded-xl font-bold border-2 border-purple-200 text-purple-700 hover:bg-purple-50 transition-all flex items-center justify-center gap-2"
+              >
+                <Store size={18} /> View Shop
+              </button>
             </div>
           </div>
 
@@ -196,6 +271,24 @@ const CustomerProduct = () => {
         cancelText={modalConfig.cancelText}
         isAlert={modalConfig.isAlert}
       />
+
+      {product && (
+        <ReportModal
+          isOpen={isReportModalOpen}
+          onClose={() => setIsReportModalOpen(false)}
+          targetId={product.id}
+          targetType="product"
+          targetName={product.name}
+          onSuccess={() => {
+            showModal({
+              title: "Report Submitted",
+              message: "Thank you for flagging this product. Our team will review it shortly.",
+              type: "success",
+              isAlert: true
+            });
+          }}
+        />
+      )}
     </div>
   );
 };

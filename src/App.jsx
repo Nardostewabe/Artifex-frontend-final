@@ -35,6 +35,11 @@ import MyProfile from './Pages/Customer/pages/MyProfile.jsx';
 import SellerProfile from './Pages/Seller/pages/SellerProfile.jsx';
 import ContentAdminDashboard from './Pages/ContentAdmin/index.jsx';
 import SellerOrders from './Pages/Seller/pages/SellerOrders.jsx';
+import PublicSellerShop from './Pages/Public/PublicSellerShop.jsx';
+import Favorites from './Pages/Customer/pages/Favorites.jsx';
+import CustomerOrders from './Pages/Customer/pages/CustomerOrders.jsx';
+import ForgotPassword from './Pages/Public/ForgotPassword.jsx';
+import ResetPassword from './Pages/Public/ResetPassword.jsx';
 
 const App = () => {
   return (
@@ -56,14 +61,17 @@ const App = () => {
                   <Route path="/" element={<HomePage />} />
                   <Route path="/shop" element={<Shop />} />
                   <Route path="/cart" element={<CartPage />} />
-                  <Route path="/collections" element= {<CustomerCollection/>}/>
+                  <Route path="/collections" element={<CustomerCollection />} />
                   <Route path="/about" element={<div className="pt-32 text-center">About Page Coming Soon</div>} />
                   <Route path="/contact" element={<div className="pt-32 text-center">Contact Page Coming Soon</div>} />
                   <Route path="/signup" element={<Signup />} />
                   <Route path="/complete-signup" element={<CompleteSignup />} />
                   <Route path="/login" element={<Login />} />
+                  <Route path="/forgot-password" element={<ForgotPassword />} />
+                  <Route path="/reset-password" element={<ResetPassword />} />
 
                   <Route path="/chomepage" element={<CHomepage />} />
+                  <Route path="/seller-shop/:sellerId" element={<PublicSellerShop />} />
 
                   {/* =========================================
                2. LOGGED IN ROUTES (Token Required)
@@ -87,6 +95,8 @@ const App = () => {
                     <Route path="/collection" element={<CustomerCollection />} />
                     <Route path="customer/product/:id" element={<CustomerProduct />} />
                     <Route path="/my-profile" element={<MyProfile />} />
+                    <Route path="/favorites" element={<Favorites />} />
+                    <Route path="/orders" element={<CustomerOrders />} />
                   </Route>
 
                 </Route>

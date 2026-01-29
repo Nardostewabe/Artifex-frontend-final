@@ -168,7 +168,7 @@ const SellerInventory = () => {
                                                 <span className="font-medium text-gray-900">{product.name}</span>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4 font-medium text-gray-900">${product.price.toFixed(2)}</td>
+                                        <td className="px-6 py-4 font-medium text-gray-900">ETB {product.price.toFixed(2)}</td>
 
                                         {/* Note: Backend property is stockQuantity, not stock */}
                                         <td className="px-6 py-4 text-gray-600">{product.stockQuantity} units</td>
@@ -218,7 +218,7 @@ const SellerInventory = () => {
 
                                     <div className="flex items-center justify-between mt-2">
                                         <div className="flex flex-col">
-                                            <span className="text-lg font-bold text-gray-900">${product.price}</span>
+                                            <span className="text-lg font-bold text-gray-900">ETB {product.price}</span>
                                             <span className="text-xs text-gray-500">{product.stockQuantity} in stock</span>
                                         </div>
                                         <StatusBadge quantity={product.stockQuantity} statusLabel={product.stockStatus} />

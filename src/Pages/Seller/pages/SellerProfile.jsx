@@ -204,10 +204,10 @@ const SellerProfile = () => {
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Address</label>
+                                            <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Address / Location</label>
                                             <textarea
-                                                value={editData.address}
-                                                onChange={(e) => setEditData({ ...editData, address: e.target.value })}
+                                                value={editData.address || editData.location || ''}
+                                                onChange={(e) => setEditData({ ...editData, address: e.target.value, location: e.target.value })}
                                                 className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-purple-50 focus:ring-2 focus:ring-purple-200 outline-none resize-none h-24"
                                             />
                                         </div>
@@ -244,7 +244,7 @@ const SellerProfile = () => {
                                             </div>
                                             <div className="flex items-center gap-3 text-gray-600">
                                                 <MapPin size={18} className="text-purple-400" />
-                                                <span className="text-sm font-medium">{profile.address || "Not set"}</span>
+                                                <span className="text-sm font-medium">{profile.address || profile.location || "Not set"}</span>
                                             </div>
                                         </div>
                                     </div>

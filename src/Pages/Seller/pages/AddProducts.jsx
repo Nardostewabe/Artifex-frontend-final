@@ -285,7 +285,7 @@ const AddProduct = () => {
                 <div>
                   <label className="block text-xs font-medium text-gray-700 mb-1">Base Price *</label>
                   <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><DollarSign size={14} className="text-gray-400" /></div>
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><span className="text-gray-500 font-bold text-xs">ETB</span></div>
                     <input name="price" value={formData.price} onChange={handleInputChange} type="number" min="0" step="0.01" className="w-full pl-8 pr-4 py-2.5 rounded-xl border border-gray-200 outline-none focus:border-purple-500" />
                   </div>
                 </div>
@@ -304,8 +304,8 @@ const AddProduct = () => {
                             key={cat.id}
                             onClick={() => toggleCategory(cat.id)}
                             className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all flex items-center gap-1.5 ${isSelected
-                                ? 'bg-purple-600 text-white border-purple-600 shadow-sm'
-                                : 'bg-white text-gray-600 border-gray-200 hover:border-purple-300'
+                              ? 'bg-purple-600 text-white border-purple-600 shadow-sm'
+                              : 'bg-white text-gray-600 border-gray-200 hover:border-purple-300'
                               }`}
                           >
                             {isSelected && <Check size={12} />}

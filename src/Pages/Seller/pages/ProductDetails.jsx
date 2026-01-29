@@ -127,7 +127,7 @@ const ProductDetails = () => {
 
                         {/* Price & Stock */}
                         <div className="flex items-center gap-6 mb-8">
-                            <span className="text-3xl font-bold text-gray-900">${product.price}</span>
+                            <span className="text-3xl font-bold text-gray-900">ETB {product.price}</span>
                             <div className="h-8 w-[1px] bg-gray-200"></div>
                             <div className="flex items-center gap-2">
                                 {product.stockStatus === 'In Stock' ? (

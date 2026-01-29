@@ -44,10 +44,12 @@ const Shop = () => {
   // 2. Handle Filtering
   useEffect(() => {
     const categoryParam = searchParams.get('category');
+    const searchParam = searchParams.get('search');
     const categoryId = categoryParam ? parseInt(categoryParam) : 'all';
 
     setSelectedCategoryId(categoryId);
-    applyFilters(categoryId, searchTerm, products);
+    if (searchParam) setSearchTerm(searchParam);
+    applyFilters(categoryId, searchParam || searchTerm, products);
 
   }, [searchParams, products, searchTerm]);
 
@@ -63,7 +65,14 @@ const Shop = () => {
 
     if (search) {
       const lowerSearch = search.toLowerCase();
-      result = result.filter(p => p.name.toLowerCase().includes(lowerSearch));
+      result = result.filter(p => {
+        const productCats = p.categories || p.Categories || [];
+        return (
+          p.name.toLowerCase().includes(lowerSearch) ||
+          (p.description && p.description.toLowerCase().includes(lowerSearch)) ||
+          productCats.some(c => c.name.toLowerCase().includes(lowerSearch))
+        );
+      });
     }
 
     setFilteredProducts(result);
@@ -145,7 +154,7 @@ const Shop = () => {
                     <div className="p-5">
                       <h3 className="font-bold text-gray-900 mb-1 group-hover:text-purple-600 transition-colors">{product.name}</h3>
                       <div className="flex justify-between items-center">
-                        <span className="text-gray-900 font-medium">${product.price}</span>
+                        <span className="text-gray-900 font-medium">ETB {product.price}</span>
                         <RatingDisplay productId={product.id} initialRating={product.averageRating || product.rating} />
                       </div>
                     </div>

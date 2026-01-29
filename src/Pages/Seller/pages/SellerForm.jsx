@@ -47,14 +47,14 @@ const SellerForm = () => {
         formData.append("shopLogo", shopLogo);
       }
 
-      const response = await fetch(`${API_BASE_URL}/api/profile/seller`, {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${token}`
-          // Note: Do NOT set Content-Type to application/json manually for FormData
-        },
-        body: formData
-      });
+      const response = await fetch(`${API_BASE_URL}/api/Profile/seller`, {
+    method: 'POST', // or PUT
+    headers: { 
+        'Authorization': `Bearer ${token}` 
+        // ✅ Content-Type is left out intentionally
+    },
+    body: formData // ✅ Sending the FormData object directly
+});
 
       if (response.ok) {
         navigate("/waiting-approval");

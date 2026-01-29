@@ -1,23 +1,38 @@
-import { useState, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
+import { Loader2 } from "lucide-react";
+import { API_BASE_URL } from "../../../config";
 
 export default function ProductList() {
-  const [products, setProducts] = useState([
-    { id: 1, name: "Crochet Flower", seller: "AnnaDesigns", category: "Home Decor", status: "Available", date: "2025-01-03", img: "https://via.placeholder.com/60" },
-    { id: 2, name: "Crochet Bag", seller: "LilyCrafts", category: "Bags", status: "Available", date: "2025-02-11", img: "https://via.placeholder.com/60" },
-    { id: 3, name: "Mini Crochet Bear", seller: "CraftJoy", category: "Toys", status: "Out of Stock", date: "2025-02-18", img: "https://via.placeholder.com/60" },
-  ]);
-
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [filterCategory, setFilterCategory] = useState("All");
 
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/Products`);
+        if (res.ok) setProducts(await res.json());
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProducts();
+  }, []);
+
   const filteredProducts = useMemo(() => {
     return products.filter((p) =>
-      (p.name.toLowerCase().includes(search.toLowerCase()) || p.seller.toLowerCase().includes(search.toLowerCase())) &&
+      (p.name.toLowerCase().includes(search.toLowerCase()) || 
+       (p.seller?.shopName || "").toLowerCase().includes(search.toLowerCase())) &&
       (filterCategory === "All" || p.category === filterCategory)
     );
   }, [products, search, filterCategory]);
 
-  const categories = ["All", ...Array.from(new Set(products.map(p => p.category)))];
+  const categories = ["All", ...Array.from(new Set(products.map(p => p.category).filter(Boolean)))];
+
+  if (loading) return <div className="p-10 text-center"><Loader2 className="animate-spin inline text-[#3A3A6C]"/></div>;
 
   return (
     <div className="space-y-6">
@@ -36,7 +51,7 @@ export default function ProductList() {
           onChange={(e) => setFilterCategory(e.target.value)}
           className="p-2 rounded-xl border border-gray-200 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-[#B18AFF]"
         >
-          {categories.map(c => <option key={c}>{c}</option>)}
+          {categories.map(c => <option key={c} value={c}>{c}</option>)}
         </select>
       </div>
 
@@ -55,12 +70,18 @@ export default function ProductList() {
             {filteredProducts.map(p => (
               <tr key={p.id} className="border-t hover:bg-[#F5F5FF] transition cursor-pointer">
                 <td className="p-2">
-                  <img src={p.img} className="w-12 h-12 rounded-lg object-cover shadow-sm" alt={p.name} />
+                  {p.images && p.images.length > 0 ? (
+                    <img src={p.images[0].url} className="w-12 h-12 rounded-lg object-cover shadow-sm" alt={p.name} />
+                  ) : (
+                    <div className="w-12 h-12 bg-slate-100 rounded-lg"></div>
+                  )}
                 </td>
-                <td className="p-2">{p.name}</td>
-                <td className="p-2">{p.seller}</td>
-                <td className="p-2">{p.date}</td>
-                <td className="p-2">{p.category}</td>
+                <td className="p-2 font-bold">{p.name}</td>
+                <td className="p-2">{p.seller?.shopName || "Unknown"}</td>
+                <td className="p-2">{new Date(p.createdAt).toLocaleDateString()}</td>
+                <td className="p-2">
+                    <span className="bg-purple-50 text-purple-600 px-2 py-1 rounded text-xs font-bold">{p.category}</span>
+                </td>
               </tr>
             ))}
             {filteredProducts.length === 0 && (

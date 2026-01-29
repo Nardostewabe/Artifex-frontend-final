@@ -67,7 +67,7 @@ const CartPage = () => {
         // 2. Confirm & Pay
         showModal({
             title: "Confirm Checkout",
-            message: `Proceed to payment for $${total.toFixed(2)}?`,
+            message: `Proceed to payment for ETB ${total.toFixed(2)}?`,
             type: "info",
             confirmText: "Pay Now",
             onConfirm: async () => {
@@ -176,7 +176,7 @@ const CartPage = () => {
                                         <div className="flex justify-between items-start">
                                             <div>
                                                 <h3 className="font-bold text-gray-900">{item.name}</h3>
-                                                <p className="text-sm text-gray-500">${item.price}</p>
+                                                <p className="text-sm text-gray-500">ETB {item.price}</p>
                                             </div>
                                             <button
                                                 onClick={() => removeFromCart(item.id)}
@@ -197,7 +197,7 @@ const CartPage = () => {
                                                     className="px-3 py-1 text-gray-600 hover:bg-gray-50 border-l border-gray-200"
                                                 >+</button>
                                             </div>
-                                            <span className="text-gray-900 font-bold ml-auto">${(item.price * item.quantity).toFixed(2)}</span>
+                                            <span className="text-gray-900 font-bold ml-auto">ETB {(item.price * item.quantity).toFixed(2)}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -212,7 +212,7 @@ const CartPage = () => {
                             <div className="space-y-4 mb-6">
                                 <div className="flex justify-between text-gray-600">
                                     <span>Subtotal</span>
-                                    <span>${total.toFixed(2)}</span>
+                                    <span>ETB {total.toFixed(2)}</span>
                                 </div>
                                 <div className="flex justify-between text-gray-600">
                                     <span>Shipping</span>
@@ -221,7 +221,7 @@ const CartPage = () => {
                                 <div className="h-px bg-gray-100 my-4"></div>
                                 <div className="flex justify-between text-gray-900 font-bold text-lg">
                                     <span>Total</span>
-                                    <span>${total.toFixed(2)}</span>
+                                    <span>ETB {total.toFixed(2)}</span>
                                 </div>
                             </div>
                             <button

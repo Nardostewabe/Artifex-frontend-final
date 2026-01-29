@@ -94,7 +94,7 @@ const TrendingSection = ({ id }) => {
               <div>
                 <h3 className="font-bold text-gray-900 truncate">{product.name}</h3>
                 <div className="flex items-center justify-between mt-1">
-                  <span className="text-gray-900 font-bold">${product.price}</span>
+                  <span className="text-gray-900 font-bold">ETB {product.price}</span>
                   <span className="text-[10px] text-gray-400">{product.orderCount || 0} sold</span>
                 </div>
               </div>

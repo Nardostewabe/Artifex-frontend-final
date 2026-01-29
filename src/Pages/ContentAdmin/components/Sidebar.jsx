@@ -1,53 +1,62 @@
-import React from "react";
-import { AlertCircle, Clock, LogOut, BarChart, BookOpen } from "lucide-react";
+import { LayoutDashboard, Flag, Layers, ShoppingBag, FileClock, AlertTriangle, LogOut } from "lucide-react";
 
-export default function Sidebar({ setActivePage, activePage, queueCount, unseenLogsCount }) {
-  /**
-   * NAVIGATION CONFIG
-   */
-  const menus = [
-    { id: "queue", title: "Moderation Queue", icon: <AlertCircle />, count: queueCount },
-    { id: "tutorials", title: "DIY Tutorials", icon: <BookOpen />, count: 0 },
-    { id: "history", title: "History Logs", icon: <Clock />, count: unseenLogsCount },
-    { id: "reports", title: "Insights", icon: <BarChart />, count: 0 },
+export default function Sidebar({ activePage, setActivePage, queueCount, onLogout }) {
+  
+  const menuItems = [
+    { id: "queue", label: "Moderation Queue", icon: LayoutDashboard, count: queueCount },
+    { id: "flagged", label: "Pending Reports", icon: Flag }, // Optional: You might want to merge Queue & Flagged
+    { id: "categories", label: "Categories", icon: Layers },
+    { id: "products", label: "All Products", icon: ShoppingBag },
+    { id: "history", label: "Audit Logs", icon: FileClock },
+    { id: "reports", label: "System Reports", icon: AlertTriangle },
   ];
 
   return (
-    <div className="w-64 shrink-0 bg-[#6C63FF] text-white p-6 flex flex-col shadow-2xl z-20 hidden md:flex rounded-r-3xl">
-      <div className="mb-10 px-2">
-        <h1 className="text-2xl font-black italic tracking-tighter text-white">CMOD</h1>
-        <p className="text-[10px] text-white/60 font-bold uppercase tracking-widest leading-none mt-1">Content Moderator</p>
+    <aside className="w-20 md:w-64 bg-[#6C63FF] border-r border-slate-200 flex flex-col justify-between transition-all duration-300 z-50">
+      {/* LOGO */}
+      <div className="p-6 flex items-center gap-3">
+        <div className="w-8 h-8 bg-[#6C63FF] rounded-lg flex items-center justify-center text-white font-black text-lg">A</div>
+        <span className="font-black text-xl tracking-tighter text-[#3A3A6C] hidden md:block">Artifex<span className="text-[#6C63FF]">.Admin</span></span>
       </div>
 
-      <nav className="flex-1 space-y-2">
-        {menus.map((m) => (
+      {/* MENU */}
+      <nav className="flex-1 px-4 space-y-2 mt-4">
+        {menuItems.map((item) => (
           <button
-            key={m.id}
-            onClick={() => setActivePage(m.id)}
-            className={`flex items-center justify-between w-full px-4 py-3 rounded-xl transition-all duration-300 ${activePage === m.id
-              ? "bg-white text-[#6C63FF] font-bold shadow-lg scale-105"
-              : "text-black/70 text-sm hover:text-white hover:bg-white/10"
-              }`}
+            key={item.id}
+            onClick={() => setActivePage(item.id)}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group relative ${
+              activePage === item.id 
+                ? "bg-white text-black font-bold shadow-sm" 
+                : "text-slate-400 hover:bg-slate-50 hover:text-slate-600 font-medium"
+            }`}
           >
-            <div className="flex items-center gap-3">
-              <span className="text-lg">{m.icon}</span>
-              <span className="text-sm">{m.title}</span>
-            </div>
-
-            {/* BUBBLE UI: Shows red circle if count > 0 */}
-            {m.count > 0 && (
-              <span className={`h-5 min-w-[20px] px-1.5 flex items-center justify-center rounded-full text-[10px] font-black ${activePage === m.id ? "bg-[#6C63FF] text-white" : "bg-red-500 text-white"
-                }`}>
-                {m.count}
+            <item.icon size={20} className={activePage === item.id ? "text-black" : "text-slate-400 group-hover:text-slate-600"} />
+            <span className="hidden md:block">{item.label}</span>
+            
+            {/* BADGE (Only show if count > 0) */}
+            {item.count > 0 && (
+              <span className="absolute right-2 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full hidden md:block animate-pulse">
+                {item.count}
               </span>
+            )}
+            {/* Mobile Dot Badge */}
+            {item.count > 0 && (
+              <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full md:hidden"></span>
             )}
           </button>
         ))}
       </nav>
 
-      <button className="flex items-center gap-3 px-4 py-3 mt-auto text-black/70 text-sm hover:text-white hover:bg-white/10 rounded-xl transition-colors">
+      {/* FOOTER */}
+      <div className="p-4 border-t border-slate-100">
+        <button
+        onClick={onLogout}
+        className="flex items-center gap-3 px-4 py-3 mt-auto text-black/70 text-sm hover:text-white hover:bg-white/10 rounded-xl transition-colors"
+      >
         <LogOut /> Logout
       </button>
-    </div>
+      </div>
+    </aside>
   );
 }

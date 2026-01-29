@@ -1,74 +1,99 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+import { API_BASE_URL } from "../../config";
 import Sidebar from "./components/Sidebar";
 import Header from "./components/Header";
+
+// Pages
 import FlaggedContent from "./pages/FlaggedContent";
 import ModerationHistory from "./pages/ModerationHistory";
-import Tutorials from "./pages/Tutorials";
+import ModerationQueue from "./pages/ModerationQueue";
+import CategoryManagement from "./pages/CatagoryManagement"; // Note: Check spelling 'Catagory' vs 'Category'
+import ViewProducts from "./pages/ViewProducts";
+import ViolationReports from "./pages/ViolationReports";
 
 export default function ContentAdminDashboard() {
     const [activePage, setActivePage] = useState("queue");
+    const [stats, setStats] = useState({ pendingReports: 0 });
     const [toast, setToast] = useState(null);
+    const { token, logout } = useAuth();
+    const navigate = useNavigate();
 
-    // Simple mock data for counts
-    const queueCount = 5;
-    const unseenLogsCount = 2;
+    // 1. Fetch Dashboard Stats (For Sidebar Badges)
+    useEffect(() => {
+        const fetchStats = async () => {
+            try {
+                const res = await fetch(`${API_BASE_URL}/api/ContentAdmin/stats`, {
+                    headers: { "Authorization": `Bearer ${token}` }
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    setStats({ pendingReports: data.pendingReports || 0 });
+                }
+            } catch (error) {
+                console.error("Failed to fetch dashboard stats", error);
+            }
+        };
+        fetchStats();
+    }, [token, activePage]); // Refresh stats when page changes
 
-    // Simple toast handler
+    const handleLogout = () => {
+        logout();
+        navigate("/login");
+    };
+
     const showToast = (message, type = "success") => {
         setToast({ message, type });
         setTimeout(() => setToast(null), 3000);
     };
 
+    // 2. Dynamic Router (Tutorials Removed)
     const renderContent = () => {
         switch (activePage) {
             case "queue":
+                return <ModerationQueue onAction={(msg) => showToast(msg)} />;
+            case "flagged":
                 return <FlaggedContent showToast={showToast} />;
+            case "categories":
+                return <CategoryManagement showToast={showToast} />;
+            case "products":
+                return <ViewProducts />;
             case "history":
-                // Mocking logs for the history page
-                const mockLogs = [
-                    { id: 1, action: "Approved Listing", moderator: "Admin", target: "Bag", reason: "N/A", date: "2025-01-05" },
-                    { id: 2, action: "Removed Flagged Review", moderator: "Admin", target: "Review #123", reason: "Harassment", date: "2025-01-04" },
-                ];
-                return <ModerationHistory logs={mockLogs} />;
-            case "tutorials":
-                return <Tutorials showToast={showToast} />;
+                return <ModerationHistory />; // Now fetches its own data
             case "reports":
-                return <div className="p-8 text-center text-gray-500">Analytics & Reports Module - Coming Soon</div>;
+                return <ViolationReports showToast={showToast} />;
             default:
-                return <FlaggedContent showToast={showToast} />;
+                return <ModerationQueue />;
         }
     };
 
     return (
-        <div className="flex min-h-screen w-screen bg-[#F8FAFC] text-slate-900">
-
-            {/* SIDEBAR */}
+        <div className="flex min-h-screen w-screen bg-[#F8FAFC] text-slate-900 bg-gradient-to-br from-slate-50 to-blue-50">
+            {/* SIDEBAR - Dynamic Counts */}
             <Sidebar
                 setActivePage={setActivePage}
                 activePage={activePage}
-                queueCount={queueCount}
-                unseenLogsCount={unseenLogsCount}
+                queueCount={stats.pendingReports} 
+                onLogout={handleLogout}
             />
 
-            {/* MAIN CONTENT AREA */}
+            {/* MAIN CONTENT */}
             <div className="flex-1 flex flex-col h-screen overflow-hidden">
-
-                <Header moderatorName="Alex" />
-
+                <Header moderatorName="Admin" />
                 <main className="flex-1 overflow-y-auto p-4 md:p-8">
                     {renderContent()}
                 </main>
-
             </div>
 
-            {/* TOAST NOTIFICATION */}
+            {/* TOAST */}
             {toast && (
-                <div className={`fixed bottom-5 right-5 px-6 py-3 rounded-xl shadow-2xl text-white font-bold animate-bounce ${toast.type === "error" ? "bg-red-500" : "bg-green-500"
-                    }`}>
+                <div className={`fixed bottom-5 right-5 px-6 py-3 rounded-xl shadow-2xl text-white font-bold animate-bounce ${
+                    toast.type === "error" ? "bg-red-500" : "bg-emerald-500"
+                }`}>
                     {toast.message}
                 </div>
             )}
-
         </div>
     );
 }

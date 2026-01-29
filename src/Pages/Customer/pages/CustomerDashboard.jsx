@@ -124,7 +124,7 @@ const CustomerDashboard = () => {
                 <div className="p-4">
                   <h3 className="font-semibold text-gray-900 truncate">{product.name}</h3>
                   <div className="flex justify-between items-center mt-2">
-                    <span className="font-bold text-gray-800">${product.price}</span>
+                    <span className="font-bold text-gray-800">ETB {product.price}</span>
                     <RatingDisplay productId={product.id} initialRating={product.averageRating || product.rating} />
                   </div>
                 </div>
@@ -135,64 +135,39 @@ const CustomerDashboard = () => {
       </section>
 
       {/* --- Category Tiles --- */}
-      <section className="w-screen py-12 shadow-sm my-6 bg-white">
-        <div className="bg-white mb-10 lg:mb-30 px-6 py-8">
-          <div className="w-full text-center py-6">
-            <h1 className="font-bold text-sm md:text-2xl lg:text-3xl">Browse Categories</h1>
+      <section className="w-screen py-8 bg-white border-y border-gray-50 my-4">
+        <div className="container mx-auto px-6">
+          <div className="w-full text-center mb-6">
+            <h2 className="font-bold text-xl md:text-2xl text-gray-900">Browse Categories</h2>
           </div>
 
-          <div className="overflow-x-scroll space-x-4 grid grid-cols-3 md:grid-cols-6 lg:flex hide-scrollbar -mr-px">
+          <div className="flex overflow-x-auto space-x-4 md:space-x-6 hide-scrollbar pb-2">
             {/* Static 'All' Link */}
-            <Link to="/shop">
-              <div className="shrink-0">
-                <div className="overflow-hidden rounded-lg">
-                  <div className='cursor-pointer transition-transform hover:scale-105'>
-                    <div className="w-50 h-50 md:w-80 md:h-80 lg:w-100 lg:h-100 bg-gray-100 rounded-lg overflow-hidden">
-                      <img src={AllImg} alt="All" className="w-full h-full object-cover" />
-                    </div>
-                  </div>
+            <Link to="/shop" className="shrink-0 group">
+              <div className="relative">
+                <div className="w-32 h-32 sm:w-40 sm:h-40 md:w-56 md:h-56 lg:w-64 lg:h-64 bg-gray-100 rounded-2xl overflow-hidden shadow-sm group-hover:shadow-md transition-all duration-300 ring-2 ring-transparent group-hover:ring-purple-100">
+                  <img src={AllImg} alt="All" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                 </div>
-                <p className="mt-2 text-lg font-medium text-left text-gray-800">All Categories</p>
+                <p className="mt-3 text-sm font-bold text-center text-gray-700 uppercase tracking-widest group-hover:text-purple-600 transition-colors">All items</p>
               </div>
             </Link>
 
             {/* Dynamic Categories */}
             {categories.map((cat) => (
-              <Link to={`/collection/${cat.name.toLowerCase()}`} key={cat.id}>
-                <div className="shrink-0">
-                  <div className="overflow-hidden rounded-lg">
-                    <div className='cursor-pointer transition-transform hover:scale-105'>
-                      <div className="w-50 h-50 md:w-80 md:h-80 lg:w-100 lg:h-100 bg-gray-100 rounded-lg overflow-hidden">
-                        <img
-                          src={getCategoryImage(cat.name)}
-                          alt={cat.name}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                    </div>
+              <Link to={`/collection/${cat.name.toLowerCase()}`} key={cat.id} className="shrink-0 group">
+                <div className="relative">
+                  <div className="w-32 h-32 sm:w-40 sm:h-40 md:w-56 md:h-56 lg:w-64 lg:h-64 bg-gray-100 rounded-2xl overflow-hidden shadow-sm group-hover:shadow-md transition-all duration-300 ring-2 ring-transparent group-hover:ring-purple-100">
+                    <img
+                      src={getCategoryImage(cat.name)}
+                      alt={cat.name}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
                   </div>
-                  <p className="mt-2 text-lg font-medium text-left text-gray-800 capitalize">{cat.name}</p>
+                  <p className="mt-3 text-sm font-bold text-center text-gray-700 uppercase tracking-widest capitalize group-hover:text-purple-600 transition-colors">{cat.name}</p>
                 </div>
               </Link>
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* --- Tutorials Section --- */}
-      <section className="container mx-auto px-6 py-12">
-        <h2 className="text-2xl font-bold text-gray-800 mb-6">Learn & DIY</h2>
-        <div
-          onClick={() => navigate('/tutorials')}
-          className="bg-white p-6 rounded-xl shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between cursor-pointer hover:bg-gray-50 border border-gray-100 transition-colors"
-        >
-          <div className="mb-4 sm:mb-0">
-            <h3 className="text-xl font-bold text-gray-900">Tutorials</h3>
-            <p className="text-gray-600 mt-1">Explore DIY guides, patterns, and learn how to make your own crafts.</p>
-          </div>
-          <button className="px-6 py-3 rounded-xl font-medium transition-colors duration-200 bg-gray-900 text-white hover:bg-gray-800 shadow-lg">
-            View Tutorials
-          </button>
         </div>
       </section>
     </div>

@@ -94,7 +94,7 @@ export default function Dashboard() {
     },
     {
       title: "Total Revenue",
-      value: (stats?.totalRevenue ?? stats?.TotalRevenue) ? `$${(stats?.totalRevenue ?? stats?.TotalRevenue).toLocaleString()}` : "$0",
+      value: (stats?.totalRevenue ?? stats?.TotalRevenue) ? `ETB ${(stats?.totalRevenue ?? stats?.TotalRevenue).toLocaleString()}` : "ETB 0",
       icon: <DollarSign className="w-6 h-6" />,
       theme: "from-emerald-100 to-teal-100 text-emerald-600",
       badge: "Earnings"
