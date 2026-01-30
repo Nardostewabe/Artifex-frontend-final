@@ -104,9 +104,9 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen w-screen bg-gradient-to-r from-purple-200 to-blue-200 flex items-center justify-center">
-      <form onSubmit={handleLogin} className="bg-white p-6 rounded-lg shadow-md w-full max-w-sm">
-        <h2 className="text-2xl font-semibold mb-4 text-center">Login</h2>
+    <div className="min-h-screen w-screen bg-gradient-to-r from-purple-200 to-blue-200 dark:from-slate-900 dark:to-slate-800 flex items-center justify-center transition-colors duration-500">
+      <form onSubmit={handleLogin} className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md w-full max-w-sm transition-colors border dark:border-slate-700">
+        <h2 className="text-2xl font-semibold mb-4 text-center text-gray-800 dark:text-white">Login</h2>
 
         {error && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded mb-4 text-sm text-center">
@@ -117,7 +117,7 @@ const Login = () => {
         <input
           type="text"
           placeholder="Enter username or email"
-          className="w-full mb-3 px-3 py-2 border rounded"
+          className="w-full mb-3 px-3 py-2 border dark:border-slate-600 rounded bg-white dark:bg-slate-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500"
           required
           value={username}
           onChange={(e) => setUsername(e.target.value)}
@@ -126,7 +126,7 @@ const Login = () => {
         <input
           type="password"
           placeholder="Enter your password"
-          className="w-full mb-3 px-3 py-2 border rounded"
+          className="w-full mb-3 px-3 py-2 border dark:border-slate-600 rounded bg-white dark:bg-slate-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500"
           required
           value={password}
           onChange={(e) => setPassword(e.target.value)}
@@ -146,10 +146,9 @@ const Login = () => {
         >
           {loading ? "Logging in..." : "Login"}
         </button>
-
-        <p className="mt-4 text-center text-sm">
+        <p className="mt-4 text-center text-sm text-gray-600 dark:text-gray-300">
           Don’t have an account?{" "}
-          <Link to="/signup" className="text-blue-600 underline">
+          <Link to="/signup" className="text-blue-600 dark:text-blue-400 underline">
             Signup
           </Link>
         </p>

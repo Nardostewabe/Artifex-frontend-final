@@ -16,11 +16,13 @@ import {
   XCircle
 } from "lucide-react";
 import { useAuth } from "../../../context/AuthContext";
+import { useModal } from "../../../context/ModalContext";
 import { API_BASE_URL } from "../../../config";
 import { useNavigate } from "react-router-dom";
 
 export default function SellerManagement() {
   const { token, logout } = useAuth();
+  const { showAlert } = useModal();
   const navigate = useNavigate();
   const [sellers, setSellers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -90,10 +92,10 @@ export default function SellerManagement() {
         await fetchSellers(); // Refresh the list from server
       } else {
         const msg = await resp.text();
-        alert(msg || `Failed to ${action} seller`);
+        showAlert(msg || `Failed to ${action} seller`, "Action Failed", "danger");
       }
     } catch (err) {
-      alert(err.message);
+      showAlert(err.message, "Error", "danger");
     } finally {
       setProcessingId(null);
     }

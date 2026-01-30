@@ -13,6 +13,7 @@ import {
   Plus
 } from "lucide-react";
 import { useAuth } from "../../../context/AuthContext";
+import { useModal } from "../../../context/ModalContext";
 import { API_BASE_URL } from "../../../config";
 import { useNavigate } from "react-router-dom";
 
@@ -146,6 +147,7 @@ const CreateAdminModal = ({ isOpen, onClose, token, onSuccess }) => {
 
 export default function AdminManagement() {
   const { token, logout } = useAuth();
+  const { showAlert } = useModal();
   const navigate = useNavigate();
   const [admins, setAdmins] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -202,7 +204,7 @@ export default function AdminManagement() {
         throw new Error("Failed to remove administrator");
       }
     } catch (err) {
-      alert(err.message);
+      showAlert(err.message, "Remove Failed", "danger");
     } finally {
       setIsProcessing(false);
     }

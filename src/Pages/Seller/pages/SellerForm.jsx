@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { API_BASE_URL } from "../../../config";
+import { useModal } from "../../../context/ModalContext";
 import { Upload, X } from 'lucide-react';
 
 const SellerForm = () => {
   const navigate = useNavigate();
+  const { showAlert } = useModal();
   const [loading, setLoading] = useState(false);
 
   const [shopName, setShopName] = useState("");
@@ -30,7 +32,7 @@ const SellerForm = () => {
     const token = localStorage.getItem("token");
 
     if (!token) {
-      alert("Session expired. Please login/signup again.");
+      await showAlert("Session expired. Please login/signup again.", "Session Expired", "warning");
       navigate("/login");
       return;
     }
@@ -48,23 +50,23 @@ const SellerForm = () => {
       }
 
       const response = await fetch(`${API_BASE_URL}/api/Profile/seller`, {
-    method: 'POST', // or PUT
-    headers: { 
-        'Authorization': `Bearer ${token}` 
-        // ✅ Content-Type is left out intentionally
-    },
-    body: formData // ✅ Sending the FormData object directly
-});
+        method: 'POST', // or PUT
+        headers: {
+          'Authorization': `Bearer ${token}`
+          // ✅ Content-Type is left out intentionally
+        },
+        body: formData // ✅ Sending the FormData object directly
+      });
 
       if (response.ok) {
         navigate("/waiting-approval");
       } else {
         const errorText = await response.text();
-        alert(`Failed to create shop: ${errorText}`);
+        showAlert(`Failed to create shop: ${errorText}`, "Error", "danger");
       }
     } catch (err) {
       console.error(err);
-      alert("Error connecting to server.");
+      showAlert("Error connecting to server.", "Connection Error", "danger");
     } finally {
       setLoading(false);
     }

@@ -4,7 +4,7 @@ export default function DataTable({ columns, data }) {
   // Logic to determine badge colors for Status columns
   const getStatusBadge = (value) => {
     const status = String(value).toLowerCase();
-    
+
     const styles = {
       active: "bg-green-100 text-green-700 border border-green-200",
       approved: "bg-green-100 text-green-700 border border-green-200",
@@ -21,11 +21,11 @@ export default function DataTable({ columns, data }) {
   };
 
   return (
-    <div className="w-full bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col">
+    <div className="w-full bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col transition-colors">
       <div className="overflow-x-auto">
         <table className="w-full min-w-[600px] border-separate border-spacing-y-2">
           <thead>
-            <tr className="bg-slate-50 text-slate-500 text-sm uppercase tracking-wider rounded-lg">
+            <tr className="bg-slate-50 dark:bg-slate-700 text-slate-500 dark:text-slate-300 text-sm uppercase tracking-wider rounded-lg transition-colors">
               {columns.map((col) => (
                 <th key={col} className="px-4 py-3 text-left font-semibold first:rounded-l-lg last:rounded-r-lg">
                   {col}
@@ -37,13 +37,13 @@ export default function DataTable({ columns, data }) {
           <tbody className="space-y-2">
             {data.length > 0 ? (
               data.map((row, i) => (
-                <tr key={i} className="bg-white hover:bg-purple-50 transition-colors duration-200 group">
+                <tr key={i} className="bg-white dark:bg-slate-800 hover:bg-purple-50 dark:hover:bg-slate-700 transition-colors duration-200 group">
                   {columns.map((col) => {
                     const cellValue = row[col];
                     const badgeClass = getStatusBadge(cellValue);
 
                     return (
-                      <td key={`${i}-${col}`} className="px-4 py-3 text-slate-700 border-b border-slate-100 group-last:border-0">
+                      <td key={`${i}-${col}`} className="px-4 py-3 text-slate-700 dark:text-slate-200 border-b border-slate-100 dark:border-slate-700 group-last:border-0 transition-colors">
                         {badgeClass ? (
                           <span className={`px-3 py-1 rounded-full text-xs font-medium ${badgeClass}`}>
                             {cellValue}

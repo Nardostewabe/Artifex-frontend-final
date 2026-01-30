@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { API_BASE_URL } from "../../../config";
+import { useModal } from "../../../context/ModalContext";
 import { Upload, User } from 'lucide-react';
 
 const CustomerForm = () => {
     const navigate = useNavigate();
+    const { showAlert } = useModal();
     const [name, setName] = useState("");
     const [phone, setPhone] = useState("");
     const [address, setAddress] = useState("");
@@ -27,7 +29,7 @@ const CustomerForm = () => {
         const token = localStorage.getItem("token");
 
         if (!token) {
-            alert("Session expired. Please login/signup again.");
+            await showAlert("Session expired. Please login/signup again.", "Session Expired", "warning");
             navigate("/login");
             return;
         }
@@ -55,11 +57,11 @@ const CustomerForm = () => {
                 navigate("/login");
             } else {
                 const errorText = await response.text();
-                alert(`Failed to save profile: ${errorText}`);
+                showAlert(`Failed to save profile: ${errorText}`, "Error", "danger");
             }
         } catch (err) {
             console.error(err);
-            alert("Error connecting to server.");
+            showAlert("Error connecting to server.", "Connection Error", "danger");
         } finally {
             setLoading(false);
         }

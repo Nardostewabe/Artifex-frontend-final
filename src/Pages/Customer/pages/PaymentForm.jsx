@@ -2,9 +2,11 @@ import { useState } from "react";
 import { Loader2, CreditCard } from "lucide-react";
 import { API_BASE_URL } from "../config";
 import { useAuth } from "../context/AuthContext";
+import { useModal } from "../context/ModalContext";
 
 export default function PaymentForm() {
   const { token, user } = useAuth(); // Assuming you have user info in context
+  const { showAlert } = useModal();
   const [loading, setLoading] = useState(false);
   const [amount, setAmount] = useState(1000); // Default amount
 
@@ -40,7 +42,7 @@ export default function PaymentForm() {
       }
     } catch (error) {
       console.error("Payment Error:", error);
-      alert("Failed to start payment. Please try again.");
+      showAlert("Failed to start payment. Please try again.", "Payment Error", "danger");
     } finally {
       setLoading(false);
     }

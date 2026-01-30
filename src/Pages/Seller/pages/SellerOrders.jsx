@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { Package, Truck, CheckCircle, Clock, MapPin, Filter, Download, Calendar } from 'lucide-react';
 import { API_BASE_URL } from '../../../config';
 import { useAuth } from '../../../context/AuthContext';
+import { useModal } from '../../../context/ModalContext';
 import DisputeModal from '../../../components/DisputeModal';
 
 const SellerOrders = () => {
     const { token } = useAuth();
+    const { showAlert } = useModal();
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -49,7 +51,7 @@ const SellerOrders = () => {
                     order.orderId === orderId ? { ...order, status: newStatus } : order
                 ));
             } else {
-                alert("Failed to update status");
+                showAlert("Failed to update status", "Update Failed", "danger");
             }
         } catch (err) {
             console.error(err);
@@ -174,7 +176,7 @@ const SellerOrders = () => {
                 isOpen={disputeModalOpen}
                 onClose={() => setDisputeModalOpen(false)}
                 orderId={selectedOrderId}
-                onSuccess={() => alert("Dispute submitted successfully to admins.")}
+                onSuccess={() => showAlert("Dispute submitted successfully to admins.", "Success", "success")}
             />
         </div>
     );

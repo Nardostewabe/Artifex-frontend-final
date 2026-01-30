@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { MapPin, Phone, Tag, Edit3, Store, Loader2, Camera, Save, X } from 'lucide-react';
 import { API_BASE_URL } from '../../../config';
 import { useAuth } from '../../../context/AuthContext';
+import { useModal } from '../../../context/ModalContext';
 
 const SellerProfile = () => {
     const { token } = useAuth();
+    const { showAlert } = useModal();
     const [profile, setProfile] = useState(null);
     const [loading, setLoading] = useState(true);
     const [isEditing, setIsEditing] = useState(false);
@@ -78,7 +80,7 @@ const SellerProfile = () => {
                 }
                 setIsEditing(false);
             } else {
-                alert("Failed to update shop profile.");
+                showAlert("Failed to update shop profile.", "Update Failed", "danger");
             }
         } catch (error) {
             console.error(error);

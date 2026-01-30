@@ -3,9 +3,11 @@ import { User, Phone, MapPin, Edit3, Camera, Save, X, Loader2, Package, AlertCir
 import { useNavigate } from 'react-router-dom';
 import { API_BASE_URL } from '../../../config';
 import { useAuth } from '../../../context/AuthContext';
+import { useModal } from '../../../context/ModalContext';
 
 const MyProfile = () => {
     const { token } = useAuth();
+    const { showAlert } = useModal();
     const navigate = useNavigate();
     const [profile, setProfile] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -74,7 +76,7 @@ const MyProfile = () => {
                 }
                 setIsEditing(false);
             } else {
-                alert("Failed to update profile.");
+                showAlert("Failed to update profile.", "Update Failed", "danger");
             }
         } catch (error) {
             console.error(error);

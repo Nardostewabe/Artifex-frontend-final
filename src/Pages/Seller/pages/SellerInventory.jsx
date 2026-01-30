@@ -5,10 +5,13 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { API_BASE_URL } from '../../../config';
+import { API_BASE_URL } from '../../../config';
 import { useAuth } from '../../../context/AuthContext';
+import { useModal } from '../../../context/ModalContext';
 
 const SellerInventory = () => {
     const { token } = useAuth();
+    const { showModal, showAlert } = useModal();
 
     // State for Real Data
     const [products, setProducts] = useState([]);
@@ -45,7 +48,14 @@ const SellerInventory = () => {
 
     // 2. DELETE PRODUCT
     const handleDelete = async (productId) => {
-        if (!window.confirm("Are you sure you want to delete this product?")) return;
+        const confirmed = await showModal({
+            title: "Delete Product",
+            message: "Are you sure you want to delete this product? This action cannot be undone.",
+            type: "danger",
+            confirmText: "Delete",
+            cancelText: "Cancel"
+        });
+        if (!confirmed) return;
 
         try {
             const actualToken = token || localStorage.getItem("token");
@@ -61,7 +71,7 @@ const SellerInventory = () => {
             // Update UI immediately (Optimistic update)
             setProducts(products.filter(p => p.id !== productId));
         } catch (err) {
-            alert("Error deleting: " + err.message);
+            showAlert("Error deleting: " + err.message, "Delete Failed", "danger");
         }
     };
 

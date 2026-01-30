@@ -3,6 +3,7 @@ import { Menu, X, LogOut, User, Store, PlusCircle, FileText, Home } from 'lucide
 import logo from '../../../assets/Artifex logo 2_2/6.png';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
+import ThemeToggle from '../../../components/ThemeToggle';
 
 const SellerNavigationBar = () => {
     const [isScrolled, setIsScrolled] = useState(false);
@@ -80,6 +81,7 @@ const SellerNavigationBar = () => {
 
                     {/* RIGHT SECTION: ICONS & ACTIONS */}
                     <div className="flex-1 flex justify-end items-center space-x-3 md:space-x-6">
+                        <ThemeToggle className="hidden md:block" />
                         <div className="flex items-center gap-2 px-4 py-1.5 bg-purple-50 text-purple-700 border border-purple-100 rounded-full text-xs font-bold uppercase shadow-sm">
                             <User size={14} /> Seller Portal
                         </div>
@@ -96,6 +98,7 @@ const SellerNavigationBar = () => {
                         }`}
                 >
                     <div className="flex flex-col items-center py-10 space-y-8">
+                        <ThemeToggle />
                         {navLinks.map((link) => (
                             <Link
                                 key={link.name}
