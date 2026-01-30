@@ -47,6 +47,8 @@ import Contact from './Pages/Public/Contact.jsx';
 import PaymentForm from './Pages/Customer/pages/PaymentForm.jsx';
 import PaymentSuccess from './Pages/Customer/pages/PaymentSuccess.jsx';
 
+import HomeRedirect from './components/HomeRedirect.jsx';
+
 const App = () => {
   return (
     <>
@@ -66,7 +68,7 @@ const App = () => {
                       {/* =========================================
                1. PUBLIC ROUTES (No Token Required)
                ========================================= */}
-                      <Route path="/" element={<HomePage />} />
+                      <Route path="/" element={<HomeRedirect />} />
                       <Route path="/shop" element={<Shop />} />
                       <Route path="/cart" element={<CartPage />} />
                       <Route path="/collections" element={<CustomerCollection />} />
