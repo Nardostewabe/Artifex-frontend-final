@@ -1,40 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Star, Loader2, Package } from 'lucide-react';
+import { Loader2, Package } from 'lucide-react';
 import { API_BASE_URL } from "../../../config.js";
 import RatingDisplay from '../../../components/RatingDisplay.jsx';
 
-// --- Static Images for Categories ---
-import knitwearImg from '../../../assets/Categories/knitwear.jpg';
-import crochetImg from '../../../assets/Categories/crochet.jpg';
-import woodworkImg from '../../../assets/Categories/chair.jpg';
-import jewleryImg from '../../../assets/Categories/jewlery.jpg';
-import printsImg from '../../../assets/Categories/print.jpg';
-import stickersImg from '../../../assets/Categories/lin.jpg';
-import ceramicsImg from '../../../assets/Categories/ceramics.jpg';
-import decorImg from '../../../assets/Categories/home-decor.jpg';
-import clothingImg from '../../../assets/Categories/clothing.jpg';
-import accessoriesImg from '../../../assets/Categories/accessories.jpg';
-import AllImg from '../../../assets/Categories/all.jpg';
-
-// Helper: Match DB Category Name -> Local Image
-const getCategoryImage = (categoryName) => {
-  if (!categoryName) return AllImg;
-  const normalized = categoryName.toLowerCase().trim();
-  const map = {
-    'knitwear': knitwearImg,
-    'crochet': crochetImg,
-    'woodwork': woodworkImg,
-    'jewelry': jewleryImg,
-    'art prints': printsImg,
-    'stickers': stickersImg,
-    'ceramics': ceramicsImg,
-    'home decor': decorImg,
-    'clothing': clothingImg,
-    'accessories': accessoriesImg,
-  };
-  return map[normalized] || AllImg;
-};
+// We only need one static image now for the "All Items" link or as a fallback
+import AllImg from '../../../assets/Categories/all.jpg'; 
 
 const CustomerDashboard = () => {
   const navigate = useNavigate();
@@ -62,7 +33,7 @@ const CustomerDashboard = () => {
           setFeaturedProducts(trendingData.slice(0, 3));
         }
 
-        // 3. Fetch Categories
+        // 3. Fetch Categories (Now includes names AND imageUrls)
         const catRes = await fetch(`${API_BASE_URL}/api/Categories`);
         if (catRes.ok) {
           setCategories(await catRes.json());
@@ -83,7 +54,7 @@ const CustomerDashboard = () => {
   }
 
   return (
-    <div className="animate-fade-in w-full overflow-x-hidden min-h-screen w-screen bg-gradient-to-br from-[#bfdbfe] to-[#e9d5ff] pt-20">
+    <div className="animate-fade-in w-full overflow-x-hidden min-h-screen bg-gradient-to-br from-[#bfdbfe] to-[#e9d5ff] pt-20">
 
       {/* --- Featured / Trending Section --- */}
       <section className="container mx-auto px-6 py-8">
@@ -135,7 +106,7 @@ const CustomerDashboard = () => {
       </section>
 
       {/* --- Category Tiles --- */}
-      <section className="w-screen py-8 bg-white border-y border-gray-50 my-4">
+      <section className="w-full py-8 bg-white border-y border-gray-50 my-4">
         <div className="container mx-auto px-6">
           <div className="w-full text-center mb-6">
             <h2 className="font-bold text-xl md:text-2xl text-gray-900">Browse Categories</h2>
@@ -152,18 +123,22 @@ const CustomerDashboard = () => {
               </div>
             </Link>
 
-            {/* Dynamic Categories */}
+            {/* Dynamic Categories from DB */}
             {categories.map((cat) => (
               <Link to={`/collection/${cat.name.toLowerCase()}`} key={cat.id} className="shrink-0 group">
                 <div className="relative">
                   <div className="w-32 h-32 sm:w-40 sm:h-40 md:w-56 md:h-56 lg:w-64 lg:h-64 bg-gray-100 rounded-2xl overflow-hidden shadow-sm group-hover:shadow-md transition-all duration-300 ring-2 ring-transparent group-hover:ring-purple-100">
                     <img
-                      src={getCategoryImage(cat.name)}
+                      // Use the DB image URL, or fallback to the generic 'All' image if missing
+                      src={cat.imageUrl || AllImg}
                       alt={cat.name}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      onError={(e) => { e.target.src = AllImg; }} // Safety fallback if URL is broken
                     />
                   </div>
-                  <p className="mt-3 text-sm font-bold text-center text-gray-700 uppercase tracking-widest capitalize group-hover:text-purple-600 transition-colors">{cat.name}</p>
+                  <p className="mt-3 text-sm font-bold text-center text-gray-700 uppercase tracking-widest capitalize group-hover:text-purple-600 transition-colors">
+                    {cat.name}
+                  </p>
                 </div>
               </Link>
             ))}

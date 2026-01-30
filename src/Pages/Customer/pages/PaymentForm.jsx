@@ -2,9 +2,7 @@ import { useState } from "react";
 import { Loader2, CreditCard } from "lucide-react";
 import { API_BASE_URL } from "../../../config";
 import { useAuth } from "../../../context/AuthContext.jsx";
-import { API_BASE_URL } from "../config";
-import { useAuth } from "../context/AuthContext";
-import { useModal } from "../context/ModalContext";
+import { useModal } from "../../../context/ModalContext.jsx";
 
 export default function PaymentForm() {
   const { token, user } = useAuth(); // Assuming you have user info in context

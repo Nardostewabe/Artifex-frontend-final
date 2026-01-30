@@ -5,7 +5,6 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { API_BASE_URL } from '../../../config';
-import { API_BASE_URL } from '../../../config';
 import { useAuth } from '../../../context/AuthContext';
 import { useModal } from '../../../context/ModalContext';
 
