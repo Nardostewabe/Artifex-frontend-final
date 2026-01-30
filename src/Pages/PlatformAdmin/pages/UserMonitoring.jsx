@@ -12,11 +12,13 @@ import {
   Inbox
 } from "lucide-react";
 import { useAuth } from "../../../context/AuthContext";
+import { useModal } from "../../../context/ModalContext";
 import { API_BASE_URL } from "../../../config";
 import { useNavigate } from "react-router-dom";
 
 // --- Sub-Component: User Details Modal ---
 const UserDetailsModal = ({ isOpen, onClose, userId, token, onActionSuccess }) => {
+  const { showAlert } = useModal();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -59,14 +61,14 @@ const UserDetailsModal = ({ isOpen, onClose, userId, token, onActionSuccess }) =
         body: JSON.stringify(warnText)
       });
       if (resp.ok) {
-        alert("Warning sent to user.");
+        showAlert("Warning sent to user.", "Success", "success");
         setShowWarnInput(false);
         setWarnText("");
       } else {
         throw new Error("Failed to send warning");
       }
     } catch (err) {
-      alert(err.message);
+      showAlert(err.message, "Warning Failed", "danger");
     } finally {
       setProcessing(false);
     }
@@ -80,7 +82,7 @@ const UserDetailsModal = ({ isOpen, onClose, userId, token, onActionSuccess }) =
         headers: { "Authorization": `Bearer ${token}` }
       });
       if (resp.ok) {
-        alert("User status updated.");
+        showAlert("User status updated.", "Success", "success");
         onActionSuccess();
         onClose();
         setShowConfirmSuspend(false);
@@ -88,7 +90,7 @@ const UserDetailsModal = ({ isOpen, onClose, userId, token, onActionSuccess }) =
         throw new Error("Failed to update user status");
       }
     } catch (err) {
-      alert(err.message);
+      showAlert(err.message, "Action Failed", "danger");
     } finally {
       setProcessing(false);
     }

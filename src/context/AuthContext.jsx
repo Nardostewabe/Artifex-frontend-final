@@ -1,9 +1,11 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { decodeToken } from "../utils/jwt";
+import { useModal } from "./ModalContext";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
+  const { showAlert } = useModal();
   // Initialize state by checking local storage
   const [token, setToken] = useState(localStorage.getItem("token"));
   const [user, setUser] = useState(localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : null);
@@ -32,8 +34,8 @@ export const AuthProvider = ({ children }) => {
           logout();
         } else {
           // Auto logout when time expires
-          const timer = setTimeout(() => {
-            alert("Session expired. Please log in again.");
+          const timer = setTimeout(async () => {
+            await showAlert("Session expired. Please log in again.", "Session Expired", "warning");
             logout();
           }, timeLeft);
 

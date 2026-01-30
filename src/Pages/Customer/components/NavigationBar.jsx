@@ -4,6 +4,7 @@ import logo from '../../../assets/Artifex logo 2_2/6.png'; // Make sure this pat
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
 import { useCart } from '../../../context/CartContext';
+import ThemeToggle from '../../../components/ThemeToggle';
 
 const Navigationbar = () => {
     const [isScrolled, setIsScrolled] = useState(false);
@@ -109,6 +110,8 @@ const Navigationbar = () => {
                             </div>
                         )}
 
+                        <ThemeToggle className="hidden md:block" />
+
                         <button
                             onClick={() => setIsSearchOpen(true)}
                             className="text-gray-700 hover:text-blue-400 p-1 transition-colors"
@@ -141,6 +144,7 @@ const Navigationbar = () => {
                         }`}
                 >
                     <div className="flex flex-col items-center py-8 space-y-6">
+                        <ThemeToggle />
                         {navLinks.map((link) => (
                             <Link
                                 key={link.name}
@@ -174,7 +178,7 @@ const Navigationbar = () => {
                         </div>
                     </div>
                 </div>
-            </nav>
+            </nav >
 
             {isMobileMenuOpen && (
                 <div
@@ -182,7 +186,8 @@ const Navigationbar = () => {
                     style={{ top: '80px' }}
                     onClick={() => setIsMobileMenuOpen(false)}
                 />
-            )}
+            )
+            }
 
             {/* SEARCH OVERLAY */}
             <div className={`fixed inset-0 z-[60] bg-white/95 backdrop-blur-md transition-all duration-500 ${isSearchOpen ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0 pointer-events-none'}`}>

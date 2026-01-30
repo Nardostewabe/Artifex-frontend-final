@@ -86,11 +86,11 @@ const Shop = () => {
   if (isLoading) return <div className="h-screen w-full flex items-center justify-center"><Loader2 className="animate-spin text-purple-600" size={48} /></div>;
 
   return (
-    <div className="pt-24 pb-12 px-4 sm:px-6 min-h-screen w-screen bg-gradient-to-br from-[#bfdbfe] to-[#e9d5ff] ">
+    <div className="pt-24 pb-12 px-4 sm:px-6 min-h-screen w-screen bg-gradient-to-br from-[#bfdbfe] to-[#e9d5ff] dark:from-slate-900 dark:to-[#1e1b4b] transition-colors duration-500">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
-          <h1 className="text-3xl md:text-4xl font-serif text-gray-900">Shop Collection</h1>
+          <h1 className="text-3xl md:text-4xl font-serif text-gray-900 dark:text-white transition-colors">Shop Collection</h1>
           <div className="relative w-full md:w-80">
             <Search className="absolute left-3 top-3 text-gray-400" size={20} />
             <input
@@ -98,7 +98,7 @@ const Shop = () => {
               placeholder="Search..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 rounded-full border border-gray-200 focus:outline-none focus:border-purple-500 shadow-sm"
+              className="w-full pl-10 pr-4 py-2.5 rounded-full border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:outline-none focus:border-purple-500 shadow-sm transition-colors"
             />
           </div>
         </div>
@@ -106,10 +106,10 @@ const Shop = () => {
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Sidebar */}
           <aside className="w-full lg:w-64 flex-shrink-0">
-            <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 sticky top-24">
+            <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 sticky top-24 transition-colors">
               <div className="flex items-center gap-2 mb-4">
-                <Filter size={20} className="text-gray-500" />
-                <h3 className="font-bold text-gray-900">Categories</h3>
+                <Filter size={20} className="text-gray-500 dark:text-gray-400" />
+                <h3 className="font-bold text-gray-900 dark:text-white">Categories</h3>
               </div>
               <div className="flex lg:flex-col gap-2 overflow-x-auto pb-2 lg:pb-0 hide-scrollbar">
                 <button
@@ -122,7 +122,7 @@ const Shop = () => {
                   <button
                     key={cat.id}
                     onClick={() => handleCategoryClick(cat.id)}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium text-left transition-colors whitespace-nowrap ${selectedCategoryId === cat.id ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-600 hover:bg-gray-100'}`}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium text-left transition-colors whitespace-nowrap ${selectedCategoryId === cat.id ? 'bg-gray-900 dark:bg-purple-600 text-white' : 'bg-gray-50 dark:bg-slate-700 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-600'}`}
                   >
                     {cat.name}
                   </button>
@@ -142,8 +142,8 @@ const Shop = () => {
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredProducts.map((product) => (
-                  <div key={product.id} onClick={() => navigate(`/customer/product/${product.id}`)} className="group bg-white rounded-xl shadow-sm hover:shadow-md transition-all cursor-pointer overflow-hidden border border-gray-100">
-                    <div className="h-64 bg-gray-100 relative overflow-hidden">
+                  <div key={product.id} onClick={() => navigate(`/customer/product/${product.id}`)} className="group bg-white dark:bg-slate-800 rounded-xl shadow-sm hover:shadow-md transition-all cursor-pointer overflow-hidden border border-gray-100 dark:border-slate-700">
+                    <div className="h-64 bg-gray-100 dark:bg-slate-700 relative overflow-hidden">
                       {product.images && product.images.length > 0 ? (
                         <img src={product.images[0].url} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                       ) : (
@@ -152,9 +152,9 @@ const Shop = () => {
                       {product.isTrending && <div className="absolute top-3 right-3 bg-orange-500 text-white text-[10px] font-bold px-2 py-1 rounded-full shadow-sm">HOT</div>}
                     </div>
                     <div className="p-5">
-                      <h3 className="font-bold text-gray-900 mb-1 group-hover:text-purple-600 transition-colors">{product.name}</h3>
+                      <h3 className="font-bold text-gray-900 dark:text-white mb-1 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">{product.name}</h3>
                       <div className="flex justify-between items-center">
-                        <span className="text-gray-900 font-medium">ETB {product.price}</span>
+                        <span className="text-gray-900 dark:text-gray-200 font-medium">ETB {product.price}</span>
                         <RatingDisplay productId={product.id} initialRating={product.averageRating || product.rating} />
                       </div>
                     </div>

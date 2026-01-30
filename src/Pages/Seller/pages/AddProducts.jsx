@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext.jsx';
+import { useModal } from '../../../context/ModalContext.jsx';
 import { API_BASE_URL } from "../../../config.js";
 
 import {
@@ -11,6 +12,7 @@ import {
 const AddProduct = () => {
   const navigate = useNavigate();
   const { token } = useAuth();
+  const { showAlert } = useModal();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
@@ -85,7 +87,7 @@ const AddProduct = () => {
 
     const validFiles = files.filter(file => {
       if (file.size > 4 * 1024 * 1024) {
-        alert(`File ${file.name} is too big! Max 4MB.`);
+        showAlert(`File ${file.name} is too big! Max 4MB.`, "Upload Error", "warning");
         return false;
       }
       return true;

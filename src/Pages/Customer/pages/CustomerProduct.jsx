@@ -147,14 +147,14 @@ const CustomerProduct = () => {
   if (error || !product) return <div className="text-center py-20 text-red-500 font-bold">{error || "Product not found"}</div>;
 
   return (
-    <div className="min-h-screen w-screen bg-gradient-to-br from-[#bfdbfe] to-[#e9d5ff] pt-20 md:pt-24 pb-12 px-4 sm:px-6">
+    <div className="min-h-screen w-screen bg-gradient-to-br from-[#bfdbfe] to-[#e9d5ff] dark:from-slate-900 dark:to-[#1e1b4b] pt-20 md:pt-24 pb-12 px-4 sm:px-6 transition-colors duration-500">
       {/* Breadcrumb */}
-      <div className="flex items-center gap-2 mb-6 text-sm text-gray-600">
+      <div className="flex items-center gap-2 mb-6 text-sm text-gray-600 dark:text-gray-400">
         <span className="cursor-pointer hover:underline" onClick={() => navigate('/')}>Home</span>
         <span>/</span>
         <span className="cursor-pointer hover:underline" onClick={() => navigate('/shop')}>Shop</span>
         <span>/</span>
-        <span className="font-semibold text-gray-900">{product.name}</span>
+        <span className="font-semibold text-gray-900 dark:text-gray-200">{product.name}</span>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
@@ -162,7 +162,7 @@ const CustomerProduct = () => {
         {/* ✅ LEFT SIDE: Image Gallery */}
         <div className="flex flex-col gap-4">
           {/* Main Large Image */}
-          <div className="bg-gray-100 rounded-xl overflow-hidden shadow-sm h-96 flex items-center justify-center border border-gray-200">
+          <div className="bg-gray-100 dark:bg-slate-800 rounded-xl overflow-hidden shadow-sm h-96 flex items-center justify-center border border-gray-200 dark:border-slate-700 transition-colors">
             {activeImage ? (
               <img src={activeImage} alt={product.name} className="w-full h-full object-cover transition-all duration-300" />
             ) : (
@@ -179,7 +179,7 @@ const CustomerProduct = () => {
                   onClick={() => setActiveImage(img.url)}
                   className={`w-20 h-20 rounded-lg overflow-hidden border-2 flex-shrink-0 transition-all ${activeImage === img.url
                     ? 'border-purple-600 ring-2 ring-purple-100'
-                    : 'border-transparent hover:border-gray-300'
+                    : 'border-transparent hover:border-gray-300 dark:hover:border-slate-600'
                     }`}
                 >
                   <img src={img.url} alt="Thumbnail" className="w-full h-full object-cover" />
@@ -192,9 +192,9 @@ const CustomerProduct = () => {
         {/* RIGHT SIDE: Details */}
         <div className="flex flex-col space-y-6">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">{product.name}</h1>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">{product.name}</h1>
             <div className="flex items-center gap-4">
-              <span className="text-2xl font-bold text-gray-800">ETB {product.price}</span>
+              <span className="text-2xl font-bold text-gray-800 dark:text-gray-200">ETB {product.price}</span>
               {reviewRating.count > 0 && (
                 <div className="flex items-center gap-1 bg-purple-50 text-purple-700 px-3 py-1 rounded-full text-sm">
                   <Star size={16} className="fill-purple-700 text-purple-700" />
@@ -234,7 +234,7 @@ const CustomerProduct = () => {
               </button>
               <button
                 onClick={toggleFavorite}
-                className={`p-4 rounded-xl border transition-all ${isFavorited ? 'bg-red-50 border-red-200 text-red-500' : 'border-gray-200 text-gray-400 hover:bg-gray-50'}`}
+                className={`p-4 rounded-xl border transition-all ${isFavorited ? 'bg-red-50 border-red-200 text-red-500' : 'border-gray-200 dark:border-slate-700 text-gray-400 hover:bg-gray-50 dark:hover:bg-slate-800'}`}
                 title={isFavorited ? "Remove from favorites" : "Add to favorites"}
               >
                 <Heart size={20} className={isFavorited ? "fill-red-500" : ""} />
@@ -250,8 +250,8 @@ const CustomerProduct = () => {
             </div>
           </div>
 
-          <div className="prose text-gray-700">
-            <h3 className="font-semibold text-gray-900">Description</h3>
+          <div className="prose text-gray-700 dark:text-gray-300">
+            <h3 className="font-semibold text-gray-900 dark:text-white">Description</h3>
             <p className="whitespace-pre-wrap">{product.description || "No description provided."}</p>
           </div>
         </div>

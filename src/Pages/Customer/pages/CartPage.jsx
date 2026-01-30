@@ -10,13 +10,13 @@ import { recordPurchase } from '../../../services/purchaseService';
 const CartPage = () => {
     const { cartItems, removeFromCart, updateQuantity, getCartTotal, clearCart } = useCart();
     // ✅ Extract 'user' to get email/name for Chapa
-    const { token, user } = useAuth(); 
+    const { token, user } = useAuth();
     const navigate = useNavigate();
 
     const total = getCartTotal();
     // ✅ Calculate the 50% Split
     const depositAmount = total / 2;
-    
+
     const [isProcessing, setIsProcessing] = useState(false);
 
     // Modal State
@@ -102,7 +102,7 @@ const CartPage = () => {
                         const errorData = await orderResponse.json();
                         throw new Error(errorData.message || "Failed to create order.");
                     }
-                    
+
                     // --- STEP B: Initialize Payment for 50% Amount ---
                     const paymentResponse = await fetch(`${API_BASE_URL}/api/Payment/initialize`, {
                         method: 'POST',
@@ -126,9 +126,9 @@ const CartPage = () => {
 
                     // --- STEP C: Record Purchase & Redirect ---
                     await recordPurchase(cartItems.map(item => item.id));
-                    
+
                     // Clear cart locally since order is created in DB
-                    clearCart(); 
+                    clearCart();
 
                     // ✅ ROUTING: Redirect to Chapa
                     if (paymentData.checkoutUrl) {
@@ -165,8 +165,8 @@ const CartPage = () => {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-[#bfdbfe] to-[#e9d5ff] pt-32 pb-12 px-4 sm:px-6 relative">
-            
+        <div className="min-h-screen bg-gradient-to-br from-[#bfdbfe] to-[#e9d5ff] dark:from-slate-900 dark:to-[#1e1b4b] pt-32 pb-12 px-4 sm:px-6 relative transition-colors duration-500">
+
             {/* Full Screen Loader for Redirection */}
             {isProcessing && (
                 <div className="fixed inset-0 bg-white/80 backdrop-blur-sm z-50 flex flex-col items-center justify-center">
@@ -177,36 +177,36 @@ const CartPage = () => {
             )}
 
             <div className="max-w-7xl mx-auto">
-                <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-8">
+                <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white mb-8">
                     <ArrowLeft size={20} /> Continue Shopping
                 </button>
 
-                <h1 className="text-3xl font-bold text-gray-900 mb-8">Shopping Cart</h1>
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">Shopping Cart</h1>
 
                 <div className="flex flex-col lg:flex-row gap-8">
                     {/* Items List (Same as before) */}
-                    <div className="flex-1 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div className="flex-1 bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 overflow-hidden transition-colors">
                         <div className="p-6 space-y-6">
                             {cartItems.map((item) => (
-                                <div key={item.id} className="flex gap-4 py-4 border-b border-gray-100 last:border-0">
+                                <div key={item.id} className="flex gap-4 py-4 border-b border-gray-100 dark:border-slate-700 last:border-0">
                                     <div className="w-24 h-24 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
                                         {item.images?.[0] ? <img src={item.images[0].url} alt={item.name} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-gray-400"><ShoppingBag size={24} /></div>}
                                     </div>
                                     <div className="flex-1 flex flex-col justify-between">
                                         <div className="flex justify-between items-start">
                                             <div>
-                                                <h3 className="font-bold text-gray-900">{item.name}</h3>
-                                                <p className="text-sm text-gray-500">ETB {item.price}</p>
+                                                <h3 className="font-bold text-gray-900 dark:text-white">{item.name}</h3>
+                                                <p className="text-sm text-gray-500 dark:text-gray-400">ETB {item.price}</p>
                                             </div>
                                             <button onClick={() => removeFromCart(item.id)} className="text-red-400 hover:text-red-500 p-1"><Trash2 size={18} /></button>
                                         </div>
                                         <div className="flex items-center gap-3 mt-2">
-                                            <div className="flex items-center border border-gray-200 rounded-lg">
-                                                <button onClick={() => updateQuantity(item.id, item.quantity - 1)} className="px-3 py-1 text-gray-600 hover:bg-gray-50 border-r border-gray-200">-</button>
-                                                <span className="px-3 py-1 text-gray-900 font-medium min-w-[2.5rem] text-center">{item.quantity}</span>
-                                                <button onClick={() => updateQuantity(item.id, item.quantity + 1)} className="px-3 py-1 text-gray-600 hover:bg-gray-50 border-l border-gray-200">+</button>
+                                            <div className="flex items-center border border-gray-200 dark:border-slate-600 rounded-lg">
+                                                <button onClick={() => updateQuantity(item.id, item.quantity - 1)} className="px-3 py-1 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700 border-r border-gray-200 dark:border-slate-600">-</button>
+                                                <span className="px-3 py-1 text-gray-900 dark:text-white font-medium min-w-[2.5rem] text-center">{item.quantity}</span>
+                                                <button onClick={() => updateQuantity(item.id, item.quantity + 1)} className="px-3 py-1 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700 border-l border-gray-200 dark:border-slate-600">+</button>
                                             </div>
-                                            <span className="text-gray-900 font-bold ml-auto">ETB {(item.price * item.quantity).toFixed(2)}</span>
+                                            <span className="text-gray-900 dark:text-white font-bold ml-auto">ETB {(item.price * item.quantity).toFixed(2)}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -216,15 +216,15 @@ const CartPage = () => {
 
                     {/* Order Summary */}
                     <div className="w-full lg:w-96 flex-shrink-0">
-                        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 sticky top-24">
-                            <h2 className="text-lg font-bold text-gray-900 mb-6">Payment Details</h2>
+                        <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 sticky top-24 transition-colors">
+                            <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-6">Payment Details</h2>
                             <div className="space-y-4 mb-6">
-                                <div className="flex justify-between text-gray-600">
+                                <div className="flex justify-between text-gray-600 dark:text-gray-300">
                                     <span>Subtotal</span>
                                     <span>ETB {total.toFixed(2)}</span>
                                 </div>
                                 <div className="h-px bg-gray-100 my-4"></div>
-                                
+
                                 {/* 50% Split Visualization */}
                                 <div className="flex justify-between text-purple-600 font-bold">
                                     <span>Due Now (50%)</span>
@@ -235,8 +235,8 @@ const CartPage = () => {
                                     <span>ETB {depositAmount.toLocaleString()}</span>
                                 </div>
 
-                                <div className="h-px bg-gray-100 my-4"></div>
-                                <div className="flex justify-between text-gray-900 font-bold text-lg">
+                                <div className="h-px bg-gray-100 dark:bg-slate-700 my-4"></div>
+                                <div className="flex justify-between text-gray-900 dark:text-white font-bold text-lg">
                                     <span>Total</span>
                                     <span>ETB {total.toFixed(2)}</span>
                                 </div>

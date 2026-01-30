@@ -5,9 +5,11 @@ import { useAuth } from '../../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
 import DisputeModal from '../../../components/DisputeModal';
+import { useModal } from '../../../context/ModalContext';
 
 const CustomerOrders = () => {
     const { token } = useAuth();
+    const { showAlert } = useModal();
     const navigate = useNavigate();
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -118,7 +120,7 @@ const CustomerOrders = () => {
                 isOpen={disputeModalOpen}
                 onClose={() => setDisputeModalOpen(false)}
                 orderId={selectedOrderId}
-                onSuccess={() => alert("Dispute submitted successfully to admins.")}
+                onSuccess={() => showAlert("Dispute submitted successfully to admins.", "Success", "success")}
             />
         </div>
     );
