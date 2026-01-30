@@ -42,6 +42,8 @@ import ForgotPassword from './Pages/Public/ForgotPassword.jsx';
 import ResetPassword from './Pages/Public/ResetPassword.jsx';
 import About from './Pages/Public/About.jsx';
 import Contact from './Pages/Public/Contact.jsx';
+import PaymentForm from './Pages/Customer/pages/PaymentForm.jsx';
+import PaymentSuccess from './Pages/Customer/pages/PaymentSuccess.jsx';
 
 const App = () => {
   return (

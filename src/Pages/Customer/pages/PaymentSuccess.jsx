@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { CheckCircle, XCircle, Loader2, ArrowLeft } from "lucide-react";
-import { API_BASE_URL } from "../config";
-import { useAuth } from "../context/AuthContext";
+import { API_BASE_URL } from "../../../config";
+import { useAuth } from "../../../context/AuthContext.jsx";
 
 export default function PaymentSuccess() {
   const [searchParams] = useSearchParams();
