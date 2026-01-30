@@ -40,6 +40,8 @@ import Favorites from './Pages/Customer/pages/Favorites.jsx';
 import CustomerOrders from './Pages/Customer/pages/CustomerOrders.jsx';
 import ForgotPassword from './Pages/Public/ForgotPassword.jsx';
 import ResetPassword from './Pages/Public/ResetPassword.jsx';
+import About from './Pages/Public/About.jsx';
+import Contact from './Pages/Public/Contact.jsx';
 
 const App = () => {
   return (
@@ -62,8 +64,8 @@ const App = () => {
                   <Route path="/shop" element={<Shop />} />
                   <Route path="/cart" element={<CartPage />} />
                   <Route path="/collections" element={<CustomerCollection />} />
-                  <Route path="/about" element={<div className="pt-32 text-center">About Page Coming Soon</div>} />
-                  <Route path="/contact" element={<div className="pt-32 text-center">Contact Page Coming Soon</div>} />
+                  <Route path="/about" element={<About />} />
+                  <Route path="/contact" element={<Contact />} />
                   <Route path="/signup" element={<Signup />} />
                   <Route path="/complete-signup" element={<CompleteSignup />} />
                   <Route path="/login" element={<Login />} />
@@ -97,6 +99,8 @@ const App = () => {
                     <Route path="/my-profile" element={<MyProfile />} />
                     <Route path="/favorites" element={<Favorites />} />
                     <Route path="/orders" element={<CustomerOrders />} />
+                   <Route path="/payment" element={<PaymentForm />} />
+<Route path="/payment/success" element={<PaymentSuccess />} />
                   </Route>
 
                 </Route>
