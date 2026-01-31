@@ -111,128 +111,154 @@ const UserDetailsModal = ({ isOpen, onClose, userId, token, onActionSuccess }) =
           </button>
         </div>
 
-        <div className="p-8 overflow-y-auto space-y-8">
-          {loading ? (
-            <div className="flex flex-col items-center py-20 text-slate-400">
-              <Loader2 className="animate-spin w-12 h-12 mb-4" />
-              <p className="font-bold">Retrieving complete profile...</p>
+      {/* ... inside UserDetailsModal ... */}
+
+<div className="p-8 overflow-y-auto space-y-8">
+  {loading ? (
+    <div className="flex flex-col items-center py-20 text-slate-400">
+      <Loader2 className="animate-spin w-12 h-12 mb-4" />
+      <p className="font-bold">Retrieving complete profile...</p>
+    </div>
+  ) : error ? (
+    <div className="p-6 bg-red-50 text-red-600 rounded-2xl border border-red-100 text-center">
+      <AlertCircle className="mx-auto mb-2" size={32} />
+      <p className="font-bold">{error}</p>
+    </div>
+  ) : (
+    <>
+      {/* Quick Stats */}
+      <div className="grid grid-cols-3 gap-4">
+        <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 text-center">
+          <p className="text-[10px] uppercase font-black text-slate-400 mb-1">Status</p>
+          <span className={`px-2 py-0.5 rounded-full text-[10px] font-black ${(user.status || user.Status || "Active") === "Active" ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-700"
+            }`}>
+            {user.status || user.Status || "Active"}
+          </span>
+        </div>
+        <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 text-center">
+          <p className="text-[10px] uppercase font-black text-slate-400 mb-1">Orders</p>
+          {/* ✅ FIXED: Checks OrderCount (Backend) OR orderCount (Frontend) */}
+          <p className="text-xl font-black text-slate-800 italic">
+            {user.OrderCount ?? user.orderCount ?? 0}
+          </p>
+        </div>
+        <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 text-center">
+          <p className="text-[10px] uppercase font-black text-slate-400 mb-1">Reports</p>
+          {/* ✅ FIXED: Checks ReportCount OR reportCount */}
+          <p className="text-xl font-black text-red-600 italic">
+            {user.ReportCount ?? user.reportCount ?? 0}
+          </p>
+        </div>
+      </div>
+
+      {/* Detail Fields */}
+      <div className="grid grid-cols-2 gap-6">
+        <div>
+          <h4 className="text-xs font-black text-slate-400 uppercase mb-2">Account History</h4>
+          <div className="space-y-3">
+            <div className="flex justify-between border-b border-slate-50 pb-2">
+              <span className="text-sm font-medium text-slate-500">Username</span>
+              <span className="text-sm font-bold text-slate-800">{user.username || user.Username}</span>
             </div>
-          ) : error ? (
-            <div className="p-6 bg-red-50 text-red-600 rounded-2xl border border-red-100 text-center">
-              <AlertCircle className="mx-auto mb-2" size={32} />
-              <p className="font-bold">{error}</p>
+            <div className="flex justify-between border-b border-slate-50 pb-2">
+              <span className="text-sm font-medium text-slate-500">Email</span>
+              <span className="text-sm font-bold text-slate-800">{user.email || user.Email}</span>
             </div>
-          ) : (
-            <>
-              {/* Quick Stats */}
-              <div className="grid grid-cols-3 gap-4">
-                <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 text-center">
-                  <p className="text-[10px] uppercase font-black text-slate-400 mb-1">Status</p>
-                  <span className={`px-2 py-0.5 rounded-full text-[10px] font-black ${(user.status || "Active") === "Active" ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-700"
-                    }`}>
-                    {user.status || "Active"}
+          </div>
+        </div>
+        <div>
+          <h4 className="text-xs font-black text-slate-400 uppercase mb-2">Platform Activity</h4>
+          <p className="text-sm text-slate-600">This user joined the community on <span className="font-bold text-slate-800">
+            {(user.joinedDate || user.JoinedDate) ? new Date(user.joinedDate || user.JoinedDate).toLocaleDateString() : "N/A"}
+          </span>.</p>
+        </div>
+      </div>
+
+      {/* Order History */}
+      <div>
+        <h4 className="text-xs font-black text-slate-400 uppercase mb-3 text-slate-700">Recent Transactions</h4>
+        <div className="space-y-2">
+          {/* ✅ FIXED: Checks RecentOrders OR recentOrders */}
+          {(user.RecentOrders || user.recentOrders)?.length > 0 ? (
+            (user.RecentOrders || user.recentOrders).map((o) => (
+              <div key={o.id || o.Id} className="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-100 hover:bg-white transition shadow-sm">
+                <div className="flex items-center gap-3">
+                  <div className="bg-white p-2 rounded-lg text-blue-500 shadow-inner italic font-black text-xs">
+                    #{o.id || o.Id}
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-slate-800 italic">Order Ref: {o.id || o.Id}</p>
+                    <p className="text-[10px] text-slate-400">
+                      {/* ✅ Checks date OR Date */}
+                      {(o.date || o.Date) ? new Date(o.date || o.Date).toLocaleDateString() : "N/A"}
+                    </p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  {/* ✅ Checks total OR Total */}
+                  <p className="text-xs font-black text-slate-800">
+                    ${(o.total || o.Total || 0).toFixed(2)}
+                  </p>
+                  <span className={`text-[9px] font-bold uppercase ${
+                    (o.status || o.Status) === "Delivered" ? "text-emerald-500" : "text-amber-500"
+                  }`}>
+                    {o.status || o.Status}
                   </span>
                 </div>
-                <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 text-center">
-                  <p className="text-[10px] uppercase font-black text-slate-400 mb-1">Orders</p>
-                  <p className="text-xl font-black text-slate-800 italic">{user.orderCount || 0}</p>
-                </div>
-                <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 text-center">
-                  <p className="text-[10px] uppercase font-black text-slate-400 mb-1">Reports</p>
-                  <p className="text-xl font-black text-red-600 italic">{user.reportCount || 0}</p>
-                </div>
               </div>
-
-              {/* Detail Fields */}
-              <div className="grid grid-cols-2 gap-6">
-                <div>
-                  <h4 className="text-xs font-black text-slate-400 uppercase mb-2">Account History</h4>
-                  <div className="space-y-3">
-                    <div className="flex justify-between border-b border-slate-50 pb-2">
-                      <span className="text-sm font-medium text-slate-500">Username</span>
-                      <span className="text-sm font-bold text-slate-800">{user.username}</span>
-                    </div>
-                    <div className="flex justify-between border-b border-slate-50 pb-2">
-                      <span className="text-sm font-medium text-slate-500">Email</span>
-                      <span className="text-sm font-bold text-slate-800">{user.email}</span>
-                    </div>
-                  </div>
-                </div>
-                <div>
-                  <h4 className="text-xs font-black text-slate-400 uppercase mb-2">Platform Activity</h4>
-                  <p className="text-sm text-slate-600">This user joined the community on <span className="font-bold text-slate-800">{user.joinedDate ? new Date(user.joinedDate).toLocaleDateString() : "N/A"}</span>.</p>
-                </div>
-              </div>
-
-              {/* Order History */}
-              <div>
-                <h4 className="text-xs font-black text-slate-400 uppercase mb-3 text-slate-700">Recent Transactions</h4>
-                <div className="space-y-2">
-                  {user.recentOrders?.length > 0 ? user.recentOrders.map(o => (
-                    <div key={o.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-100 hover:bg-white transition shadow-sm">
-                      <div className="flex items-center gap-3">
-                        <div className="bg-white p-2 rounded-lg text-blue-500 shadow-inner italic font-black text-xs">#{o.id}</div>
-                        <div>
-                          <p className="text-xs font-bold text-slate-800 italic">Order Ref: {o.id}</p>
-                          <p className="text-[10px] text-slate-400">{o.date ? new Date(o.date).toLocaleDateString() : "N/A"}</p>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-xs font-black text-slate-800">${o.total}</p>
-                        <span className={`text-[9px] font-bold uppercase ${o.status === "Delivered" ? "text-emerald-500" : "text-amber-500"
-                          }`}>{o.status}</span>
-                      </div>
-                    </div>
-                  )) : (
-                    <p className="text-sm text-slate-400 italic px-4">No recent transactions found.</p>
-                  )}
-                </div>
-              </div>
-
-              {/* Administrative Actions */}
-              <div className="pt-6 border-t border-slate-100 flex flex-col gap-4">
-                <h4 className="text-xs font-black text-slate-400 uppercase">Administrative Actions</h4>
-
-                {showWarnInput ? (
-                  <div className="bg-blue-50 p-4 rounded-2xl border border-blue-100 space-y-3">
-                    <textarea
-                      placeholder="Enter warning message..."
-                      className="w-full p-3 bg-white rounded-xl text-sm border-none focus:ring-2 focus:ring-blue-400 transition min-h-[100px]"
-                      value={warnText}
-                      onChange={(e) => setWarnText(e.target.value)}
-                    />
-                    <div className="flex justify-end gap-2">
-                      <button onClick={() => setShowWarnInput(false)} className="px-4 py-2 text-xs font-bold text-slate-500">Cancel</button>
-                      <button
-                        onClick={handleWarn}
-                        disabled={processing}
-                        className="px-6 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold shadow-lg shadow-blue-200"
-                      >
-                        {processing ? "Sending..." : "Send Warning"}
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="flex gap-4">
-                    <button
-                      onClick={() => setShowWarnInput(true)}
-                      className="flex-1 flex items-center justify-center gap-2 py-3 bg-blue-50 text-blue-600 rounded-2xl text-xs font-black hover:bg-blue-100 transition shadow-sm"
-                    >
-                      <MessageSquare size={16} /> Send Warning
-                    </button>
-                    <button
-                      onClick={() => setShowConfirmSuspend(true)}
-                      disabled={processing}
-                      className="flex-1 flex items-center justify-center gap-2 py-3 bg-red-50 text-red-600 rounded-2xl text-xs font-black hover:bg-red-100 transition shadow-sm"
-                    >
-                      <ShieldAlert size={16} /> {(user.status || "Active") === "Active" ? "Suspend User" : "Unsuspend User"}
-                    </button>
-                  </div>
-                )}
-              </div>
-            </>
+            ))
+          ) : (
+            <p className="text-sm text-slate-400 italic px-4">No recent transactions found.</p>
           )}
         </div>
+      </div>
+
+      {/* Administrative Actions (Kept exactly as is) */}
+      <div className="pt-6 border-t border-slate-100 flex flex-col gap-4">
+          {/* ... Your warning/suspend buttons logic stays here ... */}
+          {/* (I am hiding this part to save space, but DO NOT DELETE IT from your code) */}
+          <h4 className="text-xs font-black text-slate-400 uppercase">Administrative Actions</h4>
+
+            {showWarnInput ? (
+                <div className="bg-blue-50 p-4 rounded-2xl border border-blue-100 space-y-3">
+                <textarea
+                    placeholder="Enter warning message..."
+                    className="w-full p-3 bg-white rounded-xl text-sm border-none focus:ring-2 focus:ring-blue-400 transition min-h-[100px]"
+                    value={warnText}
+                    onChange={(e) => setWarnText(e.target.value)}
+                />
+                <div className="flex justify-end gap-2">
+                    <button onClick={() => setShowWarnInput(false)} className="px-4 py-2 text-xs font-bold text-slate-500">Cancel</button>
+                    <button
+                    onClick={handleWarn}
+                    disabled={processing}
+                    className="px-6 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold shadow-lg shadow-blue-200"
+                    >
+                    {processing ? "Sending..." : "Send Warning"}
+                    </button>
+                </div>
+                </div>
+            ) : (
+                <div className="flex gap-4">
+                <button
+                    onClick={() => setShowWarnInput(true)}
+                    className="flex-1 flex items-center justify-center gap-2 py-3 bg-blue-50 text-blue-600 rounded-2xl text-xs font-black hover:bg-blue-100 transition shadow-sm"
+                >
+                    <MessageSquare size={16} /> Send Warning
+                </button>
+                <button
+                    onClick={() => setShowConfirmSuspend(true)}
+                    disabled={processing}
+                    className="flex-1 flex items-center justify-center gap-2 py-3 bg-red-50 text-red-600 rounded-2xl text-xs font-black hover:bg-red-100 transition shadow-sm"
+                >
+                    <ShieldAlert size={16} /> {(user.status || "Active") === "Active" ? "Suspend User" : "Unsuspend User"}
+                </button>
+                </div>
+            )}
+      </div>
+    </>
+  )}
+</div>
 
         <ConfirmationModal
           isOpen={showConfirmSuspend}
