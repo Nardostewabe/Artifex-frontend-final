@@ -40,6 +40,7 @@ import About from './Pages/Public/About.jsx';
 import Contact from './Pages/Public/Contact.jsx';
 import PaymentForm from './Pages/Customer/pages/PaymentForm.jsx';
 import PaymentSuccess from './Pages/Customer/pages/PaymentSuccess.jsx';
+import AuthProvider from './context/AuthContext.jsx';
 
 import HomeRedirect from './components/HomeRedirect.jsx';
 
