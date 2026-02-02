@@ -5,7 +5,7 @@ import { API_BASE_URL } from "../../../config.js";
 import RatingDisplay from '../../../components/RatingDisplay.jsx';
 
 // We only need one static image now for the "All Items" link or as a fallback
-import AllImg from '../../../assets/Categories/all.jpg'; 
+import AllImg from '../../../assets/categories/all.jpg'; 
 
 const CustomerDashboard = () => {
   const navigate = useNavigate();
