@@ -40,7 +40,13 @@ import About from './Pages/Public/About.jsx';
 import Contact from './Pages/Public/Contact.jsx';
 import PaymentForm from './Pages/Customer/pages/PaymentForm.jsx';
 import PaymentSuccess from './Pages/Customer/pages/PaymentSuccess.jsx';
-import AuthProvider from './context/AuthContext.jsx';
+import { AuthProvider } from './context/AuthContext.jsx';
+import { CartProvider } from './context/CartContext.jsx';
+import PublicLayout from './layouts/PublicLayout.jsx';
+import ProtectedRoute from './components/ProtectedRoute.jsx';
+import SellerLayout from './layouts/SellerLayout.jsx';
+import PlatformAdminLayout from './layouts/PlatformAdminLayout.jsx';
+
 
 import HomeRedirect from './components/HomeRedirect.jsx';
 
