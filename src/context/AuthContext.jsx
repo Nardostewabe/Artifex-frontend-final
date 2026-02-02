@@ -1,4 +1,5 @@
-import { createContext, useContext, useState, useEffect } from "react";
+// ✅ FIX: Added 'React' to the import
+import React, { createContext, useContext, useState, useEffect } from "react";
 import { decodeToken } from "../utils/jwt";
 import { useModal } from "./ModalContext";
 
@@ -35,7 +36,10 @@ export const AuthProvider = ({ children }) => {
         } else {
           // Auto logout when time expires
           const timer = setTimeout(async () => {
-            await showAlert("Session expired. Please log in again.", "Session Expired", "warning");
+            // Check if showAlert exists before calling it (safety check)
+            if (showAlert) { 
+                await showAlert("Session expired. Please log in again.", "Session Expired", "warning");
+            }
             logout();
           }, timeLeft);
 
