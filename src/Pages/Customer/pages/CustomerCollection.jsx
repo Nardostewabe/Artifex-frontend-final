@@ -108,7 +108,7 @@ const CustomerCollection = () => {
                     By {product.sellerName || "Local Artisan"}
                   </p>
                   <div className="flex justify-between items-center pt-2 border-t border-gray-50">
-                    <span className="font-bold text-gray-900">${product.price}</span>
+                    <span className="font-bold text-gray-900">ETB {product.price}</span>
                     <RatingDisplay productId={product.id} initialRating={product.averageRating || product.rating} />
                   </div>
                 </div>

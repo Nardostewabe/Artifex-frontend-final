@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import {
   User,
   ShoppingBag,
-  DollarSign,
   AlertTriangle,
   Sparkles,
   TrendingUp,
@@ -95,7 +94,7 @@ export default function Dashboard() {
     {
       title: "Total Revenue",
       value: (stats?.totalRevenue ?? stats?.TotalRevenue) ? `ETB ${(stats?.totalRevenue ?? stats?.TotalRevenue).toLocaleString()}` : "ETB 0",
-      icon: <DollarSign className="w-6 h-6" />,
+      icon: <span className="font-bold text-xs uppercase opacity-70">ETB</span>,
       theme: "from-emerald-100 to-teal-100 text-emerald-600",
       badge: "Earnings"
     },

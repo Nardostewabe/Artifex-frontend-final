@@ -11,13 +11,14 @@ import {
   X,
   ChevronRight,
   MoreHorizontal,
-  DollarSign,
   Loader2,
   Store
 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { API_BASE_URL } from '../../../config';
 import { useAuth } from '../../../context/AuthContext';
+
+const ETBIcon = () => <span className="font-bold text-xs">ETB</span>;
 
 
 const SellerDashboard = () => {
@@ -32,7 +33,7 @@ const SellerDashboard = () => {
 
   // Computed Stats
   const [stats, setStats] = useState([
-    { label: 'Total Revenue', value: 'ETB 0.00', change: '--', icon: DollarSign, color: 'text-emerald-500', bg: 'bg-emerald-50' },
+    { label: 'Total Revenue', value: 'ETB 0.00', change: '--', icon: ETBIcon, color: 'text-emerald-500', bg: 'bg-emerald-50' },
     { label: 'Active Orders', value: '0', change: '0 Pending', icon: Package, color: 'text-[#8b5cf6]', bg: 'bg-purple-50' },
     { label: 'Total Products', value: '0', change: '0 Low Stock', icon: ShoppingBag, color: 'text-[#0ea5e9]', bg: 'bg-blue-50' },
     { label: 'Completed Orders', value: '0', change: 'Lifetime', icon: Check, color: 'text-amber-500', bg: 'bg-amber-50' },

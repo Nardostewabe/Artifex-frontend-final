@@ -8,13 +8,15 @@ import {
   ClipboardList,
   LogOut,
 } from "lucide-react";
+import { useAuth } from "../../../context/AuthContext";
 
 export default function Sidebar({ pendingReportsCount = 0, pendingRegistersCount = 0 }) {
   const navigate = useNavigate();
 
+  const { logout } = useAuth();
+
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
+    logout();
     navigate("/login");
   };
 

@@ -84,7 +84,9 @@ const CartPage = () => {
                     const orderPayload = {
                         items: cartItems.map(item => ({
                             productId: item.id,
-                            quantity: item.quantity
+                            quantity: item.quantity,
+                            selectedColor: item.selectedColor || null,
+                            selectedSize: item.selectedSize || null
                         }))
                     };
 
@@ -188,7 +190,7 @@ const CartPage = () => {
                     <div className="flex-1 bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 overflow-hidden transition-colors">
                         <div className="p-6 space-y-6">
                             {cartItems.map((item) => (
-                                <div key={item.id} className="flex gap-4 py-4 border-b border-gray-100 dark:border-slate-700 last:border-0">
+                                <div key={item.cartItemId} className="flex gap-4 py-4 border-b border-gray-100 dark:border-slate-700 last:border-0">
                                     <div className="w-24 h-24 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
                                         {item.images?.[0] ? <img src={item.images[0].url} alt={item.name} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-gray-400"><ShoppingBag size={24} /></div>}
                                     </div>
@@ -197,14 +199,29 @@ const CartPage = () => {
                                             <div>
                                                 <h3 className="font-bold text-gray-900 dark:text-white">{item.name}</h3>
                                                 <p className="text-sm text-gray-500 dark:text-gray-400">ETB {item.price}</p>
+                                                {/* ✅ Show Customization Options */}
+                                                {(item.selectedColor || item.selectedSize) && (
+                                                    <div className="flex flex-wrap gap-2 mt-1">
+                                                        {item.selectedColor && (
+                                                            <span className="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full font-medium">
+                                                                Color: {item.selectedColor}
+                                                            </span>
+                                                        )}
+                                                        {item.selectedSize && (
+                                                            <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-medium">
+                                                                Size: {item.selectedSize}
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                )}
                                             </div>
-                                            <button onClick={() => removeFromCart(item.id)} className="text-red-400 hover:text-red-500 p-1"><Trash2 size={18} /></button>
+                                            <button onClick={() => removeFromCart(item.cartItemId)} className="text-red-400 hover:text-red-500 p-1"><Trash2 size={18} /></button>
                                         </div>
                                         <div className="flex items-center gap-3 mt-2">
                                             <div className="flex items-center border border-gray-200 dark:border-slate-600 rounded-lg">
-                                                <button onClick={() => updateQuantity(item.id, item.quantity - 1)} className="px-3 py-1 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700 border-r border-gray-200 dark:border-slate-600">-</button>
+                                                <button onClick={() => updateQuantity(item.cartItemId, item.quantity - 1)} className="px-3 py-1 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700 border-r border-gray-200 dark:border-slate-600">-</button>
                                                 <span className="px-3 py-1 text-gray-900 dark:text-white font-medium min-w-[2.5rem] text-center">{item.quantity}</span>
-                                                <button onClick={() => updateQuantity(item.id, item.quantity + 1)} className="px-3 py-1 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700 border-l border-gray-200 dark:border-slate-600">+</button>
+                                                <button onClick={() => updateQuantity(item.cartItemId, item.quantity + 1)} className="px-3 py-1 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700 border-l border-gray-200 dark:border-slate-600">+</button>
                                             </div>
                                             <span className="text-gray-900 dark:text-white font-bold ml-auto">ETB {(item.price * item.quantity).toFixed(2)}</span>
                                         </div>

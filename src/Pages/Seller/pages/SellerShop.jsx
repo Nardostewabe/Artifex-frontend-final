@@ -9,7 +9,6 @@ import {
   Filter,
   MoreVertical,
   Package,
-  DollarSign,
   Edit3,
   Trash2,
   Eye,
@@ -189,7 +188,7 @@ const SellerShop = () => {
 
                   {/* Action Overlay */}
                   <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
-                    <button onClick={() => navigate(`/product/${product.id}`)} className="p-2 bg-white rounded-full hover:bg-gray-100 text-gray-800 transition-transform hover:scale-110" title="View">
+                    <button onClick={() => navigate(`/seller/product/${product.id}`)} className="p-2 bg-white rounded-full hover:bg-gray-100 text-gray-800 transition-transform hover:scale-110" title="View">
                       <Eye size={18} />
                     </button>
                     <button onClick={() => navigate(`/product/edit/${product.id}`)} className="p-2 bg-white rounded-full hover:bg-gray-100 text-blue-600 transition-transform hover:scale-110" title="Edit">
@@ -228,7 +227,7 @@ const SellerShop = () => {
 
                   <div className="flex items-center justify-between pt-3 border-t border-gray-50">
                     <div className="flex items-center gap-1 text-gray-900 font-bold">
-                      <DollarSign size={16} className="text-gray-400" />
+                      <p className="text-gray-400">ETB</p>
                       {product.price}
                     </div>
                     <div className="text-xs text-gray-400">

@@ -81,7 +81,10 @@ const App = () => {
                       <Route path="/reset-password" element={<ResetPassword />} />
 
                       <Route path="/chomepage" element={<CHomepage />} />
-                      <Route path="/seller-shop/:sellerId" element={<PublicSellerShop />} />
+                      <Route path="/seller-shop/:id" element={<PublicSellerShop />} />
+                      {/* ✅ Public Product Details - Anyone can view */}
+                      <Route path="customer/product/:id" element={<CustomerProduct />} />
+                      <Route path="/product/:id" element={<CustomerProduct />} />
 
                       {/* =========================================
                2. LOGGED IN ROUTES (Token Required)
@@ -103,7 +106,6 @@ const App = () => {
                         <Route path="/collections/:category" element={<CustomerCollection />} />
                         <Route path="/collection/:category" element={<CustomerCollection />} />
                         <Route path="/collection" element={<CustomerCollection />} />
-                        <Route path="customer/product/:id" element={<CustomerProduct />} />
                         <Route path="/my-profile" element={<MyProfile />} />
                         <Route path="/favorites" element={<Favorites />} />
                         <Route path="/orders" element={<CustomerOrders />} />
@@ -125,7 +127,7 @@ const App = () => {
                         <Route path="/seller-inventory" element={<SellerInventory />} />
                         <Route path="/seller-shop" element={<SellerShop />} />
                         <Route path="/product/edit/:id" element={<EditProduct />} />
-                        <Route path="/product/:id" element={<ProductDetails />} />
+                        <Route path="/seller/product/:id" element={<ProductDetails />} />
                         <Route path="/seller-orders" element={<SellerOrders />} />
                         <Route path="/seller-profile" element={<SellerProfile />} />
                       </Route>

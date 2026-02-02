@@ -11,7 +11,7 @@ import ReviewSection from './ReviewSection.jsx';
 const CustomerProduct = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { token } = useAuth();
+  const { token, user } = useAuth();
   const { addToCart } = useCart();
 
   const [product, setProduct] = useState(null);
@@ -21,6 +21,11 @@ const CustomerProduct = () => {
   const [reviewRating, setReviewRating] = useState({ avg: 0, count: 0 });
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [isFavorited, setIsFavorited] = useState(false);
+
+  // Customization State
+  const [selectedColor, setSelectedColor] = useState(null);
+  const [selectedSize, setSelectedSize] = useState(null);
+  const [customizationError, setCustomizationError] = useState('');
 
   // Modal State
   const [modalConfig, setModalConfig] = useState({
@@ -132,7 +137,41 @@ const CustomerProduct = () => {
   };
 
   const handleAddToCart = () => {
-    addToCart(product);
+    // Check if user is logged in first
+    if (!token) {
+      showModal({
+        title: "Login Required",
+        message: "Please login to add items to your cart.",
+        type: "info",
+        confirmText: "Login",
+        onConfirm: () => navigate('/login')
+      });
+      return;
+    }
+
+    // ✅ Filter by role - only customers can add to cart
+    if (user?.role !== 1 && user?.role !== "Customer") {
+      showModal({
+        title: "Customer Account Required",
+        message: "Only customers can add items to cart. Please log in with a customer account.",
+        type: "warning",
+        isAlert: true
+      });
+      return;
+    }
+
+    // Validate customization options
+    if (product.allowColorCustomization && !selectedColor) {
+      setCustomizationError('Please select a color');
+      return;
+    }
+    if (product.allowSizeCustomization && !selectedSize) {
+      setCustomizationError('Please select a size');
+      return;
+    }
+
+    setCustomizationError('');
+    addToCart(product, selectedColor, selectedSize);
     showModal({
       title: "Added to Cart!",
       message: `${product.name} has been added to your cart.`,
@@ -210,6 +249,68 @@ const CustomerProduct = () => {
             </div>
           </div>
 
+          {/* ✅ CUSTOMIZATION OPTIONS */}
+          {(product.allowColorCustomization || product.allowSizeCustomization) && (
+            <div className="space-y-4 pt-4 border-t border-gray-200 dark:border-slate-700">
+              <h3 className="font-semibold text-gray-900 dark:text-white text-sm">Customize Your Order</h3>
+
+              {/* Color Selection */}
+              {product.allowColorCustomization && product.colorOptions && product.colorOptions.length > 0 && (
+                <div className="space-y-2">
+                  <label className="text-xs font-medium text-gray-700 dark:text-gray-300">Color *</label>
+                  <div className="flex flex-wrap gap-2">
+                    {product.colorOptions.map((color, idx) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => {
+                          setSelectedColor(color);
+                          setCustomizationError('');
+                        }}
+                        className={`px-4 py-2 rounded-lg border-2 text-sm font-medium transition-all ${selectedColor === color
+                          ? 'border-purple-600 bg-purple-50 text-purple-700 dark:bg-purple-900 dark:text-purple-200'
+                          : 'border-gray-200 dark:border-slate-600 text-gray-700 dark:text-gray-300 hover:border-purple-300 dark:hover:border-purple-500'
+                          }`}
+                      >
+                        {color}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Size Selection */}
+              {product.allowSizeCustomization && product.sizeOptions && product.sizeOptions.length > 0 && (
+                <div className="space-y-2">
+                  <label className="text-xs font-medium text-gray-700 dark:text-gray-300">Size *</label>
+                  <div className="flex flex-wrap gap-2">
+                    {product.sizeOptions.map((size, idx) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => {
+                          setSelectedSize(size);
+                          setCustomizationError('');
+                        }}
+                        className={`px-4 py-2 rounded-lg border-2 text-sm font-medium transition-all ${selectedSize === size
+                          ? 'border-purple-600 bg-purple-50 text-purple-700 dark:bg-purple-900 dark:text-purple-200'
+                          : 'border-gray-200 dark:border-slate-600 text-gray-700 dark:text-gray-300 hover:border-purple-300 dark:hover:border-purple-500'
+                          }`}
+                      >
+                        {size}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Customization Error */}
+              {customizationError && (
+                <p className="text-xs text-red-500 font-medium">{customizationError}</p>
+              )}
+            </div>
+          )}
+
           <div className="flex flex-col gap-3 pt-4">
             {/* "Order Now" button removed as requested */}
             {/* Action Buttons */}
@@ -226,7 +327,19 @@ const CustomerProduct = () => {
                 <Share2 size={20} />
               </button>
               <button
-                onClick={() => setIsReportModalOpen(true)}
+                onClick={() => {
+                  if (!token) {
+                    showModal({
+                      title: "Login Required",
+                      message: "Please login to report products.",
+                      type: "info",
+                      confirmText: "Login",
+                      onConfirm: () => navigate('/login')
+                    });
+                  } else {
+                    setIsReportModalOpen(true);
+                  }
+                }}
                 className="p-4 rounded-xl border border-red-100 text-red-400 hover:bg-red-50 hover:text-red-500 transition-colors"
                 title="Report this product"
               >
@@ -272,24 +385,26 @@ const CustomerProduct = () => {
         isAlert={modalConfig.isAlert}
       />
 
-      {product && (
-        <ReportModal
-          isOpen={isReportModalOpen}
-          onClose={() => setIsReportModalOpen(false)}
-          targetId={product.id}
-          targetType="product"
-          targetName={product.name}
-          onSuccess={() => {
-            showModal({
-              title: "Report Submitted",
-              message: "Thank you for flagging this product. Our team will review it shortly.",
-              type: "success",
-              isAlert: true
-            });
-          }}
-        />
-      )}
-    </div>
+      {
+        product && (
+          <ReportModal
+            isOpen={isReportModalOpen}
+            onClose={() => setIsReportModalOpen(false)}
+            targetId={product.id}
+            targetType="product"
+            targetName={product.name}
+            onSuccess={() => {
+              showModal({
+                title: "Report Submitted",
+                message: "Thank you for flagging this product. Our team will review it shortly.",
+                type: "success",
+                isAlert: true
+              });
+            }}
+          />
+        )
+      }
+    </div >
   );
 };
 

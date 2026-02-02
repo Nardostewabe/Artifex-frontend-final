@@ -4,7 +4,7 @@ import { useAuth } from '../../../context/AuthContext.jsx';
 import { API_BASE_URL } from "../../../config.js";
 
 import {
-  Upload, X, Image as ImageIcon, DollarSign, Layers, ArrowLeft,
+  Upload, X, Image as ImageIcon, Layers, ArrowLeft,
   Tag, Package, Loader2, AlertCircle, Check
 } from 'lucide-react';
 

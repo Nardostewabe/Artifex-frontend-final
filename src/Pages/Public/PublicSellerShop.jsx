@@ -7,7 +7,8 @@ import ReportModal from '../../components/ReportModal';
 import ConfirmationModal from '../../components/ConfirmationModal';
 
 const PublicSellerShop = () => {
-    const { sellerId } = useParams();
+    const params = useParams();
+const sellerId = params.sellerId || params.id;
     const navigate = useNavigate();
     const location = useLocation();
 

@@ -5,7 +5,7 @@ import { useModal } from '../../../context/ModalContext.jsx';
 import { API_BASE_URL } from "../../../config.js";
 
 import {
-  Upload, X, Image as ImageIcon, DollarSign, Layers, ArrowLeft,
+  Upload, X, Image as ImageIcon, Layers, ArrowLeft,
   Tag, Package, Loader2, AlertCircle, Check
 } from 'lucide-react';
 
@@ -33,7 +33,15 @@ const AddProduct = () => {
   const [selectedCategoryIds, setSelectedCategoryIds] = useState([]); // User selection (IDs)
   const [isCategoriesLoading, setIsCategoriesLoading] = useState(true);
 
-  // 3. Images State
+  // 3. Customization State (Color & Size)
+  const [allowColorCustomization, setAllowColorCustomization] = useState(false);
+  const [colorOptions, setColorOptions] = useState([]);
+  const [colorInput, setColorInput] = useState('');
+  const [allowSizeCustomization, setAllowSizeCustomization] = useState(false);
+  const [sizeOptions, setSizeOptions] = useState([]);
+  const [sizeInput, setSizeInput] = useState('');
+
+  // 4. Images State
   const [images, setImages] = useState([]);
   const [isDragging, setIsDragging] = useState(false);
 
@@ -65,6 +73,14 @@ const AddProduct = () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+
+    // Reset customization if stock status changes from "Made to Order"
+    if (name === 'stockStatus' && value !== 'Made to Order') {
+      setAllowColorCustomization(false);
+      setColorOptions([]);
+      setAllowSizeCustomization(false);
+      setSizeOptions([]);
+    }
   };
 
   // Toggle Category Selection
@@ -76,6 +92,29 @@ const AddProduct = () => {
         return [...prev, categoryId]; // Add
       }
     });
+  };
+
+  // Customization Handlers
+  const addColorOption = () => {
+    if (colorInput.trim() && !colorOptions.includes(colorInput.trim())) {
+      setColorOptions([...colorOptions, colorInput.trim()]);
+      setColorInput('');
+    }
+  };
+
+  const removeColorOption = (color) => {
+    setColorOptions(colorOptions.filter(c => c !== color));
+  };
+
+  const addSizeOption = () => {
+    if (sizeInput.trim() && !sizeOptions.includes(sizeInput.trim())) {
+      setSizeOptions([...sizeOptions, sizeInput.trim()]);
+      setSizeInput('');
+    }
+  };
+
+  const removeSizeOption = (size) => {
+    setSizeOptions(sizeOptions.filter(s => s !== size));
   };
 
   const handleImageUpload = (e) => {
@@ -151,6 +190,22 @@ const AddProduct = () => {
       selectedCategoryIds.forEach(id => {
         submissionData.append('CategoryIds', id);
       });
+
+      // Append Customization Options (only if Made to Order)
+      if (formData.stockStatus === 'Made to Order') {
+        submissionData.append('AllowColorCustomization', allowColorCustomization);
+        if (allowColorCustomization && colorOptions.length > 0) {
+          colorOptions.forEach(color => {
+            submissionData.append('ColorOptions', color);
+          });
+        }
+        submissionData.append('AllowSizeCustomization', allowSizeCustomization);
+        if (allowSizeCustomization && sizeOptions.length > 0) {
+          sizeOptions.forEach(size => {
+            submissionData.append('SizeOptions', size);
+          });
+        }
+      }
 
       // Append Images
       images.forEach(img => {
@@ -333,6 +388,133 @@ const AddProduct = () => {
                     {stockStatuses.map(s => <option key={s} value={s}>{s}</option>)}
                   </select>
                 </div>
+
+                {/* ✅ CUSTOMIZATION OPTIONS (Only for Made to Order) */}
+                {formData.stockStatus === 'Made to Order' && (
+                  <>
+                    <div className="border-t border-gray-200 pt-4 mt-4">
+                      <h3 className="text-xs font-bold text-gray-900 uppercase tracking-wider mb-3">Customization Options</h3>
+
+                      {/* Color Customization Toggle */}
+                      <div className="space-y-3">
+                        <label className="flex items-center justify-between cursor-pointer group">
+                          <span className="text-xs font-medium text-gray-700">Allow Color Selection</span>
+                          <div className="relative">
+                            <input
+                              type="checkbox"
+                              checked={allowColorCustomization}
+                              onChange={(e) => setAllowColorCustomization(e.target.checked)}
+                              className="sr-only peer"
+                            />
+                            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+                          </div>
+                        </label>
+
+                        {/* Color Input */}
+                        {allowColorCustomization && (
+                          <div className="space-y-2">
+                            <div className="flex gap-2">
+                              <input
+                                type="text"
+                                value={colorInput}
+                                onChange={(e) => setColorInput(e.target.value)}
+                                onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addColorOption())}
+                                placeholder="Add color (e.g., Red)"
+                                className="flex-1 px-3 py-2 rounded-lg border border-gray-200 outline-none text-xs focus:border-purple-500"
+                              />
+                              <button
+                                type="button"
+                                onClick={addColorOption}
+                                className="px-4 py-2 bg-purple-600 text-white rounded-lg text-xs font-medium hover:bg-purple-700 transition-colors"
+                              >
+                                Add
+                              </button>
+                            </div>
+                            {/* Color Tags */}
+                            {colorOptions.length > 0 && (
+                              <div className="flex flex-wrap gap-2">
+                                {colorOptions.map((color, idx) => (
+                                  <span
+                                    key={idx}
+                                    className="inline-flex items-center gap-1 bg-purple-100 text-purple-700 px-2 py-1 rounded-lg text-xs font-medium"
+                                  >
+                                    {color}
+                                    <button
+                                      type="button"
+                                      onClick={() => removeColorOption(color)}
+                                      className="hover:text-purple-900"
+                                    >
+                                      <X size={12} />
+                                    </button>
+                                  </span>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Size Customization Toggle */}
+                      <div className="space-y-3 mt-4">
+                        <label className="flex items-center justify-between cursor-pointer group">
+                          <span className="text-xs font-medium text-gray-700">Allow Size Selection</span>
+                          <div className="relative">
+                            <input
+                              type="checkbox"
+                              checked={allowSizeCustomization}
+                              onChange={(e) => setAllowSizeCustomization(e.target.checked)}
+                              className="sr-only peer"
+                            />
+                            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+                          </div>
+                        </label>
+
+                        {/* Size Input */}
+                        {allowSizeCustomization && (
+                          <div className="space-y-2">
+                            <div className="flex gap-2">
+                              <input
+                                type="text"
+                                value={sizeInput}
+                                onChange={(e) => setSizeInput(e.target.value)}
+                                onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addSizeOption())}
+                                placeholder="Add size (e.g., Medium)"
+                                className="flex-1 px-3 py-2 rounded-lg border border-gray-200 outline-none text-xs focus:border-purple-500"
+                              />
+                              <button
+                                type="button"
+                                onClick={addSizeOption}
+                                className="px-4 py-2 bg-purple-600 text-white rounded-lg text-xs font-medium hover:bg-purple-700 transition-colors"
+                              >
+                                Add
+                              </button>
+                            </div>
+                            {/* Size Tags */}
+                            {sizeOptions.length > 0 && (
+                              <div className="flex flex-wrap gap-2">
+                                {sizeOptions.map((size, idx) => (
+                                  <span
+                                    key={idx}
+                                    className="inline-flex items-center gap-1 bg-purple-100 text-purple-700 px-2 py-1 rounded-lg text-xs font-medium"
+                                  >
+                                    {size}
+                                    <button
+                                      type="button"
+                                      onClick={() => removeSizeOption(size)}
+                                      className="hover:text-purple-900"
+                                    >
+                                      <X size={12} />
+                                    </button>
+                                  </span>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </>
+                )}
 
               </div>
             </div>
